@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StudentFin – Budgeting Mahasiswa Kos</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <div class="app" id="app">
+
+    <!-- ===================== SCREEN: DASHBOARD ===================== -->
+    <div class="screen active" id="screen-dashboard">
+
+      <!-- Top Bar -->
+      <div class="top-bar">
+        <div>
+          <div class="greeting">Selamat pagi 👋</div>
+          <div class="name">Dimas Pratama</div>
+        </div>
+        <div class="notif-btn" onclick="showNotif()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+          <div class="notif-dot"></div>
+        </div>
+      </div>
+
+      <!-- Budget Ring -->
+      <div class="ring-section">
+        <div class="ring-wrap">
+          <svg width="200" height="200" viewBox="0 0 200 200">
+            <circle cx="100" cy="100" r="82" fill="none" stroke="#1A2E40" stroke-width="18"/>
+            <circle cx="100" cy="100" r="82" fill="none" stroke="#213648" stroke-width="18"
+              stroke-dasharray="515" stroke-dashoffset="0"/>
+            <circle id="ringUsed" cx="100" cy="100" r="82" fill="none" stroke="#FF6B6B"
+              stroke-width="18" stroke-dasharray="515" stroke-dashoffset="515" stroke-linecap="round"/>
+            <circle id="ringLeft" cx="100" cy="100" r="82" fill="none" stroke="#00D4AA"
+              stroke-width="18" stroke-dasharray="515" stroke-dashoffset="515" stroke-linecap="round"/>
+          </svg>
+          <div class="ring-center">
+            <div class="rlabel">Budget tersisa</div>
+            <div class="ramt" id="ringAmt">Rp 580K</div>
+            <div class="rsub">dari Rp 1.500.000</div>
+          </div>
+        </div>
+        <div class="ring-legend">
+          <div class="leg"><div class="dot" style="background:#00D4AA"></div>Sisa</div>
+          <div class="leg"><div class="dot" style="background:#FF6B6B"></div>Terpakai</div>
+        </div>
+      </div>
+
+      <!-- Overbudget Alert -->
+      <div class="ob-badge warn-pulse">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/>
+          <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+        Pengeluaran "Kopi &amp; Nongkrong" hampir melewati batas budget!
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="slabel">Total Saldo</div>
+          <div class="sval accent">Rp 2,08jt</div>
+          <div class="schange up">↑ Rp 500rb masuk</div>
+        </div>
+        <div class="stat-card">
+          <div class="slabel">Pengeluaran bulan ini</div>
+          <div class="sval danger">Rp 920rb</div>
+          <div class="schange down">↑ 12% vs bulan lalu</div>
+        </div>
+      </div>
+
+      <!-- Recent Transactions -->
+      <div class="sec-header" style="margin-top: 8px">
+        <h3>Transaksi terbaru</h3>
+        <a onclick="switchScreen('transactions')">Lihat semua →</a>
+      </div>
+      <div class="tx-list">
+        <div class="tx-item">
+          <div class="tx-icon icon-food">🍔</div>
+          <div class="tx-info">
+            <div class="tname">GrabFood – Mie Ayam</div>
+            <div class="tcat">Makanan · Hari ini 12:30</div>
+          </div>
+          <div class="tx-amt neg">-Rp 28rb</div>
+        </div>
+        <div class="tx-item">
+          <div class="tx-icon icon-coffee">☕</div>
+          <div class="tx-info">
+            <div class="tname">Kopi Kenangan</div>
+            <div class="tcat">Kopi &amp; Nongkrong · Hari ini 09:15</div>
+          </div>
+          <div class="tx-amt neg">-Rp 35rb</div>
+        </div>
+        <div class="tx-item">
+          <div class="tx-icon icon-income">💰</div>
+          <div class="tx-info">
+            <div class="tname">Kiriman Orang Tua</div>
+            <div class="tcat">Pemasukan · 1 Jun</div>
+          </div>
+          <div class="tx-amt pos">+Rp 1,5jt</div>
+        </div>
+      </div>
+
+    </div>
+    <!-- END SCREEN: DASHBOARD -->
+
+
+    <!-- ===================== SCREEN: TRANSACTIONS ===================== -->
+    <div class="screen" id="screen-transactions">
+
+      <div class="section-pad">
+        <h2>Transaksi</h2>
+        <p>Juni 2026</p>
+      </div>
+
+      <!-- Filter Chips -->
+      <div class="filter-chips">
+        <div class="chip active" onclick="filterTx(this, 'all')">Semua</div>
+        <div class="chip" onclick="filterTx(this, 'Makanan')">🍔 Makanan</div>
+        <div class="chip" onclick="filterTx(this, 'Kopi')">☕ Kopi</div>
+        <div class="chip" onclick="filterTx(this, 'Transport')">🛵 Transport</div>
+        <div class="chip" onclick="filterTx(this, 'Pemasukan')">💰 Pemasukan</div>
+      </div>
+
+      <!-- Transaction List -->
+      <div class="tx-list" id="txList">
+        <div class="tx-item" data-cat="Makanan">
+          <div class="tx-icon icon-food">🍔</div>
+          <div class="tx-info"><div class="tname">GrabFood – Mie Ayam</div><div class="tcat">Makanan · Hari ini</div></div>
+          <div class="tx-amt neg">-Rp 28rb</div>
+        </div>
+        <div class="tx-item" data-cat="Kopi">
+          <div class="tx-icon icon-coffee">☕</div>
+          <div class="tx-info"><div class="tname">Kopi Kenangan</div><div class="tcat">Kopi · Hari ini</div></div>
+          <div class="tx-amt neg">-Rp 35rb</div>
+        </div>
+        <div class="tx-item" data-cat="Transport">
+          <div class="tx-icon icon-transport">🛵</div>
+          <div class="tx-info"><div class="tname">Gojek ke Kampus</div><div class="tcat">Transport · 12 Jun</div></div>
+          <div class="tx-amt neg">-Rp 18rb</div>
+        </div>
+        <div class="tx-item" data-cat="Pemasukan">
+          <div class="tx-icon icon-income">💰</div>
+          <div class="tx-info"><div class="tname">Monthly Allowance</div><div class="tcat">Pemasukan · 1 Jun</div></div>
+          <div class="tx-amt pos">+Rp 1,5jt</div>
+        </div>
+        <div class="tx-item" data-cat="Makanan">
+          <div class="tx-icon icon-food">🍜</div>
+          <div class="tx-info"><div class="tname">Warteg Depot Pak Budi</div><div class="tcat">Makanan · 11 Jun</div></div>
+          <div class="tx-amt neg">-Rp 15rb</div>
+        </div>
+        <div class="tx-item" data-cat="Kopi">
+          <div class="tx-icon icon-coffee">☕</div>
+          <div class="tx-info"><div class="tname">Janji Jiwa – Americano</div><div class="tcat">Kopi · 10 Jun</div></div>
+          <div class="tx-amt neg">-Rp 22rb</div>
+        </div>
+        <div class="tx-item" data-cat="Makanan">
+          <div class="tx-icon icon-food">🍕</div>
+          <div class="tx-info"><div class="tname">ShopeeFood – Pizza Hut</div><div class="tcat">Makanan · 9 Jun</div></div>
+          <div class="tx-amt neg">-Rp 65rb</div>
+        </div>
+        <div class="tx-item" data-cat="Transport">
+          <div class="tx-icon icon-transport">🛵</div>
+          <div class="tx-info"><div class="tname">Grab – Rungkut → Gubeng</div><div class="tcat">Transport · 8 Jun</div></div>
+          <div class="tx-amt neg">-Rp 24rb</div>
+        </div>
+      </div>
+
+    </div>
+    <!-- END SCREEN: TRANSACTIONS -->
+
+
+    <!-- ===================== SCREEN: INSIGHTS ===================== -->
+    <div class="screen" id="screen-insights">
+
+      <div class="insight-header">
+        <h2>Insight keuangan</h2>
+        <p>Analisis pengeluaran Juni 2026</p>
+      </div>
+
+      <!-- Weekly Bar Chart -->
+      <div class="sec-header"><h3>Pengeluaran mingguan</h3></div>
+      <div class="mini-bars">
+        <div class="mbar-col"><div class="mbar" style="height: 40px"></div><div class="mbar-label">M1</div></div>
+        <div class="mbar-col"><div class="mbar" style="height: 60px"></div><div class="mbar-label">M2</div></div>
+        <div class="mbar-col"><div class="mbar active-bar" style="height: 75px"></div><div class="mbar-label">M3</div></div>
+        <div class="mbar-col"><div class="mbar" style="height: 30px"></div><div class="mbar-label">M4</div></div>
+      </div>
+
+      <!-- Donut Chart -->
+      <div class="sec-header"><h3>Kategori terbesar</h3></div>
+      <div class="donut-wrap">
+        <svg width="120" height="120" viewBox="0 0 120 120" style="flex-shrink:0">
+          <circle cx="60" cy="60" r="46" fill="none" stroke="#1A2E40" stroke-width="20"/>
+          <circle cx="60" cy="60" r="46" fill="none" stroke="#FF6B6B" stroke-width="20"
+            stroke-dasharray="289" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>
+          <circle cx="60" cy="60" r="46" fill="none" stroke="#00D4AA" stroke-width="20"
+            stroke-dasharray="289" stroke-dashoffset="202" transform="rotate(-90 60 60)"/>
+          <circle cx="60" cy="60" r="46" fill="none" stroke="#F5C842" stroke-width="20"
+            stroke-dasharray="289" stroke-dashoffset="260" transform="rotate(-90 60 60)"/>
+          <text x="60" y="55" text-anchor="middle" fill="#E8F4F1" font-size="13" font-weight="700">Makan</text>
+          <text x="60" y="70" text-anchor="middle" fill="#7BA4B5" font-size="11">terbesar</text>
+        </svg>
+        <div class="donut-legend">
+          <div class="dleg-item"><div class="dleg-dot" style="background:#FF6B6B"></div><span>Makanan <b class="col-danger">30%</b></span></div>
+          <div class="dleg-item"><div class="dleg-dot" style="background:#00D4AA"></div><span>Kopi/Jajan <b class="col-accent">22%</b></span></div>
+          <div class="dleg-item"><div class="dleg-dot" style="background:#F5C842"></div><span>Transport <b class="col-warn">8%</b></span></div>
+          <div class="dleg-item"><div class="dleg-dot" style="background:#213648"></div><span>Lainnya <b class="col-muted">40%</b></span></div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Category Breakdown -->
+      <div class="sec-header"><h3>Detail kategori</h3></div>
+      <div class="cat-list">
+        <div class="cat-item">
+          <div class="chead"><span>🍔 Makanan</span><span class="camt">Rp 276rb / Rp 400rb</span></div>
+          <div class="cbar-bg"><div class="cbar-fill" style="width:69%; background:#FF6B6B"></div></div>
+        </div>
+        <div class="cat-item">
+          <div class="chead"><span>☕ Kopi &amp; Nongkrong</span><span class="camt col-danger">Rp 198rb / Rp 150rb ⚠️</span></div>
+          <div class="cbar-bg"><div class="cbar-fill" style="width:100%; background:#FF6B6B"></div></div>
+        </div>
+        <div class="cat-item">
+          <div class="chead"><span>🛵 Transport</span><span class="camt">Rp 74rb / Rp 200rb</span></div>
+          <div class="cbar-bg"><div class="cbar-fill" style="width:37%; background:#00D4AA"></div></div>
+        </div>
+        <div class="cat-item">
+          <div class="chead"><span>🏠 Kebutuhan Kos</span><span class="camt">Rp 120rb / Rp 300rb</span></div>
+          <div class="cbar-bg"><div class="cbar-fill" style="width:40%; background:#F5C842"></div></div>
+        </div>
+        <div class="cat-item">
+          <div class="chead"><span>📚 Edukasi</span><span class="camt">Rp 50rb / Rp 200rb</span></div>
+          <div class="cbar-bg"><div class="cbar-fill" style="width:25%; background:#00D4AA"></div></div>
+        </div>
+      </div>
+
+      <!-- AI Insight Card -->
+      <div class="ai-insight-card">
+        <div class="ai-label">💡 INSIGHT AI</div>
+        <div class="ai-text">
+          Kamu ngabisin <b>32%</b> lebih banyak untuk kopi minggu ini dibanding minggu lalu.
+          Kalau dikurangi <b>Rp 50rb/minggu</b>, kamu bisa nabung <b>Rp 200rb/bulan</b> lebih banyak.
+        </div>
+      </div>
+
+    </div>
+    <!-- END SCREEN: INSIGHTS -->
+
+
+    
+<div class="screen" id="screen-health">
+<div class="section-pad"><h2>Financial Health</h2><p>Kondisi keuangan bulan ini</p></div>
+<div class="health-score-card">
+<div class="health-score">82</div>
+<div class="health-status">🟢 Healthy</div>
+</div>
+<div class="health-grid">
+<div class="health-card"><h4>Budget Discipline</h4><div class="health-value">85%</div></div>
+<div class="health-card"><h4>Saving Habit</h4><div class="health-value">90%</div></div>
+<div class="health-card"><h4>Overspending Risk</h4><div class="health-value">65%</div></div>
+</div>
+<div class="ai-insight-card">
+<div class="ai-label">💡 REKOMENDASI</div>
+<div class="ai-text">Kurangi kopi Rp50.000 per minggu agar target Laptop Upgrade tercapai lebih cepat.</div>
+</div>
+</div>
+
+<!-- ===================== SCREEN: SAVINGS ===================== -->
+    <div class="screen" id="screen-savings">
+
+      <div class="section-pad">
+        <h2>Target tabungan</h2>
+        <p>3 target aktif</p>
+      </div>
+
+      <div class="total-all">
+        <div>
+          <div class="tal">Total terkumpul</div>
+          <div class="tav">Rp 1,25jt</div>
+        </div>
+        <div style="text-align:right">
+          <div class="tal">Dari target</div>
+          <div class="tav warn">Rp 5,3jt</div>
+        </div>
+      </div>
+
+      <div class="save-list">
+        <!-- Saving Card 1 -->
+        <div class="save-card">
+          <div class="shead">
+            <div>
+              <div class="sname">💻 Laptop Upgrade</div>
+              <div class="starget">Target: Rp 3.500.000</div><div class="saving-source">🔗 Blu Pocket - Laptop Fund</div>
+            </div>
+            <div class="spct">34%</div>
+          </div>
+          <div class="spbar"><div class="spfill" style="width:34%"></div></div>
+          <div class="sfooter">
+            <span>Terkumpul: Rp 1.200.000</span>
+            <span>Sisa: Rp 2.300.000</span>
+          </div>
+        </div>
+        <!-- Saving Card 2 -->
+        <div class="save-card">
+          <div class="shead">
+            <div>
+              <div class="sname">✈️ Liburan Bali</div>
+              <div class="starget">Target: Rp 1.500.000</div>
+            </div>
+            <div class="spct warn">2%</div>
+          </div>
+          <div class="spbar"><div class="spfill" style="width:2%; background:var(--warn)"></div></div>
+          <div class="sfooter">
+            <span>Terkumpul: Rp 30.000</span>
+            <span>Sisa: Rp 1.470.000</span>
+          </div>
+        </div>
+        <!-- Saving Card 3 -->
+        <div class="save-card">
+          <div class="shead">
+            <div>
+              <div class="sname">📦 Dana Darurat</div>
+              <div class="starget">Target: Rp 300.000</div><div class="saving-source">🔗 Blu Pocket - Emergency Fund</div>
+            </div>
+            <div class="spct">67%</div>
+          </div>
+          <div class="spbar"><div class="spfill" style="width:67%"></div></div>
+          <div class="sfooter">
+            <span>Terkumpul: Rp 200.000</span>
+            <span>Sisa: Rp 100.000</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-wrap">
+        <button class="save-btn" onclick="alert('Fitur tambah target tabungan')">+ Tambah target baru</button>
+      </div>
+
+    </div>
+    <!-- END SCREEN: SAVINGS -->
+
+
+    <!-- ===================== SCREEN: ACCOUNTS ===================== -->
+    <div class="screen" id="screen-accounts">
+
+      <div class="section-pad">
+        <h2>Akun keuangan</h2>
+        <p>Semua sumber keuangan di satu tempat</p>
+      </div>
+
+      <div class="total-all">
+        <div>
+          <div class="tal">Total semua saldo</div>
+          <div class="tav">Rp 2.080.000</div>
+        </div>
+      </div><div class="sync-card"><div><div class="tal">🟢 Auto Synced</div><div class="tav" id="lastSync">Last updated 5 sec ago</div></div></div>
+
+      <div class="sec-header"><h3>Rekening bank</h3></div>
+      <div class="acc-list">
+        <div class="acc-card">
+          <div class="acc-logo" style="background:#0050A0; color:#fff">BCA</div>
+          <div class="acc-info">
+            <div class="aname">BCA – Tabungan</div>
+            <div class="atype">****4821 · Rekening utama</div>
+          </div>
+          <div class="acc-bal">Rp 1.380.000</div>
+        </div>
+        <div class="acc-card">
+          <div class="acc-logo" style="background:#F5821F; color:#fff">MND</div>
+          <div class="acc-info">
+            <div class="aname">Mandiri – Tabungan</div>
+            <div class="atype">****9034 · Rekening sekunder</div>
+          </div>
+          <div class="acc-bal">Rp 350.000</div>
+        </div>
+      </div>
+
+      <div class="sec-header" style="margin-top:12px"><h3>E-Wallet</h3></div>
+      <div class="acc-list">
+        <div class="acc-card">
+          <div class="acc-logo" style="background:#00AED6; color:#fff">GO</div>
+          <div class="acc-info">
+            <div class="aname">GoPay</div>
+            <div class="atype">Sinkronisasi otomatis</div>
+          </div>
+          <div class="acc-bal">Rp 220.000</div>
+        </div>
+        <div class="acc-card">
+          <div class="acc-logo" style="background:#4C3494; color:#fff">OVO</div>
+          <div class="acc-info">
+            <div class="aname">OVO</div>
+            <div class="atype">Sinkronisasi otomatis</div>
+          </div>
+          <div class="acc-bal">Rp 85.000</div>
+        </div>
+        <div class="acc-card">
+          <div class="acc-logo" style="background:#1784FB; color:#fff">DAN</div>
+          <div class="acc-info">
+            <div class="aname">DANA</div>
+            <div class="atype">Sinkronisasi otomatis</div>
+          </div>
+          <div class="acc-bal">Rp 45.000</div>
+        </div>
+      </div>
+
+      <div class="btn-wrap">
+        <button class="save-btn" onclick="alert('Hubungkan akun baru')">+ Hubungkan akun baru</button>
+      </div>
+
+    </div>
+    <!-- END SCREEN: ACCOUNTS -->
+
+
+    <!-- ============ BOTTOM NAVIGATION ============ -->
+    <nav class="bottom-nav">
+      <div class="nav-item active" id="nav-dashboard" onclick="switchScreen('dashboard')">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">Beranda</span>
+      </div>
+      <div class="nav-item" id="nav-transactions" onclick="switchScreen('transactions')">
+        <span class="nav-icon">📋</span>
+        <span class="nav-label">Transaksi</span>
+      </div>
+      <div class="nav-item" id="nav-insights" onclick="switchScreen('insights')">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">Insight</span>
+      </div>
+      <div class="nav-item" id="nav-health" onclick="switchScreen('health')"><span class="nav-icon">❤️</span><span class="nav-label">Health</span></div>
+      <div class="nav-item" id="nav-savings" onclick="switchScreen('savings')">
+        <span class="nav-icon">🎯</span>
+        <span class="nav-label">Tabungan</span>
+      </div>
+      <div class="nav-item" id="nav-accounts" onclick="switchScreen('accounts')">
+        <span class="nav-icon">💳</span>
+        <span class="nav-label">Akun</span>
+      </div>
+    </nav>
+
+    <!-- FAB Button -->
+    <div class="fab" onclick="openModal()">+</div>
+
+
+    <!-- ============ MODAL: ADD TRANSACTION ============ -->
+    <div class="modal-overlay" id="modal">
+      <div class="modal-sheet">
+        <h3>Catat pengeluaran <span class="modal-close" onclick="closeModal()">✕</span></h3>
+
+        <div class="inp-group">
+          <label>Nominal (Rp)</label>
+          <input type="number" placeholder="Contoh: 25000" id="inp-amount" />
+        </div>
+        <div class="inp-group">
+          <label>Kategori</label>
+          <select id="inp-cat">
+            <option>🍔 Makanan</option>
+            <option>☕ Kopi &amp; Nongkrong</option>
+            <option>🛵 Transport</option>
+            <option>🏠 Kebutuhan Kos</option>
+            <option>📚 Edukasi</option>
+            <option>🛍️ Belanja</option>
+            <option>💊 Kesehatan</option>
+            <option>🎮 Hiburan</option>
+          </select>
+        </div>
+        <div class="inp-group">
+          <label>Keterangan (opsional)</label>
+          <input type="text" placeholder="Contoh: Mie goreng di warteg" id="inp-desc" />
+        </div>
+        <div class="inp-group">
+          <label>Bayar lewat</label>
+          <select id="inp-wallet">
+            <option>GoPay</option>
+            <option>QRIS</option>
+            <option>BCA Mobile</option>
+            <option>OVO</option>
+            <option>Cash</option>
+          </select>
+        </div>
+
+        <button class="save-btn" onclick="addTx()">Simpan transaksi</button>
+      </div>
+    </div>
+
+  </div>
+  <!-- END APP -->
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
