@@ -1,23 +1,24 @@
 <!DOCTYPE html>
-<html lang="id">
-
+<html lang="id" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>StudentFin — Prototype</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Geist:wght@400;500;600;700&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    /* ============================================================
+       THEME TOKENS — light & dark
+    ============================================================ */
     :root {
       --primary: #3525CD;
       --primary-light: #F5F2FF;
-      --primary-tint: rgba(53, 37, 205, 0.1);
+      --primary-tint: rgba(53,37,205,0.1);
       --bg: #FCF8FF;
       --surface: #FFFFFF;
+      --surface-2: #F5F2FF;
       --border: #C7C4D8;
-      --border-soft: rgba(199, 196, 216, 0.5);
+      --border-soft: rgba(199,196,216,0.5);
       --text: #1B1B24;
       --text-muted: #464555;
       --text-faint: #777587;
@@ -29,43 +30,56 @@
       --warning-bg: #FFF3E0;
       --indigo-soft: #E2DFFF;
       --chip-bg: #E4E1EE;
+      --shadow-card: 0 2px 4px -2px rgba(0,0,0,.08), 0 4px 6px -1px rgba(0,0,0,.08);
+      --shadow-modal: 0 24px 64px rgba(0,0,0,.22);
       --radius-lg: 24px;
       --radius-md: 12px;
       --radius-sm: 8px;
-      --shadow-card: 0 2px 4px -2px rgba(0, 0, 0, 0.10), 0 4px 6px -1px rgba(0, 0, 0, 0.10);
+      --sidebar-w: 264px;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    [data-theme="dark"] {
+      --primary: #7B6EFF;
+      --primary-light: #1E1A3A;
+      --primary-tint: rgba(123,110,255,0.15);
+      --bg: #0F0F17;
+      --surface: #1A1A26;
+      --surface-2: #22223A;
+      --border: #2E2D48;
+      --border-soft: rgba(46,45,72,0.7);
+      --text: #EDE9FF;
+      --text-muted: #9B99B8;
+      --text-faint: #6B6988;
+      --success: #4ADE80;
+      --success-bg: #0D2B1C;
+      --danger: #FF6B6B;
+      --danger-bg: #2D1010;
+      --warning: #FFB347;
+      --warning-bg: #2A1A00;
+      --indigo-soft: #2E2D48;
+      --chip-bg: #252438;
+      --shadow-card: 0 2px 4px -2px rgba(0,0,0,.4), 0 4px 8px -1px rgba(0,0,0,.4);
+      --shadow-modal: 0 24px 64px rgba(0,0,0,.7);
     }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: 'Inter', sans-serif;
       background: var(--bg);
       color: var(--text);
       -webkit-font-smoothing: antialiased;
+      transition: background .25s, color .25s;
     }
 
-    .hidden {
-      display: none !important;
-    }
+    .hidden { display: none !important; }
 
-    button {
-      font-family: inherit;
-      cursor: pointer;
-      border: none;
-      background: none;
-      color: inherit;
-    }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+    input, select, textarea { font-family: inherit; color: var(--text); }
 
-    input,
-    select {
-      font-family: inherit;
-    }
-
-    /* ============ LOGIN ============ */
+    /* ============================================================
+       LOGIN
+    ============================================================ */
     #screen-login {
       width: 100%;
       min-height: 100vh;
@@ -75,163 +89,119 @@
     .login-visual {
       flex: 1;
       position: relative;
-      background: #F0ECF9;
+      background: #1E1664;
       overflow: hidden;
       display: flex;
       align-items: flex-end;
       min-height: 100vh;
     }
 
-    .login-visual img {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
     .login-visual .overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(180deg, rgba(30, 22, 100, 0) 0%, rgba(30, 22, 100, 0.55) 100%);
-    }
-
-    .login-visual .blob {
-      position: absolute;
-      width: 384px;
-      height: 384px;
-      left: -96px;
-      top: -96px;
-      background: rgba(79, 70, 229, 0.3);
-      border-radius: 9999px;
-      filter: blur(60px);
+      background: linear-gradient(180deg, rgba(30,22,100,0) 0%, rgba(30,22,100,0.65) 100%);
     }
 
     .login-copy {
       position: relative;
       z-index: 2;
       color: white;
-      padding: 64px;
-      max-width: 560px;
+      padding: 56px;
+      max-width: 520px;
     }
 
     .login-copy .dash {
-      width: 64px;
-      height: 4px;
+      width: 48px; height: 4px;
       background: #6CF8BB;
       border-radius: 9999px;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
 
     .login-copy h1 {
-      font-size: 32px;
-      font-weight: 700;
-      line-height: 1.25;
-      margin-bottom: 16px;
+      font-size: 30px; font-weight: 700;
+      line-height: 1.3; margin-bottom: 14px;
     }
 
     .login-copy p {
-      font-size: 18px;
-      color: #DAD7FF;
-      line-height: 1.55;
+      font-size: 16px; color: #DAD7FF; line-height: 1.6;
     }
 
     .login-form-side {
       flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 48px 96px;
-      background: white;
+      display: flex; align-items: center; justify-content: center;
+      padding: 48px 80px;
+      background: var(--surface);
     }
 
-    .login-form-wrap {
-      width: 100%;
-      max-width: 384px;
-    }
+    .login-form-wrap { width: 100%; max-width: 368px; }
 
     .brand-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 8px;
+      display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
     }
 
     .brand-mark {
-      width: 34px;
-      height: 30px;
-      background: var(--primary);
-      border-radius: 6px;
+      width: 32px; height: 28px;
+      background: var(--primary); border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .brand-mark::after {
+      content: '';
+      width: 12px; height: 12px;
+      border-radius: 3px;
+      background: rgba(255,255,255,0.5);
+      transform: rotate(15deg);
     }
 
     .brand-name {
-      font-size: 28px;
-      font-weight: 700;
-      color: var(--primary);
+      font-size: 26px; font-weight: 700; color: var(--primary);
     }
 
     .login-form-wrap h2 {
-      font-size: 30px;
-      font-weight: 700;
-      margin: 12px 0 6px;
+      font-size: 28px; font-weight: 700; margin: 12px 0 5px;
     }
 
     .login-form-wrap .sub {
-      color: var(--text-muted);
-      font-size: 15px;
-      margin-bottom: 28px;
+      color: var(--text-muted); font-size: 15px; margin-bottom: 26px;
     }
 
-    .field {
-      margin-bottom: 20px;
-    }
+    .field { margin-bottom: 18px; }
 
     .field label {
-      display: block;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text);
-      margin-bottom: 6px;
-      letter-spacing: 0.02em;
+      display: block; font-size: 13px; font-weight: 600;
+      color: var(--text); margin-bottom: 6px;
       font-family: 'Geist', sans-serif;
     }
 
     .field input {
       width: 100%;
-      padding: 13px 16px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
+      padding: 12px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
       font-size: 15px;
+      background: var(--surface);
       outline: none;
-      transition: border-color .15s;
+      transition: border-color .15s, box-shadow .15s;
     }
 
     .field input:focus {
       border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-tint);
     }
 
     .field-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 24px;
-      font-size: 13.5px;
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 22px; font-size: 13.5px;
     }
 
     .field-row label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--text-muted);
-      cursor: pointer;
+      display: flex; align-items: center; gap: 8px;
+      color: var(--text-muted); cursor: pointer;
     }
 
     .field-row a {
-      color: var(--primary);
-      font-weight: 600;
-      text-decoration: none;
-      font-family: 'Geist', sans-serif;
-      font-size: 13.5px;
+      color: var(--primary); font-weight: 600;
+      text-decoration: none; font-family: 'Geist', sans-serif;
     }
 
     .btn-primary {
@@ -239,323 +209,248 @@
       padding: 13px;
       background: var(--primary);
       color: white;
-      border-radius: 8px;
-      font-weight: 500;
-      font-size: 14px;
+      border-radius: 10px;
+      font-weight: 600; font-size: 14px;
       font-family: 'Geist', sans-serif;
       letter-spacing: 0.02em;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: background .15s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: background .15s, transform .1s;
     }
 
-    .btn-primary:hover {
-      background: #2c1ea8;
-    }
+    .btn-primary:hover { background: #2c1ea8; }
+    .btn-primary:active { transform: scale(0.98); }
 
     .login-hint {
-      margin-top: 16px;
-      text-align: center;
-      font-size: 13px;
-      color: var(--text-faint);
+      margin-top: 14px; text-align: center;
+      font-size: 12.5px; color: var(--text-faint);
       background: var(--primary-light);
-      padding: 10px;
-      border-radius: 8px;
+      padding: 10px; border-radius: 8px;
     }
 
     .login-error {
-      margin-top: 12px;
-      padding: 10px 12px;
-      background: var(--danger-bg);
-      color: var(--danger);
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 500;
-      display: none;
+      margin-top: 10px; padding: 10px 12px;
+      background: var(--danger-bg); color: var(--danger);
+      border-radius: 8px; font-size: 13px; font-weight: 500; display: none;
     }
 
-    /* ============ APP SHELL ============ */
-    #screen-app {
-      display: none;
-    }
+    /* ============================================================
+       APP SHELL
+    ============================================================ */
+    #screen-app { display: none; }
 
-    .app-shell {
-      display: flex;
-      min-height: 100vh;
-    }
+    .app-shell { display: flex; min-height: 100vh; }
 
+    /* ---- Sidebar ---- */
     .sidebar {
-      width: 264px;
+      width: var(--sidebar-w);
       flex-shrink: 0;
-      background: var(--bg);
+      background: var(--surface);
       border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      padding: 24px 0;
-      position: fixed;
-      top: 0;
-      left: 0;
-      bottom: 0;
+      display: flex; flex-direction: column;
+      padding: 20px 0;
+      position: fixed; top: 0; left: 0; bottom: 0;
+      z-index: 50;
+      transition: transform .3s cubic-bezier(.4,0,.2,1), background .25s;
+      overflow-y: auto;
     }
 
     .sidebar-brand {
-      padding: 0 24px 24px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      padding: 0 20px 20px;
+      display: flex; align-items: center; gap: 8px;
+      flex-shrink: 0;
     }
 
     .sidebar-nav {
-      flex: 1;
-      padding: 12px 8px 0;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
+      flex: 1; padding: 8px 8px 0;
+      display: flex; flex-direction: column; gap: 2px;
     }
 
     .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 11px 16px;
-      border-radius: 8px;
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 14px; border-radius: 10px;
       font-family: 'Geist', sans-serif;
-      font-size: 14px;
-      font-weight: 500;
+      font-size: 14px; font-weight: 500;
       color: var(--text-muted);
       transition: background .12s, color .12s;
-      width: 100%;
-      text-align: left;
+      width: 100%; text-align: left;
     }
 
-    .nav-item i {
-      font-size: 18px;
-      width: 18px;
-      text-align: center;
-    }
+    .nav-item i { font-size: 18px; width: 18px; text-align: center; flex-shrink: 0; }
+    .nav-item:hover { background: var(--primary-tint); color: var(--primary); }
+    .nav-item.active { background: var(--primary-tint); color: var(--primary); }
 
-    .nav-item:hover {
-      background: rgba(53, 37, 205, 0.06);
-    }
-
-    .nav-item.active {
-      background: var(--primary-tint);
-      color: var(--primary);
-    }
-
-    .nav-item.disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-    }
-
-    .nav-item.disabled:hover {
-      background: none;
-    }
-
-    .sidebar-upgrade {
-      margin: 12px 16px 0;
-    }
+    .sidebar-bottom { padding: 12px 12px 0; flex-shrink: 0; }
 
     .upgrade-card {
-      background: var(--primary);
-      color: white;
-      border-radius: 12px;
-      padding: 16px;
-      position: relative;
-      overflow: hidden;
-      text-align: center;
+      background: var(--primary); color: white;
+      border-radius: 14px; padding: 16px;
+      text-align: center; position: relative; overflow: hidden;
     }
 
-    .upgrade-card i {
-      font-size: 24px;
-      color: #FFB95F;
-      margin-bottom: 6px;
-      display: block;
+    .upgrade-card::before {
+      content: '';
+      position: absolute; width: 120px; height: 120px;
+      right: -30px; top: -30px;
+      background: rgba(255,255,255,0.07);
+      border-radius: 9999px;
     }
 
-    .upgrade-card .t {
-      font-family: 'Geist', sans-serif;
-      font-weight: 700;
-      font-size: 14px;
-      margin-bottom: 4px;
-    }
-
-    .upgrade-card .d {
-      font-size: 11.5px;
-      opacity: 0.85;
-      line-height: 1.4;
-      margin-bottom: 12px;
-    }
+    .upgrade-card i { font-size: 22px; color: #FFB95F; display: block; margin-bottom: 5px; }
+    .upgrade-card .t { font-family: 'Geist',sans-serif; font-weight: 700; font-size: 13.5px; margin-bottom: 4px; }
+    .upgrade-card .d { font-size: 11px; opacity: .85; line-height: 1.4; margin-bottom: 10px; }
 
     .upgrade-card button {
-      width: 100%;
-      background: var(--bg);
-      color: var(--primary);
-      border-radius: 8px;
-      padding: 8px;
-      font-family: 'Geist', sans-serif;
-      font-size: 13px;
-      font-weight: 500;
+      width: 100%; background: rgba(255,255,255,0.15);
+      color: white; border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 8px; padding: 7px;
+      font-family: 'Geist', sans-serif; font-size: 12.5px; font-weight: 600;
+      transition: background .15s;
     }
 
+    .upgrade-card button:hover { background: rgba(255,255,255,0.25); }
+
     .sidebar-user {
-      margin-top: 16px;
-      padding-top: 16px;
+      margin-top: 12px; padding: 12px 12px 0;
       border-top: 1px solid var(--border);
-      padding-left: 16px;
-      padding-right: 16px;
+      flex-shrink: 0;
     }
 
     .sidebar-user-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 8px;
-      border-radius: 8px;
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 6px; border-radius: 10px;
+      cursor: pointer; transition: background .12s;
     }
 
+    .sidebar-user-row:hover { background: var(--primary-tint); }
+
     .avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 9999px;
-      background: var(--primary);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-      font-size: 14px;
-      flex-shrink: 0;
-      border: 1px solid var(--border);
+      width: 36px; height: 36px; border-radius: 9999px;
+      background: var(--primary); color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 13px; flex-shrink: 0;
     }
 
     .sidebar-user .name {
-      font-family: 'Geist', sans-serif;
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text);
+      font-family: 'Geist', sans-serif; font-size: 13.5px; font-weight: 600;
     }
 
-    .sidebar-user .email {
-      font-size: 11.5px;
-      color: var(--text-muted);
-      font-weight: 600;
+    .sidebar-user .email { font-size: 11px; color: var(--text-muted); }
+
+    /* Sidebar overlay for mobile */
+    .sidebar-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 49;
     }
 
-    .main-area {
-      margin-left: 264px;
-      flex: 1;
-      min-width: 0;
-    }
+    .sidebar-overlay.show { display: block; }
+
+    /* ---- Topbar ---- */
+    .main-area { margin-left: var(--sidebar-w); flex: 1; min-width: 0; }
 
     .topbar {
-      height: 64px;
-      padding: 0 24px;
-      background: rgba(252, 248, 255, 0.85);
-      backdrop-filter: blur(6px);
+      height: 60px; padding: 0 24px;
+      background: rgba(var(--bg-raw, 252,248,255), 0.9);
+      backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 10;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      position: sticky; top: 0; z-index: 10;
+      transition: background .25s;
     }
+
+    [data-theme="dark"] .topbar {
+      background: rgba(15,15,23,0.9);
+    }
+
+    .topbar-left { display: flex; align-items: center; gap: 12px; }
+
+    .hamburger {
+      display: none;
+      padding: 6px; color: var(--text-muted); font-size: 22px;
+      border-radius: 8px; transition: background .12s;
+    }
+
+    .hamburger:hover { background: var(--primary-tint); color: var(--primary); }
 
     .search-box {
       position: relative;
-      width: 256px;
+      width: 220px;
     }
 
     .search-box i {
-      position: absolute;
-      left: 12px;
-      top: 50%;
+      position: absolute; left: 11px; top: 50%;
       transform: translateY(-50%);
-      color: var(--text-faint);
-      font-size: 16px;
+      color: var(--text-faint); font-size: 15px;
     }
 
     .search-box input {
       width: 100%;
-      padding: 9px 12px 9px 38px;
-      background: var(--primary-light);
+      padding: 8px 10px 8px 34px;
+      background: var(--surface-2);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 14px;
-      outline: none;
+      border-radius: 8px; font-size: 13.5px;
+      outline: none; transition: border-color .15s;
     }
 
-    .topbar-actions {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
+    .search-box input:focus { border-color: var(--primary); }
+
+    .topbar-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 
     .btn-quickadd {
-      background: #4F46E5;
-      color: #DAD7FF;
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-family: 'Geist', sans-serif;
-      font-size: 14px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: background .15s;
+      background: var(--primary); color: white;
+      padding: 8px 16px; border-radius: 9px;
+      font-family: 'Geist', sans-serif; font-size: 13.5px; font-weight: 600;
+      display: flex; align-items: center; gap: 7px;
+      transition: background .15s, transform .1s;
     }
 
-    .btn-quickadd:hover {
-      background: var(--primary);
-      color: white;
+    .btn-quickadd:hover { background: #2c1ea8; }
+    .btn-quickadd:active { transform: scale(.97); }
+
+    /* Dark mode toggle */
+    .theme-toggle {
+      width: 36px; height: 36px;
+      border-radius: 9px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-muted); font-size: 17px;
+      transition: background .12s, color .12s;
     }
+
+    .theme-toggle:hover { background: var(--primary-tint); color: var(--primary); }
 
     .icon-btn {
-      position: relative;
-      color: var(--text-muted);
-      font-size: 20px;
-      padding: 4px;
+      position: relative; color: var(--text-muted);
+      font-size: 19px; padding: 4px;
+      width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 9px;
+      transition: background .12s, color .12s;
     }
+
+    .icon-btn:hover { background: var(--primary-tint); color: var(--primary); }
 
     .icon-btn .dot {
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 8px;
-      height: 8px;
-      background: var(--danger);
-      border-radius: 9999px;
+      position: absolute; top: 4px; right: 4px;
+      width: 7px; height: 7px;
+      background: var(--danger); border-radius: 9999px;
+      border: 2px solid var(--surface);
     }
 
-    .page {
-      padding: 32px;
-      max-width: 1280px;
-    }
+    /* ---- Pages ---- */
+    .page { padding: 28px; max-width: 1280px; }
 
     .page-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      margin-bottom: 48px;
-      gap: 16px;
-      flex-wrap: wrap;
+      display: flex; justify-content: space-between; align-items: flex-end;
+      margin-bottom: 32px; gap: 16px; flex-wrap: wrap;
     }
 
-    .page-header h1 {
-      font-size: 32px;
-      font-weight: 700;
-    }
+    .page-header h1 { font-size: 28px; font-weight: 700; }
+    .page-header .sub { color: var(--text-muted); font-size: 15px; margin-top: 4px; }
 
-    .page-header .sub {
-      color: var(--text-muted);
-      font-size: 16px;
-      margin-top: 4px;
-    }
-
-    /* cards */
+    /* ---- Cards ---- */
     .card {
       background: var(--surface);
       border-radius: var(--radius-lg);
@@ -565,1628 +460,1041 @@
     }
 
     .stat-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 24px;
-      margin-bottom: 24px;
+      display: grid; grid-template-columns: repeat(3,1fr);
+      gap: 20px; margin-bottom: 20px;
     }
 
     .stat-card {
-      background: var(--bg);
+      background: var(--surface);
       border-radius: var(--radius-lg);
       border: 1px solid var(--border);
-      padding: 24px;
-      position: relative;
-      overflow: hidden;
+      padding: 22px; position: relative; overflow: hidden;
+      box-shadow: var(--shadow-card);
     }
 
     .stat-label {
       font-family: 'Geist', sans-serif;
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--text-muted);
+      display: flex; justify-content: space-between; align-items: flex-start;
     }
 
-    .stat-value {
-      font-size: 28px;
-      font-weight: 700;
-      margin-top: 8px;
-    }
+    .stat-value { font-size: 26px; font-weight: 700; margin-top: 8px; }
 
     .stat-sub {
-      font-size: 13px;
-      margin-top: 8px;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font-weight: 500;
+      font-size: 12.5px; margin-top: 8px;
+      display: flex; align-items: center; gap: 5px; font-weight: 500;
     }
 
-    .stat-sub.up {
-      color: var(--success);
-    }
+    .stat-sub.up { color: var(--success); }
 
     .progress-track {
-      height: 8px;
-      background: #E4E1EE;
-      border-radius: 9999px;
-      overflow: hidden;
-      margin-top: 12px;
+      height: 7px; background: var(--chip-bg);
+      border-radius: 9999px; overflow: hidden; margin-top: 10px;
     }
 
     .progress-fill {
-      height: 100%;
-      background: var(--primary);
-      border-radius: 9999px;
-      transition: width .4s ease;
+      height: 100%; background: var(--primary);
+      border-radius: 9999px; transition: width .4s ease;
     }
 
-    .progress-fill.warn {
-      background: #E65100;
-    }
-
-    .progress-fill.danger {
-      background: var(--danger);
-    }
+    .progress-fill.warn { background: #E65100; }
+    .progress-fill.danger { background: var(--danger); }
 
     .progress-caption {
-      display: flex;
-      justify-content: flex-end;
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-top: 6px;
+      display: flex; justify-content: flex-end;
+      font-size: 12px; color: var(--text-muted); margin-top: 5px;
     }
 
     .dash-grid {
-      display: grid;
-      grid-template-columns: 1.6fr 1fr;
-      gap: 24px;
-      margin-bottom: 24px;
+      display: grid; grid-template-columns: 1.6fr 1fr;
+      gap: 20px; margin-bottom: 20px;
     }
 
-    .panel-title {
-      font-size: 20px;
-      font-weight: 600;
-      margin-bottom: 16px;
-    }
+    .panel-title { font-size: 18px; font-weight: 600; margin-bottom: 14px; }
 
     .chart-box {
-      height: 240px;
-      position: relative;
-      background: white;
+      height: 220px; position: relative;
+      background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px;
+      border-radius: var(--radius-md); padding: 14px;
     }
 
-    .cat-list {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
+    /* Category list */
+    .cat-list { display: flex; flex-direction: column; gap: 2px; }
 
     .cat-row {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 12px;
-      border-radius: 12px;
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px; border-radius: var(--radius-md);
       transition: background .12s;
     }
 
-    .cat-row:hover {
-      background: var(--bg);
-    }
+    .cat-row:hover { background: var(--surface-2); }
 
     .cat-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      flex-shrink: 0;
+      width: 40px; height: 40px; border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
     }
 
-    .cat-row-main {
-      flex: 1;
-    }
+    .cat-row-main { flex: 1; min-width: 0; }
 
     .cat-row-top {
-      display: flex;
-      justify-content: space-between;
+      display: flex; justify-content: space-between;
       font-family: 'Geist', sans-serif;
-      font-size: 14px;
-      font-weight: 500;
-      margin-bottom: 6px;
+      font-size: 13px; font-weight: 600; margin-bottom: 5px;
     }
 
-    .cat-row-top .amt {
-      font-family: 'Inter', sans-serif;
-      font-weight: 600;
-    }
+    .cat-row-top .amt { font-family: 'Inter', sans-serif; }
 
-    .cat-bar-wrap {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+    .cat-bar-wrap { display: flex; align-items: center; gap: 8px; }
 
     .cat-bar {
-      flex: 1;
-      height: 6px;
-      background: #E4E1EE;
-      border-radius: 9999px;
-      overflow: hidden;
+      flex: 1; height: 5px; background: var(--chip-bg);
+      border-radius: 9999px; overflow: hidden;
     }
 
-    .cat-bar-fill {
-      height: 100%;
-      border-radius: 9999px;
-    }
+    .cat-bar-fill { height: 100%; border-radius: 9999px; }
+    .cat-pct { font-size: 12px; color: var(--text-muted); width: 32px; text-align: right; }
 
-    .cat-pct {
-      font-size: 12.5px;
-      color: var(--text-muted);
-      width: 36px;
-      text-align: right;
-    }
-
-    .tx-recent {
-      margin-top: 24px;
-    }
+    /* Tx rows */
+    .tx-recent { margin-top: 20px; }
 
     .tx-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 4px;
-      border-bottom: 1px solid var(--border-soft);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 13px 4px; border-bottom: 1px solid var(--border-soft);
     }
 
-    .tx-row:last-child {
-      border-bottom: none;
-    }
+    .tx-row:last-child { border-bottom: none; }
 
-    .tx-left {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
+    .tx-left { display: flex; align-items: center; gap: 12px; }
 
     .tx-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 9999px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 17px;
-      flex-shrink: 0;
+      width: 38px; height: 38px; border-radius: 9999px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; flex-shrink: 0;
     }
 
-    .tx-name {
-      font-weight: 500;
-      font-size: 14.5px;
-    }
+    .tx-name { font-weight: 500; font-size: 14px; }
 
     .tx-meta {
-      font-size: 12.5px;
-      color: var(--text-faint);
-      margin-top: 2px;
+      font-size: 12px; color: var(--text-faint); margin-top: 2px;
+      display: flex; align-items: center; gap: 5px; flex-wrap: wrap;
     }
 
-    .tx-amt {
-      font-weight: 600;
-      font-size: 14.5px;
+    .tx-amt { font-weight: 600; font-size: 14px; }
+    .tx-amt.expense { color: var(--text); }
+    .tx-amt.income { color: var(--success); }
+
+    /* ---- Transaction Tags ---- */
+    .tag-pill {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 8px; border-radius: 9999px;
+      font-size: 10.5px; font-weight: 700; font-family: 'Geist', sans-serif;
+      letter-spacing: 0.03em; white-space: nowrap;
     }
 
-    .tx-amt.expense {
-      color: var(--text);
-    }
+    .tag-pribadi  { background: rgba(53,37,205,.12); color: var(--primary); }
+    .tag-organisasi { background: rgba(0,108,73,.12); color: var(--success); }
+    .tag-panitia  { background: rgba(230,81,0,.12); color: #E65100; }
+    .tag-kuliah   { background: rgba(46,125,50,.12); color: #2E7D32; }
+    .tag-lainnya  { background: var(--chip-bg); color: var(--text-muted); }
 
-    .tx-amt.income {
-      color: var(--success);
-    }
+    [data-theme="dark"] .tag-pribadi   { background: rgba(123,110,255,.2); color: #A89AFF; }
+    [data-theme="dark"] .tag-organisasi { background: rgba(74,222,128,.15); color: #4ADE80; }
+    [data-theme="dark"] .tag-panitia   { background: rgba(255,179,71,.15); color: #FFB347; }
+    [data-theme="dark"] .tag-kuliah    { background: rgba(74,222,128,.12); color: #86EFAC; }
 
-    /* TRANSACTIONS page */
+    /* ---- Transactions Page ---- */
     .tx-toolbar {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
+      display: flex; gap: 10px; align-items: center;
+      margin-bottom: 18px; flex-wrap: wrap;
     }
 
     .tx-toolbar select {
-      padding: 9px 14px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      background: var(--bg);
-      font-family: 'Geist', sans-serif;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-muted);
-      outline: none;
+      padding: 8px 12px; border: 1.5px solid var(--border);
+      border-radius: 8px; background: var(--surface);
+      font-family: 'Geist', sans-serif; font-size: 13px; font-weight: 500;
+      color: var(--text-muted); outline: none; cursor: pointer;
+      transition: border-color .15s;
     }
 
+    .tx-toolbar select:focus { border-color: var(--primary); }
+
     .clear-filters {
-      margin-left: auto;
-      color: var(--primary);
-      font-family: 'Geist', sans-serif;
-      font-size: 13px;
-      font-weight: 600;
+      margin-left: auto; color: var(--primary);
+      font-family: 'Geist', sans-serif; font-size: 13px; font-weight: 600;
     }
 
     .tx-table-wrap {
-      background: var(--bg);
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      overflow: hidden;
-      box-shadow: var(--shadow-card);
-    }
-
-    table.tx-table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    .tx-table thead {
-      background: white;
-      border-bottom: 1px solid var(--border-soft);
-    }
-
-    .tx-table th {
-      text-align: left;
-      padding: 14px 16px;
-      font-family: 'Geist', sans-serif;
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: var(--text-muted);
-    }
-
-    .tx-table th.right,
-    .tx-table td.right {
-      text-align: right;
-    }
-
-    .tx-table td {
-      padding: 14px 16px;
-      font-size: 14px;
-      border-bottom: 1px solid var(--border-soft);
-      vertical-align: middle;
-    }
-
-    .tx-table tbody tr:last-child td {
-      border-bottom: none;
-    }
-
-    .tx-table tbody tr:hover {
-      background: rgba(53, 37, 205, 0.03);
-    }
-
-    .tx-desc {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 500;
-      color: var(--text);
-    }
-
-    .chip {
-      padding: 4px 10px;
-      background: var(--chip-bg);
-      border-radius: 100px;
-      font-size: 11px;
-      font-family: 'Geist', sans-serif;
-      color: var(--text-muted);
-      font-weight: 500;
-      white-space: nowrap;
-    }
-
-    .amt-cell {
-      font-weight: 600;
-      font-family: 'Inter', sans-serif;
-    }
-
-    .amt-cell.expense {
-      color: var(--danger);
-    }
-
-    .amt-cell.income {
-      color: var(--success);
-    }
-
-    .empty-state {
-      padding: 60px 24px;
-      text-align: center;
-      color: var(--text-faint);
-    }
-
-    .empty-state i {
-      font-size: 32px;
-      margin-bottom: 12px;
-      display: block;
-    }
-
-    /* BUDGETS page */
-    .budget-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 24px;
-      margin-bottom: 32px;
-    }
-
-    .budget-card {
-      background: var(--bg);
-      border-radius: 16px;
-      border: 1px solid var(--border);
-      padding: 20px;
-      box-shadow: var(--shadow-card);
-      position: relative;
-    }
-
-    .budget-card.over {
-      background: rgba(255, 218, 214, 0.2);
-      border-color: rgba(186, 26, 26, 0.3);
-    }
-
-    .budget-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 16px;
-    }
-
-    .budget-icon-name {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .budget-overspent-tag {
-      background: var(--danger);
-      color: white;
-      font-size: 11px;
-      font-weight: 600;
-      font-family: 'Geist', sans-serif;
-      padding: 4px 8px;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .budget-figures {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      margin-bottom: 14px;
-    }
-
-    .budget-spent-label {
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-
-    .budget-spent-amt {
-      font-size: 22px;
-      font-weight: 600;
-    }
-
-    .budget-spent-amt.over {
-      color: var(--danger);
-    }
-
-    .budget-of {
-      font-size: 13px;
-      color: var(--text-muted);
-      text-align: right;
-    }
-
-    .budget-left {
-      font-size: 11.5px;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-align: right;
-      margin-top: 1px;
-    }
-
-    .budget-left.over {
-      color: var(--danger);
-    }
-
-    /* MODAL - Quick Add */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(27, 27, 36, 0.5);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
-      padding: 20px;
-    }
-
-    .modal-overlay.show {
-      display: flex;
-    }
-
-    .modal-box {
-      background: white;
-      border-radius: 20px;
-      width: 100%;
-      max-width: 440px;
-      padding: 28px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
-    }
-
-    .modal-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .modal-head h3 {
-      font-size: 20px;
-      font-weight: 700;
-    }
-
-    .modal-close {
-      font-size: 20px;
-      color: var(--text-faint);
-      padding: 4px;
-    }
-
-    .modal-label {
-      font-family: 'Geist', sans-serif;
-      font-size: 13px;
-      font-weight: 500;
-      margin-bottom: 8px;
-      color: var(--text);
-    }
-
-    .amount-input-wrap {
-      position: relative;
-      margin-bottom: 20px;
-    }
-
-    .amount-input-wrap .prefix {
-      position: absolute;
-      left: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-muted);
-      font-weight: 600;
-      font-size: 18px;
-    }
-
-    .amount-input-wrap input {
-      width: 100%;
-      padding: 14px 16px 14px 44px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      font-size: 22px;
-      font-weight: 700;
-      outline: none;
-    }
-
-    .amount-input-wrap input:focus {
-      border-color: var(--primary);
-    }
-
-    .cat-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .cat-btn {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      padding: 14px 6px;
-      border-radius: 12px;
-      border: 1.5px solid var(--border);
-      background: white;
-      transition: all .12s;
-    }
-
-    .cat-btn i {
-      font-size: 22px;
-    }
-
-    .cat-btn span {
-      font-size: 11.5px;
-      font-weight: 500;
-      font-family: 'Geist', sans-serif;
-      text-align: center;
-      line-height: 1.2;
-    }
-
-    .cat-btn.selected {
-      border-color: var(--primary);
-      background: var(--primary-light);
-    }
-
-    .desc-input {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      font-size: 14px;
-      outline: none;
-      margin-bottom: 20px;
-    }
-
-    .desc-input:focus {
-      border-color: var(--primary);
-    }
-
-    .modal-actions {
-      display: flex;
-      gap: 12px;
-    }
-
-    .btn-secondary {
-      flex: 1;
-      padding: 12px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      font-family: 'Geist', sans-serif;
-      font-weight: 500;
-      font-size: 14px;
-      color: var(--text-muted);
-    }
-
-    .modal-actions .btn-primary {
-      flex: 2;
-    }
-
-    .toast {
-      position: fixed;
-      bottom: 28px;
-      left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      background: var(--text);
-      color: white;
-      padding: 13px 22px;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      opacity: 0;
-      pointer-events: none;
-      transition: all .25s ease;
-      z-index: 200;
-      font-family: 'Geist', sans-serif;
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    .toast i {
-      color: #6CF8BB;
-      font-size: 18px;
-    }
-
-    @media(max-width:1000px) {
-
-      .stat-grid,
-      .dash-grid,
-      .budget-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .sidebar {
-        display: none;
-      }
-
-      .main-area {
-        margin-left: 0;
-      }
-
-      .login-visual {
-        display: none;
-      }
-
-      .login-form-side {
-        padding: 32px;
-      }
-    }
-
-    /* ============ INSIGHT PAGE ============ */
-    .insight-hero {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 24px;
-      position: relative;
-      overflow: hidden;
-      margin-bottom: 24px;
-    }
-
-    .insight-hero-blob {
-      position: absolute;
-      width: 256px;
-      height: 256px;
-      right: -40px;
-      top: -80px;
-      background: rgba(226, 223, 255, 0.6);
-      border-radius: 9999px;
-      filter: blur(32px);
-      pointer-events: none;
-    }
-
-    .insight-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 12px;
-      background: var(--primary-light);
-      border: 1px solid var(--indigo-soft);
-      border-radius: 9999px;
-      font-family: 'Geist', sans-serif;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--primary);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 12px;
-    }
-
-    .insight-headline {
-      font-size: 22px;
-      font-weight: 600;
-      margin-bottom: 8px;
-      line-height: 1.35;
-    }
-
-    .insight-headline span.red {
-      color: var(--danger);
-    }
-
-    .insight-sub {
-      font-size: 14px;
-      color: var(--text-muted);
-      max-width: 560px;
-      line-height: 1.6;
-      margin-bottom: 16px;
-    }
-
-    .insight-badges {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 12px;
-      border-radius: 9999px;
-      font-family: 'Geist', sans-serif;
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-    }
-
-    .badge.primary {
-      background: var(--primary-light);
-      border: 1px solid var(--indigo-soft);
-      color: var(--primary);
-    }
-
-    .badge.green {
-      background: #E1F0E9;
-      color: var(--success);
-    }
-
-    .insight-smart-action {
-      background: var(--primary);
-      color: white;
-      border-radius: var(--radius-lg);
-      padding: 24px;
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .insight-smart-action .blob2 {
-      position: absolute;
-      width: 200px;
-      height: 200px;
-      left: -60px;
-      bottom: -60px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 9999px;
-    }
-
-    .action-icon {
-      width: 40px;
-      height: 40px;
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 9999px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-    }
-
-    .action-title {
-      font-size: 18px;
-      font-weight: 600;
-      color: white;
-    }
-
-    .action-body {
-      font-size: 14px;
-      color: rgba(255, 255, 255, 0.88);
-      line-height: 1.6;
-    }
-
-    .action-btn {
-      background: white;
-      color: var(--primary);
-      border-radius: 8px;
-      padding: 10px;
-      font-family: 'Geist', sans-serif;
-      font-size: 13.5px;
-      font-weight: 600;
-      text-align: center;
-      cursor: pointer;
-      transition: opacity .15s;
-      border: none;
-    }
-
-    .action-btn:hover {
-      opacity: 0.9;
-    }
-
-    .heatmap-wrap {
+      background: var(--surface);
+      border-radius: 14px; border: 1px solid var(--border);
+      overflow: hidden; box-shadow: var(--shadow-card);
       overflow-x: auto;
     }
 
+    table.tx-table { width: 100%; border-collapse: collapse; min-width: 640px; }
+
+    .tx-table thead { background: var(--surface-2); border-bottom: 1px solid var(--border); }
+
+    .tx-table th {
+      text-align: left; padding: 13px 16px;
+      font-family: 'Geist', sans-serif; font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted);
+    }
+
+    .tx-table th.right, .tx-table td.right { text-align: right; }
+
+    .tx-table td {
+      padding: 13px 16px; font-size: 13.5px;
+      border-bottom: 1px solid var(--border-soft); vertical-align: middle;
+    }
+
+    .tx-table tbody tr:last-child td { border-bottom: none; }
+    .tx-table tbody tr:hover { background: var(--primary-tint); }
+
+    .tx-desc {
+      display: flex; align-items: center; gap: 8px;
+      font-weight: 500; color: var(--text);
+    }
+
+    .chip {
+      padding: 3px 9px; background: var(--chip-bg);
+      border-radius: 100px; font-size: 11px;
+      font-family: 'Geist', sans-serif; color: var(--text-muted);
+      font-weight: 600; white-space: nowrap;
+    }
+
+    .amt-cell { font-weight: 600; font-family: 'Inter', sans-serif; }
+    .amt-cell.expense { color: var(--danger); }
+    .amt-cell.income { color: var(--success); }
+
+    .empty-state {
+      padding: 56px 24px; text-align: center; color: var(--text-faint);
+    }
+
+    .empty-state i { font-size: 30px; margin-bottom: 10px; display: block; }
+
+    /* ---- Budget Page ---- */
+    .budget-grid {
+      display: grid; grid-template-columns: repeat(3,1fr);
+      gap: 20px; margin-bottom: 28px;
+    }
+
+    .budget-card {
+      background: var(--surface); border-radius: 16px;
+      border: 1px solid var(--border); padding: 18px;
+      box-shadow: var(--shadow-card); position: relative;
+    }
+
+    .budget-card.over {
+      background: var(--danger-bg);
+      border-color: rgba(186,26,26,0.3);
+    }
+
+    .budget-top {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      margin-bottom: 14px;
+    }
+
+    .budget-icon-name { display: flex; align-items: center; gap: 10px; }
+
+    .budget-overspent-tag {
+      background: var(--danger); color: white;
+      font-size: 10.5px; font-weight: 700; font-family: 'Geist', sans-serif;
+      padding: 3px 7px; border-radius: 5px;
+      display: flex; align-items: center; gap: 3px;
+    }
+
+    .budget-figures {
+      display: flex; justify-content: space-between; align-items: flex-end;
+      margin-bottom: 12px;
+    }
+
+    .budget-spent-label { font-size: 12px; color: var(--text-muted); }
+    .budget-spent-amt { font-size: 20px; font-weight: 700; }
+    .budget-spent-amt.over { color: var(--danger); }
+    .budget-of { font-size: 12px; color: var(--text-muted); text-align: right; }
+
+    .budget-left {
+      font-size: 11px; font-weight: 700; color: var(--text-muted);
+      text-align: right; margin-top: 1px;
+    }
+
+    .budget-left.over { color: var(--danger); }
+
+    /* ---- Insight Page ---- */
+    .insight-hero {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 22px;
+      position: relative; overflow: hidden; margin-bottom: 20px;
+    }
+
+    .insight-hero-blob {
+      position: absolute; width: 220px; height: 220px;
+      right: -30px; top: -60px;
+      background: rgba(123,110,255,0.12);
+      border-radius: 9999px; filter: blur(30px); pointer-events: none;
+    }
+
+    .insight-tag {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px;
+      background: var(--primary-light); border: 1px solid var(--indigo-soft);
+      border-radius: 9999px; font-family: 'Geist', sans-serif;
+      font-size: 11px; font-weight: 700; color: var(--primary);
+      text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px;
+    }
+
+    .insight-headline { font-size: 20px; font-weight: 600; margin-bottom: 8px; line-height: 1.35; }
+    .insight-headline span.red { color: var(--danger); }
+
+    .insight-sub {
+      font-size: 13.5px; color: var(--text-muted);
+      max-width: 520px; line-height: 1.6; margin-bottom: 14px;
+    }
+
+    .insight-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px; border-radius: 9999px;
+      font-family: 'Geist', sans-serif; font-size: 11.5px; font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+
+    .badge.primary { background: var(--primary-light); border: 1px solid var(--indigo-soft); color: var(--primary); }
+    .badge.green { background: var(--success-bg); color: var(--success); }
+
+    .insight-smart-action {
+      background: var(--primary); color: white;
+      border-radius: var(--radius-lg); padding: 22px;
+      position: relative; overflow: hidden;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+
+    .insight-smart-action .blob2 {
+      position: absolute; width: 180px; height: 180px;
+      left: -50px; bottom: -50px;
+      background: rgba(255,255,255,0.05); border-radius: 9999px;
+    }
+
+    .action-icon {
+      width: 38px; height: 38px;
+      background: rgba(255,255,255,0.15); border-radius: 9999px;
+      display: flex; align-items: center; justify-content: center; font-size: 17px;
+    }
+
+    .action-title { font-size: 16px; font-weight: 700; color: white; }
+
+    .action-body { font-size: 13.5px; color: rgba(255,255,255,0.88); line-height: 1.6; }
+
+    .action-btn {
+      background: white; color: var(--primary);
+      border-radius: 8px; padding: 9px;
+      font-family: 'Geist', sans-serif; font-size: 13px; font-weight: 700;
+      text-align: center; cursor: pointer; transition: opacity .15s; border: none;
+    }
+
+    .action-btn:hover { opacity: 0.9; }
+
+    .heatmap-wrap { overflow-x: auto; }
+
     .heatmap-grid {
-      display: grid;
-      grid-template-columns: 48px repeat(7, 1fr);
-      gap: 4px;
-      min-width: 520px;
+      display: grid; grid-template-columns: 64px repeat(7,1fr);
+      gap: 4px; min-width: 480px;
     }
 
     .heatmap-label {
-      font-family: 'Geist', sans-serif;
-      font-size: 11px;
+      font-family: 'Geist', sans-serif; font-size: 11px;
       color: var(--text-faint);
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      padding-right: 8px;
+      display: flex; align-items: center; justify-content: flex-end; padding-right: 8px;
     }
 
     .heatmap-col-header {
-      font-family: 'Geist', sans-serif;
-      font-size: 11px;
-      color: var(--text-faint);
-      text-align: center;
-      padding-bottom: 4px;
+      font-family: 'Geist', sans-serif; font-size: 11px;
+      color: var(--text-faint); text-align: center; padding-bottom: 3px;
     }
 
-    .hm-cell {
-      height: 28px;
-      border-radius: 4px;
-      transition: opacity .1s;
-    }
+    .hm-cell { height: 26px; border-radius: 4px; transition: opacity .1s; }
+    .hm-0 { background: var(--surface-2); }
+    .hm-1 { background: rgba(123,110,255,0.2); }
+    .hm-2 { background: rgba(123,110,255,0.4); }
+    .hm-3 { background: rgba(123,110,255,0.7); }
+    .hm-4 { background: var(--primary); }
 
-    .hm-0 {
-      background: #F0ECF9;
-    }
-
-    .hm-1 {
-      background: #E2DFFF;
-    }
-
-    .hm-2 {
-      background: #C3C0FF;
-    }
-
-    .hm-3 {
-      background: #4F46E5;
-    }
-
-    .hm-4 {
-      background: var(--primary);
-    }
-
-    /* ============ SAVINGS PAGE ============ */
-    .goals-grid {
-      display: grid;
-      grid-template-columns: 1.5fr 1fr;
-      gap: 24px;
-    }
+    /* ---- Savings Page ---- */
+    .goals-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; }
 
     .goal-card {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 24px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 22px;
       box-shadow: var(--shadow-card);
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .goal-card-accent {
-      position: absolute;
-      width: 128px;
-      height: 128px;
-      right: 0;
-      top: 0;
-      border-bottom-left-radius: 9999px;
+      position: relative; overflow: hidden;
+      display: flex; flex-direction: column; gap: 18px;
     }
 
     .goal-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 9999px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
+      width: 44px; height: 44px; border-radius: 9999px;
+      display: flex; align-items: center; justify-content: center; font-size: 19px;
     }
 
-    .goal-name {
-      font-family: 'Geist', sans-serif;
-      font-size: 14px;
-      font-weight: 500;
-    }
+    .goal-name { font-family: 'Geist', sans-serif; font-size: 14px; font-weight: 600; }
 
     .goal-status {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-family: 'Geist', sans-serif;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-muted);
-    }
-
-    .goal-amount {
-      font-size: 26px;
-      font-weight: 700;
-    }
-
-    .goal-of {
-      font-size: 14px;
+      display: flex; align-items: center; gap: 5px;
+      font-family: 'Geist', sans-serif; font-size: 11.5px; font-weight: 600;
       color: var(--text-muted);
     }
 
     .goal-progress-bar {
-      height: 12px;
-      background: #E4E1EE;
-      border-radius: 9999px;
-      overflow: hidden;
-      margin: 4px 0;
+      height: 10px; background: var(--chip-bg);
+      border-radius: 9999px; overflow: hidden; margin: 4px 0;
     }
 
-    .goal-progress-fill {
-      height: 100%;
-      border-radius: 9999px;
-    }
+    .goal-progress-fill { height: 100%; border-radius: 9999px; }
 
     .goal-pct-row {
-      display: flex;
-      justify-content: space-between;
-      font-family: 'Geist', sans-serif;
-      font-size: 12px;
-      font-weight: 700;
+      display: flex; justify-content: space-between;
+      font-family: 'Geist', sans-serif; font-size: 11.5px; font-weight: 700;
     }
 
     .forecasting-card {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 24px;
-      box-shadow: var(--shadow-card);
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 22px; box-shadow: var(--shadow-card);
     }
 
     .forecast-label {
-      font-family: 'Geist', sans-serif;
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: .05em;
-      color: var(--text-muted);
-      margin-bottom: 16px;
+      font-family: 'Geist', sans-serif; font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted);
+      margin-bottom: 14px;
     }
 
     .forecast-info {
-      background: var(--primary-light);
-      border: 1px solid var(--indigo-soft);
-      border-radius: 12px;
-      padding: 16px;
-      font-size: 14px;
-      color: var(--text-muted);
-      line-height: 1.6;
-      margin-top: 16px;
+      background: var(--primary-light); border: 1px solid var(--indigo-soft);
+      border-radius: var(--radius-md); padding: 14px;
+      font-size: 13.5px; color: var(--text-muted); line-height: 1.6; margin-top: 14px;
     }
 
     .forecast-date {
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--success);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 6px;
-    }
-
-    .total-locked {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 24px;
-      margin-top: 24px;
-      box-shadow: var(--shadow-card);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .deposit-btn {
-      padding: 11px 20px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      font-family: 'Geist', sans-serif;
-      font-size: 13.5px;
-      font-weight: 500;
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    /* ============ ACCOUNTS PAGE ============ */
-    .accounts-top {
-      display: grid;
-      grid-template-columns: 1.4fr 2fr;
-      gap: 24px;
-      margin-bottom: 24px;
+      font-size: 20px; font-weight: 700; color: var(--success);
+      display: flex; align-items: center; gap: 7px; margin-top: 5px;
     }
 
     .liquidity-card {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 24px;
-      box-shadow: var(--shadow-card);
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 22px; box-shadow: var(--shadow-card);
     }
 
-    .dist-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 6px;
-      font-size: 14px;
+    .deposit-btn {
+      padding: 10px 18px; border: 1.5px solid var(--border);
+      border-radius: 10px; font-family: 'Geist', sans-serif;
+      font-size: 13px; font-weight: 600; color: var(--text);
+      display: flex; align-items: center; gap: 7px;
+      transition: border-color .15s, color .15s;
     }
 
-    .dist-bar-wrap {
-      margin-bottom: 16px;
-    }
+    .deposit-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* ---- Accounts Page ---- */
+    .accounts-top { display: grid; grid-template-columns: 1.3fr 2fr; gap: 20px; margin-bottom: 20px; }
+
+    .dist-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; font-size: 13px; }
+    .dist-bar-wrap { margin-bottom: 14px; }
 
     .acc-list-card {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      box-shadow: var(--shadow-card);
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-card);
     }
 
     .acc-list-header {
-      background: var(--primary-light);
-      border-bottom: 1px solid var(--border);
-      padding: 14px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-family: 'Geist', sans-serif;
-      font-size: 14px;
-      font-weight: 500;
+      background: var(--surface-2); border-bottom: 1px solid var(--border);
+      padding: 12px 22px;
+      display: flex; justify-content: space-between; align-items: center;
+      font-family: 'Geist', sans-serif; font-size: 13.5px; font-weight: 600;
     }
 
     .acc-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px 24px;
-      border-bottom: 1px solid var(--border-soft);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 22px; border-bottom: 1px solid var(--border-soft);
     }
 
-    .acc-row:last-child {
-      border-bottom: none;
-    }
+    .acc-row:last-child { border-bottom: none; }
+    .acc-row:hover { background: var(--primary-tint); }
 
     .acc-logo {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      background: var(--chip-bg);
-      border: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      font-weight: 700;
+      width: 44px; height: 44px; border-radius: var(--radius-md);
+      background: var(--chip-bg); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 700;
     }
 
-    .acc-name {
-      font-size: 15px;
-      font-weight: 600;
-    }
+    .acc-name { font-size: 14.5px; font-weight: 600; }
+    .acc-type { font-family: 'Geist', sans-serif; font-size: 11.5px; font-weight: 600; color: var(--text-muted); }
+    .acc-balance { font-family: 'Geist', sans-serif; font-size: 14px; font-weight: 600; text-align: right; }
+    .acc-sync { font-family: 'Geist', sans-serif; font-size: 11px; color: var(--text-faint); margin-top: 2px; }
+    .acc-sync.fail { color: var(--danger); }
 
-    .acc-type {
-      font-family: 'Geist', sans-serif;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-muted);
-    }
-
-    .acc-balance {
-      font-family: 'Geist', sans-serif;
-      font-size: 14px;
-      font-weight: 500;
-      text-align: right;
-    }
-
-    .acc-sync {
-      font-family: 'Geist', sans-serif;
-      font-size: 11.5px;
-      color: var(--text-faint);
-      margin-top: 2px;
-    }
-
-    .acc-sync.fail {
-      color: var(--danger);
-    }
-
-    /* ============ REPORTS PAGE ============ */
+    /* ---- Reports Page ---- */
     .report-top-stats {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 20px;
-      margin-bottom: 24px;
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 18px; margin-bottom: 20px;
     }
 
     .report-stat {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 22px;
-      position: relative;
-      overflow: hidden;
-      box-shadow: var(--shadow-card);
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 20px;
+      position: relative; overflow: hidden; box-shadow: var(--shadow-card);
     }
 
-    .report-stat.primary-bg {
-      background: var(--primary);
-      color: white;
-    }
+    .report-stat.primary-bg { background: var(--primary); color: white; }
 
     .report-stat-label {
-      font-family: 'Geist', sans-serif;
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: .05em;
-      color: var(--text-muted);
-      margin-bottom: 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      font-family: 'Geist', sans-serif; font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted);
+      margin-bottom: 10px;
+      display: flex; justify-content: space-between; align-items: center;
     }
 
-    .report-stat.primary-bg .report-stat-label {
-      color: #DAD7FF;
-    }
-
-    .report-stat-value {
-      font-size: 26px;
-      font-weight: 700;
-    }
+    .report-stat.primary-bg .report-stat-label { color: #DAD7FF; }
+    .report-stat-value { font-size: 24px; font-weight: 700; }
 
     .report-stat-foot {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 14px;
-      padding-top: 14px;
-      border-top: 1px solid var(--border-soft);
-      font-size: 13px;
+      display: flex; align-items: center; gap: 6px;
+      margin-top: 12px; padding-top: 12px;
+      border-top: 1px solid var(--border-soft); font-size: 12.5px;
     }
 
-    .report-stat.primary-bg .report-stat-foot {
-      border-top-color: rgba(255, 255, 255, 0.15);
-    }
+    .report-stat.primary-bg .report-stat-foot { border-top-color: rgba(255,255,255,0.15); }
 
     .vs-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-family: 'Geist', sans-serif;
-      font-size: 12px;
-      font-weight: 600;
+      display: inline-flex; align-items: center; gap: 3px;
+      padding: 2px 7px; border-radius: 5px;
+      font-family: 'Geist', sans-serif; font-size: 11.5px; font-weight: 700;
     }
 
-    .vs-up {
-      background: rgba(255, 218, 214, 0.5);
-      color: var(--danger);
-    }
-
-    .vs-down {
-      background: rgba(108, 248, 187, 0.4);
-      color: var(--success);
-    }
+    .vs-up { background: var(--danger-bg); color: var(--danger); }
+    .vs-down { background: var(--success-bg); color: var(--success); }
 
     .spending-summary-row {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 12px;
-      border-radius: 12px;
-      transition: background .12s;
+      display: flex; align-items: center; gap: 14px;
+      padding: 10px; border-radius: var(--radius-md); transition: background .12s;
     }
 
-    .spending-summary-row:hover {
-      background: var(--bg);
-    }
-
-    .ss-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      flex-shrink: 0;
-    }
-
-    .ss-main {
-      flex: 1;
-    }
-
-    .ss-top {
-      display: flex;
-      justify-content: space-between;
-      font-family: 'Geist', sans-serif;
-      font-size: 14px;
-      font-weight: 500;
-      margin-bottom: 6px;
-    }
-
-    .ss-bar-wrap {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .ss-bar {
-      flex: 1;
-      height: 6px;
-      background: #E4E1EE;
-      border-radius: 9999px;
-      overflow: hidden;
-    }
-
-    .ss-bar-fill {
-      height: 100%;
-      border-radius: 9999px;
-    }
-
-    .ss-pct {
-      font-size: 13.5px;
-      color: var(--text-muted);
-      width: 36px;
-      text-align: right;
-    }
+    .spending-summary-row:hover { background: var(--surface-2); }
+    .ss-icon { width: 44px; height: 44px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .ss-main { flex: 1; }
+    .ss-top { display: flex; justify-content: space-between; font-family: 'Geist', sans-serif; font-size: 13.5px; font-weight: 600; margin-bottom: 5px; }
+    .ss-bar-wrap { display: flex; align-items: center; gap: 8px; }
+    .ss-bar { flex: 1; height: 5px; background: var(--chip-bg); border-radius: 9999px; overflow: hidden; }
+    .ss-bar-fill { height: 100%; border-radius: 9999px; }
+    .ss-pct { font-size: 13px; color: var(--text-muted); width: 34px; text-align: right; }
 
     .ai-insight-card {
-      background: var(--primary-light);
-      border: 1px solid var(--indigo-soft);
-      border-radius: 16px;
-      padding: 20px;
-      position: relative;
-      overflow: hidden;
+      background: var(--primary-light); border: 1px solid var(--indigo-soft);
+      border-radius: 16px; padding: 18px;
     }
 
     .ai-insight-item {
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px;
-      position: relative;
-      overflow: hidden;
-      margin-bottom: 12px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-md); padding: 14px;
+      position: relative; overflow: hidden; margin-bottom: 10px;
     }
 
-    .ai-insight-item:last-child {
-      margin-bottom: 0;
-    }
+    .ai-insight-item:last-child { margin-bottom: 0; }
+    .ai-accent { position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
 
-    .ai-accent {
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 4px;
-      border-radius: 0;
-    }
-
-    .prev-reports-table {
-      width: 100%;
-      border-collapse: collapse;
-    }
+    .prev-reports-table { width: 100%; border-collapse: collapse; }
 
     .prev-reports-table th {
-      text-align: left;
-      padding: 14px 20px;
-      font-family: 'Geist', sans-serif;
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: .04em;
-      color: var(--text-muted);
-      background: var(--primary-light);
-      border-bottom: 1px solid var(--border);
+      text-align: left; padding: 12px 18px;
+      font-family: 'Geist', sans-serif; font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted);
+      background: var(--surface-2); border-bottom: 1px solid var(--border);
     }
 
-    .prev-reports-table th:last-child {
-      text-align: right;
-    }
+    .prev-reports-table th:last-child { text-align: right; }
 
     .prev-reports-table td {
-      padding: 16px 20px;
-      font-size: 14px;
-      border-bottom: 1px solid var(--border-soft);
-      vertical-align: middle;
+      padding: 14px 18px; font-size: 13.5px;
+      border-bottom: 1px solid var(--border-soft); vertical-align: middle;
     }
 
-    .prev-reports-table tbody tr:last-child td {
-      border-bottom: none;
-    }
+    .prev-reports-table tbody tr:last-child td { border-bottom: none; }
+    .prev-reports-table tbody tr:hover { background: var(--primary-tint); }
 
-    .prev-reports-table tbody tr:hover {
-      background: rgba(53, 37, 205, .03);
-    }
-
-    /* ============ UPGRADE PAGE ============ */
-    .upgrade-hero {
-      text-align: center;
-      padding: 48px 32px 32px;
-      max-width: 640px;
-      margin: 0 auto;
-    }
-
-    .upgrade-hero .badge-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 4px 14px;
-      border-radius: 9999px;
-      background: #EAE6F4;
-      color: var(--primary);
-      font-family: 'Geist', sans-serif;
-      font-size: 12px;
-      font-weight: 600;
-      margin-bottom: 16px;
-      letter-spacing: .04em;
-    }
-
+    /* ---- Upgrade Page ---- */
     .billing-toggle {
-      display: inline-flex;
-      background: var(--primary-light);
-      box-shadow: 0 2px 4px rgba(0, 0, 0, .05) inset;
-      border-radius: 9999px;
-      padding: 4px;
-      margin: 0 auto;
-      margin-top: 24px;
+      display: inline-flex; background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 9999px; padding: 4px; margin-top: 20px;
     }
 
     .billing-opt {
-      padding: 8px 24px;
-      border-radius: 9999px;
-      font-family: 'Geist', sans-serif;
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: all .15s;
-      display: flex;
-      align-items: center;
+      padding: 7px 20px; border-radius: 9999px;
+      font-family: 'Geist', sans-serif; font-size: 13.5px; font-weight: 600;
+      color: var(--text-muted); cursor: pointer; transition: all .15s;
+      display: flex; align-items: center; gap: 6px;
+    }
+
+    .billing-opt.active { background: var(--primary); color: white; }
+
+    .discount-badge {
+      background: var(--indigo-soft); color: var(--primary);
+      font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 9999px;
+    }
+
+    .billing-opt.active .discount-badge { background: rgba(255,255,255,0.2); color: white; }
+
+    .plans-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; margin-bottom: 28px; }
+
+    .plan-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 18px; padding: 22px;
+      display: flex; flex-direction: column; gap: 0; box-shadow: var(--shadow-card);
+    }
+
+    .plan-card.featured { background: var(--primary); border-color: rgba(123,110,255,0.3); color: white; }
+
+    .plan-name { font-size: 20px; font-weight: 700; margin-bottom: 5px; }
+    .plan-card.featured .plan-name { color: white; }
+    .plan-desc { font-size: 13.5px; color: var(--text-muted); margin-bottom: 18px; line-height: 1.5; }
+    .plan-card.featured .plan-desc { color: rgba(255,255,255,0.8); }
+    .plan-price { font-size: 26px; font-weight: 700; margin-bottom: 3px; }
+    .plan-period { font-size: 13.5px; color: var(--text-muted); }
+    .plan-card.featured .plan-period { color: rgba(255,255,255,0.7); }
+    .plan-divider { height: 1px; background: var(--border); margin: 18px 0; }
+    .plan-card.featured .plan-divider { background: rgba(255,255,255,0.15); }
+
+    .plan-feature { display: flex; align-items: flex-start; gap: 10px; font-size: 13.5px; margin-bottom: 10px; }
+    .plan-feature i { font-size: 15px; flex-shrink: 0; margin-top: 2px; }
+    .plan-card.featured .plan-feature { color: white; }
+    .plan-card.featured .plan-feature i { color: #6CF8BB; }
+
+    .plan-btn {
+      margin-top: auto; padding: 11px;
+      border-radius: 10px; font-family: 'Geist', sans-serif;
+      font-size: 13.5px; font-weight: 700; text-align: center;
+      cursor: pointer; transition: all .15s; display: block; width: 100%; border: none;
+    }
+
+    .plan-btn.outline { background: transparent; border: 1.5px solid var(--border); color: var(--text-muted); }
+    .plan-btn.outline:hover { border-color: var(--primary); color: var(--primary); }
+    .plan-btn.solid-white { background: white; color: var(--primary); }
+    .plan-btn.solid-white:hover { opacity: .9; }
+    .plan-btn.solid-primary { background: var(--primary); color: white; }
+    .plan-btn.solid-primary:hover { background: #2c1ea8; }
+
+    .most-popular-tag {
+      display: inline-block; background: #FFB95F; color: #653E00;
+      padding: 3px 10px; border-radius: 9999px;
+      font-family: 'Geist', sans-serif; font-size: 11.5px; font-weight: 700;
+      letter-spacing: .04em; margin-bottom: 7px;
+    }
+
+    /* ---- MODAL — Quick Add (redesigned) ---- */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center;
+      z-index: 100; padding: 16px;
+    }
+
+    .modal-overlay.show { display: flex; }
+
+    .modal-box {
+      background: var(--surface);
+      border-radius: 24px; width: 100%; max-width: 480px;
+      box-shadow: var(--shadow-modal);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      animation: modalIn .22s cubic-bezier(.34,1.3,.64,1) both;
+    }
+
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(.93) translateY(10px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    /* Modal header with gradient */
+    .modal-header {
+      padding: 22px 24px 18px;
+      background: linear-gradient(135deg, var(--primary) 0%, #6B5EFF 100%);
+      position: relative; overflow: hidden;
+    }
+
+    .modal-header::before {
+      content: '';
+      position: absolute; width: 200px; height: 200px;
+      right: -60px; top: -60px;
+      background: rgba(255,255,255,0.07); border-radius: 9999px;
+    }
+
+    .modal-header::after {
+      content: '';
+      position: absolute; width: 120px; height: 120px;
+      left: 20px; bottom: -40px;
+      background: rgba(255,255,255,0.05); border-radius: 9999px;
+    }
+
+    .modal-header-inner {
+      position: relative; z-index: 1;
+      display: flex; align-items: flex-start; justify-content: space-between;
+    }
+
+    .modal-title-group { flex: 1; }
+
+    .modal-eyebrow {
+      font-family: 'Geist', sans-serif; font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .07em;
+      color: rgba(255,255,255,0.6); margin-bottom: 4px;
+    }
+
+    .modal-title {
+      font-size: 20px; font-weight: 700; color: white;
+    }
+
+    .modal-close {
+      width: 34px; height: 34px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 17px;
+      transition: background .15s; flex-shrink: 0;
+    }
+
+    .modal-close:hover { background: rgba(255,255,255,0.25); }
+
+    /* Amount display inside header */
+    .modal-amount-display {
+      position: relative; z-index: 1;
+      margin-top: 16px;
+      display: flex; align-items: baseline; gap: 6px;
+    }
+
+    .modal-amount-currency {
+      font-size: 20px; font-weight: 700; color: rgba(255,255,255,0.7);
+    }
+
+    .modal-amount-value {
+      font-size: 40px; font-weight: 700; color: white;
+      line-height: 1; min-width: 40px;
+    }
+
+    .modal-amount-input {
+      position: absolute; inset: 0; opacity: 0;
+      font-size: 1px; width: 100%; cursor: text;
+      background: transparent; border: none; outline: none;
+    }
+
+    .modal-amount-cursor {
+      width: 2px; height: 36px;
+      background: rgba(255,255,255,0.7);
+      border-radius: 2px; display: inline-block;
+      animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    /* Modal body */
+    .modal-body { padding: 20px 24px 24px; }
+
+    .modal-section { margin-bottom: 18px; }
+
+    .modal-label {
+      font-family: 'Geist', sans-serif; font-size: 11.5px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .05em;
+      color: var(--text-muted); margin-bottom: 10px;
+      display: flex; align-items: center; gap: 6px;
+    }
+
+    .modal-label i { font-size: 13px; }
+
+    /* Category grid */
+    .cat-grid {
+      display: grid; grid-template-columns: repeat(5,1fr);
       gap: 8px;
     }
 
-    .billing-opt.active {
-      background: white;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, .08);
-      color: var(--text);
-    }
-
-    .discount-badge {
-      background: var(--indigo-soft);
-      color: var(--primary);
-      font-size: 11.5px;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 9999px;
-    }
-
-    .plans-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 20px;
-      margin-bottom: 32px;
-    }
-
-    .plan-card {
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 24px;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-      box-shadow: var(--shadow-card);
-    }
-
-    .plan-card.featured {
-      background: var(--primary);
-      border-color: #C3C0FF;
-      color: white;
-    }
-
-    .plan-name {
-      font-size: 22px;
-      font-weight: 700;
-      margin-bottom: 6px;
-    }
-
-    .plan-card.featured .plan-name {
-      color: white;
-    }
-
-    .plan-desc {
-      font-size: 14px;
-      color: var(--text-muted);
-      margin-bottom: 20px;
-      line-height: 1.5;
-    }
-
-    .plan-card.featured .plan-desc {
-      color: rgba(255, 255, 255, 0.8);
-    }
-
-    .plan-price {
-      font-size: 28px;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-
-    .plan-period {
-      font-size: 14px;
-      color: var(--text-muted);
-    }
-
-    .plan-card.featured .plan-period {
-      color: rgba(255, 255, 255, 0.7);
-    }
-
-    .plan-divider {
-      height: 1px;
-      background: var(--border);
-      margin: 20px 0;
-    }
-
-    .plan-card.featured .plan-divider {
-      background: rgba(255, 255, 255, 0.15);
-    }
-
-    .plan-feature {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      font-size: 14px;
-      margin-bottom: 12px;
-    }
-
-    .plan-feature i {
-      font-size: 16px;
-      flex-shrink: 0;
-      margin-top: 2px;
-    }
-
-    .plan-card.featured .plan-feature {
-      color: white;
-    }
-
-    .plan-card.featured .plan-feature i {
-      color: #6CF8BB;
-    }
-
-    .plan-btn {
-      margin-top: auto;
-      padding: 12px;
-      border-radius: 10px;
-      font-family: 'Geist', sans-serif;
-      font-size: 14px;
-      font-weight: 600;
-      text-align: center;
+    .cat-btn {
+      display: flex; flex-direction: column; align-items: center; gap: 5px;
+      padding: 10px 4px; border-radius: var(--radius-md);
+      border: 1.5px solid var(--border);
+      background: var(--surface); transition: all .12s;
       cursor: pointer;
-      transition: all .15s;
-      display: block;
-      width: 100%;
-      border: none;
     }
 
-    .plan-btn.outline {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text-muted);
+    .cat-btn i { font-size: 20px; }
+
+    .cat-btn span {
+      font-size: 10px; font-weight: 600; font-family: 'Geist', sans-serif;
+      text-align: center; line-height: 1.2; color: var(--text-muted);
     }
 
-    .plan-btn.outline:hover {
+    .cat-btn:hover { border-color: var(--primary); background: var(--primary-tint); }
+
+    .cat-btn.selected {
       border-color: var(--primary);
-      color: var(--primary);
+      background: var(--primary-tint);
+      box-shadow: 0 0 0 3px var(--primary-tint);
     }
 
-    .plan-btn.solid-white {
-      background: white;
-      color: var(--primary);
+    .cat-btn.selected span { color: var(--primary); }
+
+    /* Tag selector pills */
+    .tag-selector {
+      display: flex; flex-wrap: wrap; gap: 7px;
     }
 
-    .plan-btn.solid-white:hover {
-      opacity: .9;
+    .tag-option {
+      padding: 5px 12px; border-radius: 9999px;
+      border: 1.5px solid var(--border);
+      font-family: 'Geist', sans-serif; font-size: 12px; font-weight: 600;
+      cursor: pointer; transition: all .12s; color: var(--text-muted);
+      background: var(--surface);
     }
 
-    .plan-btn.solid-primary {
-      background: var(--primary);
-      color: white;
+    .tag-option:hover { border-color: var(--primary); color: var(--primary); }
+
+    .tag-option.selected-tag { border-width: 0; }
+
+    .tag-option[data-tag="pribadi"].selected-tag   { background: rgba(53,37,205,.12); color: var(--primary); box-shadow: 0 0 0 1.5px var(--primary); }
+    .tag-option[data-tag="organisasi"].selected-tag { background: rgba(0,108,73,.12); color: var(--success); box-shadow: 0 0 0 1.5px var(--success); }
+    .tag-option[data-tag="panitia"].selected-tag   { background: rgba(230,81,0,.12); color: #E65100; box-shadow: 0 0 0 1.5px #E65100; }
+    .tag-option[data-tag="kuliah"].selected-tag    { background: rgba(46,125,50,.12); color: #2E7D32; box-shadow: 0 0 0 1.5px #2E7D32; }
+    .tag-option[data-tag="lainnya"].selected-tag   { background: var(--chip-bg); color: var(--text-muted); box-shadow: 0 0 0 1.5px var(--border); }
+
+    [data-theme="dark"] .tag-option[data-tag="pribadi"].selected-tag   { background: rgba(123,110,255,.2); color: #A89AFF; box-shadow: 0 0 0 1.5px #7B6EFF; }
+    [data-theme="dark"] .tag-option[data-tag="organisasi"].selected-tag { background: rgba(74,222,128,.15); color: #4ADE80; box-shadow: 0 0 0 1.5px #4ADE80; }
+    [data-theme="dark"] .tag-option[data-tag="panitia"].selected-tag   { background: rgba(255,179,71,.15); color: #FFB347; box-shadow: 0 0 0 1.5px #FFB347; }
+
+    /* Note input */
+    .note-input {
+      width: 100%; padding: 11px 13px;
+      border: 1.5px solid var(--border); border-radius: var(--radius-md);
+      font-size: 14px; background: var(--surface);
+      outline: none; transition: border-color .15s;
     }
 
-    .plan-btn.solid-primary:hover {
-      background: #2c1ea8;
+    .note-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-tint); }
+
+    /* Modal footer */
+    .modal-footer {
+      display: flex; gap: 10px; padding: 0 24px 24px;
     }
 
-    .most-popular-tag {
-      display: inline-block;
-      background: #FFB95F;
-      color: #653E00;
-      padding: 4px 12px;
-      border-radius: 9999px;
+    .btn-cancel {
+      flex: 1; padding: 12px;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      font-family: 'Geist', sans-serif; font-weight: 600; font-size: 14px;
+      color: var(--text-muted); background: var(--surface);
+      transition: border-color .15s, color .15s;
+    }
+
+    .btn-cancel:hover { border-color: var(--primary); color: var(--primary); }
+
+    .btn-save {
+      flex: 2; padding: 12px;
+      background: var(--primary); color: white;
+      border-radius: 10px; font-family: 'Geist', sans-serif;
+      font-weight: 700; font-size: 14px;
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+      transition: background .15s, transform .1s;
+    }
+
+    .btn-save:hover { background: #2c1ea8; }
+    .btn-save:active { transform: scale(.97); }
+
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed; bottom: 24px; left: 50%;
+      transform: translateX(-50%) translateY(16px);
+      background: var(--text); color: var(--bg);
+      padding: 12px 20px; border-radius: 10px;
+      font-size: 13.5px; font-weight: 600;
+      display: flex; align-items: center; gap: 9px;
+      opacity: 0; pointer-events: none;
+      transition: all .25s ease; z-index: 200;
       font-family: 'Geist', sans-serif;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: .04em;
-      margin-bottom: 8px;
+      white-space: nowrap; max-width: calc(100vw - 32px);
+    }
+
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast i { color: #6CF8BB; font-size: 17px; }
+
+    /* ---- Mobile nav bar ---- */
+    .mobile-nav {
+      display: none;
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 8px 8px 12px;
+      z-index: 50;
+      gap: 4px;
+    }
+
+    .mobile-nav-item {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; gap: 3px; padding: 7px 4px;
+      border-radius: 10px; cursor: pointer; transition: background .12s;
+      color: var(--text-muted); font-family: 'Geist', sans-serif;
+      font-size: 10px; font-weight: 600;
+    }
+
+    .mobile-nav-item i { font-size: 20px; }
+    .mobile-nav-item.active { background: var(--primary-tint); color: var(--primary); }
+
+    /* ---- Responsive ---- */
+    @media (max-width: 768px) {
+      :root { --sidebar-w: 0px; }
+
+      .sidebar {
+        width: 264px;
+        transform: translateX(-100%);
+      }
+
+      .sidebar.open { transform: translateX(0); }
+
+      .main-area { margin-left: 0; }
+
+      .hamburger { display: flex; }
+
+      .search-box { width: 160px; }
+
+      .topbar { padding: 0 14px; }
+
+      .page { padding: 16px 14px 80px; }
+
+      .page-header { margin-bottom: 20px; }
+      .page-header h1 { font-size: 22px; }
+
+      .stat-grid { grid-template-columns: 1fr; gap: 12px; }
+      .dash-grid { grid-template-columns: 1fr; gap: 12px; }
+      .budget-grid { grid-template-columns: 1fr; gap: 12px; }
+      .report-top-stats { grid-template-columns: 1fr; gap: 12px; }
+      .plans-grid { grid-template-columns: 1fr; gap: 12px; }
+      .goals-grid { grid-template-columns: 1fr; gap: 12px; }
+      .accounts-top { grid-template-columns: 1fr; gap: 12px; }
+
+      .mobile-nav { display: flex; }
+
+      .topbar-actions .btn-quickadd span { display: none; }
+      .btn-quickadd { padding: 8px 10px; }
+
+      .login-visual { display: none; }
+      .login-form-side { padding: 28px 20px; }
+
+      .cat-grid { grid-template-columns: repeat(4,1fr); }
+
+      .modal-box { border-radius: 20px; max-width: 100%; margin: 0; }
+      .modal-overlay { align-items: flex-end; }
+      .modal-box { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+
+      .tx-toolbar { gap: 8px; }
+      .tx-toolbar select { font-size: 12px; padding: 7px 10px; }
+    }
+
+    @media (max-width: 480px) {
+      .cat-grid { grid-template-columns: repeat(3,1fr); }
+      .topbar-actions { gap: 6px; }
     }
   </style>
 </head>
-
 <body>
 
-  <!-- ============ LOGIN SCREEN ============ -->
-  <div id="screen-login">
-    <div class="login-visual">
-      <svg viewBox="0 0 640 1024" preserveAspectRatio="xMidYMid slice"
-        style="position:absolute;inset:0;width:100%;height:100%;">
-        <defs>
-          <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#4F46E5" />
-            <stop offset="100%" stop-color="#1E1664" />
-          </linearGradient>
-        </defs>
-        <rect width="640" height="1024" fill="url(#bgGrad)" />
-        <circle cx="540" cy="150" r="220" fill="#ffffff" opacity="0.04" />
-        <circle cx="80" cy="650" r="300" fill="#ffffff" opacity="0.05" />
-        <circle cx="450" cy="780" r="140" fill="#ffffff" opacity="0.04" />
-        <g opacity="0.9">
-          <rect x="100" y="380" width="200" height="130" rx="14" fill="#ffffff" opacity="0.08" />
-          <rect x="120" y="410" width="100" height="10" rx="5" fill="#ffffff" opacity="0.25" />
-          <rect x="120" y="432" width="160" height="8" rx="4" fill="#ffffff" opacity="0.15" />
-          <rect x="120" y="450" width="60" height="8" rx="4" fill="#6CF8BB" opacity="0.7" />
-        </g>
-        <g opacity="0.9">
-          <rect x="340" y="470" width="180" height="120" rx="14" fill="#ffffff" opacity="0.07" />
-          <circle cx="375" cy="505" r="14" fill="#6CF8BB" opacity="0.5" />
-          <rect x="400" y="498" width="90" height="8" rx="4" fill="#ffffff" opacity="0.2" />
-          <rect x="400" y="516" width="60" height="6" rx="3" fill="#ffffff" opacity="0.12" />
-        </g>
-      </svg>
-      <div class="overlay"></div>
-      <div class="blob"></div>
-      <div class="login-copy">
-        <div class="dash"></div>
-        <h1>Master Your Finances,<br />Focus on Your Future.</h1>
-        <p>StudentFin memberikan kejelasan keuangan tingkat profesional untuk kelola uang bulananmu dengan mudah. Dibuat
-          untuk mahasiswa kos.</p>
-      </div>
-    </div>
-    <div class="login-form-side">
-      <div class="login-form-wrap">
-        <div class="brand-row">
-          <div class="brand-mark"></div>
-          <div class="brand-name">StudentFin</div>
-        </div>
-        <h2>Selamat datang kembali</h2>
-        <div class="sub">Masukkan detail akunmu untuk masuk.</div>
-
-        <div class="field">
-          <label>Alamat email</label>
-          <input type="email" id="login-email" placeholder="nama@universitas.ac.id" value="dimas@email.com" />
-        </div>
-        <div class="field">
-          <label>Kata sandi</label>
-          <input type="password" id="login-password" placeholder="••••••••" value="studentfin123" />
-        </div>
-        <div class="field-row">
-          <label><input type="checkbox" checked style="width:16px;height:16px;" /> Ingat saya</label>
-          <a href="#">Lupa kata sandi?</a>
-        </div>
-        <button class="btn-primary" id="btn-login"><span>Masuk</span> <i class="ti ti-arrow-right"></i></button>
-        <div class="login-error" id="login-error">Email atau kata sandi salah. Coba lagi.</div>
-        <div class="login-hint">Demo: gunakan email & password apa pun untuk masuk, atau klik langsung Masuk.</div>
-      </div>
+<!-- ============ LOGIN ============ -->
+<div id="screen-login">
+  <div class="login-visual">
+    <svg viewBox="0 0 640 1024" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%;">
+      <defs>
+        <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#4F46E5"/>
+          <stop offset="100%" stop-color="#1E1664"/>
+        </linearGradient>
+      </defs>
+      <rect width="640" height="1024" fill="url(#bgGrad)"/>
+      <circle cx="540" cy="150" r="240" fill="#fff" opacity="0.04"/>
+      <circle cx="80" cy="650" r="320" fill="#fff" opacity="0.04"/>
+      <circle cx="450" cy="800" r="140" fill="#6CF8BB" opacity="0.05"/>
+      <g opacity="0.9">
+        <rect x="100" y="360" width="210" height="140" rx="16" fill="#fff" opacity="0.07"/>
+        <rect x="120" y="392" width="110" height="10" rx="5" fill="#fff" opacity="0.25"/>
+        <rect x="120" y="416" width="170" height="8" rx="4" fill="#fff" opacity="0.13"/>
+        <rect x="120" y="436" width="70" height="8" rx="4" fill="#6CF8BB" opacity="0.7"/>
+      </g>
+      <g opacity="0.9">
+        <rect x="340" y="460" width="190" height="125" rx="16" fill="#fff" opacity="0.06"/>
+        <circle cx="378" cy="498" r="15" fill="#6CF8BB" opacity="0.45"/>
+        <rect x="406" y="490" width="100" height="9" rx="4" fill="#fff" opacity="0.18"/>
+        <rect x="406" y="510" width="68" height="7" rx="3" fill="#fff" opacity="0.1"/>
+      </g>
+    </svg>
+    <div class="overlay"></div>
+    <div class="login-copy">
+      <div class="dash"></div>
+      <h1>Master Your Finances,<br/>Focus on Your Future.</h1>
+      <p>StudentFin memberikan kejelasan keuangan tingkat profesional untuk kelola uang bulananmu. Dibuat untuk mahasiswa kos.</p>
     </div>
   </div>
+  <div class="login-form-side">
+    <div class="login-form-wrap">
+      <div class="brand-row">
+        <div class="brand-mark"></div>
+        <div class="brand-name">StudentFin</div>
+      </div>
+      <h2>Selamat datang kembali</h2>
+      <div class="sub">Masuk ke akun StudentFin-mu.</div>
+      <div class="field">
+        <label>Alamat email</label>
+        <input type="email" id="login-email" placeholder="nama@universitas.ac.id" value="dimas@email.com"/>
+      </div>
+      <div class="field">
+        <label>Kata sandi</label>
+        <input type="password" id="login-password" placeholder="••••••••" value="studentfin123"/>
+      </div>
+      <div class="field-row">
+        <label><input type="checkbox" checked style="width:15px;height:15px;accent-color:var(--primary);"/> Ingat saya</label>
+        <a href="#">Lupa kata sandi?</a>
+      </div>
+      <button class="btn-primary" id="btn-login"><span>Masuk</span><i class="ti ti-arrow-right"></i></button>
+      <div class="login-error" id="login-error">Email atau kata sandi salah.</div>
+      <div class="login-hint">Demo: klik Masuk langsung untuk mencoba.</div>
+    </div>
+  </div>
+</div>
 
-  <!-- ============ APP SHELL ============ -->
-  <div id="screen-app">
-    <div class="app-shell">
-      <aside class="sidebar">
-        <div class="sidebar-brand">
-          <div class="brand-mark"></div>
-          <div class="brand-name" style="font-size:22px;">StudentFin</div>
-        </div>
-        <nav class="sidebar-nav">
-          <button class="nav-item" data-page="dashboard"><i class="ti ti-layout-dashboard"></i>Dashboard</button>
-          <button class="nav-item" data-page="transactions"><i class="ti ti-receipt"></i>Transaksi</button>
-          <button class="nav-item" data-page="budgets"><i class="ti ti-wallet"></i>Anggaran</button>
-          <button class="nav-item" data-page="insight"><i class="ti ti-chart-bar"></i>Insight</button>
-          <button class="nav-item" data-page="savings"><i class="ti ti-target-arrow"></i>Target Tabungan</button>
-          <button class="nav-item" data-page="accounts"><i class="ti ti-building-bank"></i>Akun</button>
-          <button class="nav-item" data-page="reports"><i class="ti ti-file-text"></i>Laporan Bulanan</button>
-          <button class="nav-item" data-page="upgrade"><i class="ti ti-sparkles"></i>Upgrade Pro</button>
-        </nav>
-        <div class="sidebar-upgrade">
-          <div class="upgrade-card">
-            <i class="ti ti-sparkles"></i>
-            <div class="t">Upgrade ke Pro</div>
-            <div class="d">Buka insight lanjutan, akun tak terbatas, dan lainnya.</div>
-            <button id="btn-upgrade">Upgrade Sekarang</button>
-          </div>
+<!-- ============ APP ============ -->
+<div id="screen-app">
+  <div class="app-shell">
+
+    <!-- Sidebar overlay -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-mark"></div>
+        <div class="brand-name" style="font-size:20px;">StudentFin</div>
+      </div>
+      <nav class="sidebar-nav">
+        <button class="nav-item" data-page="dashboard"><i class="ti ti-layout-dashboard"></i>Dashboard</button>
+        <button class="nav-item" data-page="transactions"><i class="ti ti-receipt"></i>Transaksi</button>
+        <button class="nav-item" data-page="budgets"><i class="ti ti-wallet"></i>Anggaran</button>
+        <button class="nav-item" data-page="insight"><i class="ti ti-chart-bar"></i>Insight</button>
+        <button class="nav-item" data-page="savings"><i class="ti ti-target-arrow"></i>Target Tabungan</button>
+        <button class="nav-item" data-page="accounts"><i class="ti ti-building-bank"></i>Akun</button>
+        <button class="nav-item" data-page="reports"><i class="ti ti-file-text"></i>Laporan</button>
+        <button class="nav-item" data-page="upgrade"><i class="ti ti-sparkles"></i>Upgrade Pro</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="upgrade-card">
+          <i class="ti ti-sparkles"></i>
+          <div class="t">Upgrade ke Pro</div>
+          <div class="d">Insight lanjutan, akun tak terbatas, dan lebih banyak.</div>
+          <button id="btn-upgrade">Upgrade Sekarang</button>
         </div>
         <div class="sidebar-user">
           <div class="sidebar-user-row">
@@ -2197,535 +1505,480 @@
             </div>
           </div>
         </div>
-      </aside>
+      </div>
+    </aside>
 
-      <div class="main-area">
-        <div class="topbar">
+    <div class="main-area">
+      <div class="topbar">
+        <div class="topbar-left">
+          <button class="hamburger" id="btn-hamburger"><i class="ti ti-menu-2"></i></button>
           <div class="search-box">
             <i class="ti ti-search"></i>
-            <input type="text" id="global-search" placeholder="Cari transaksi..." />
-          </div>
-          <div class="topbar-actions">
-            <button class="btn-quickadd" id="btn-quickadd"><i class="ti ti-plus"></i>Tambah Cepat</button>
-            <button class="icon-btn"><i class="ti ti-bell"></i><span class="dot"></span></button>
-            <button class="icon-btn"><i class="ti ti-settings"></i></button>
+            <input type="text" id="global-search" placeholder="Cari transaksi..."/>
           </div>
         </div>
+        <div class="topbar-actions">
+          <button class="btn-quickadd" id="btn-quickadd"><i class="ti ti-plus"></i><span>Tambah</span></button>
+          <button class="theme-toggle" id="btn-theme" title="Ganti tema"><i class="ti ti-moon"></i></button>
+          <button class="icon-btn"><i class="ti ti-bell"></i><span class="dot"></span></button>
+        </div>
+      </div>
 
-        <!-- DASHBOARD -->
-        <div class="page" id="page-dashboard">
-          <div class="page-header">
-            <div>
-              <h1 id="dash-greeting">Selamat datang kembali, Dimas!</h1>
-              <div class="sub" id="dash-date-sub">Ini ringkasan keuanganmu bulan ini.</div>
-            </div>
-          </div>
-
-          <div class="stat-grid">
-            <div class="stat-card">
-              <div class="stat-label">SALDO TOTAL <i class="ti ti-wallet"
-                  style="color:var(--primary);font-size:20px;"></i></div>
-              <div class="stat-value" id="stat-balance">Rp 0</div>
-              <div class="stat-sub up"><i class="ti ti-trending-up"></i> <span id="stat-balance-note">Tetap
-                  terkendali</span></div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-label">SISA ANGGARAN <i class="ti ti-pig-money"
-                  style="color:var(--warning);font-size:20px;"></i></div>
-              <div class="stat-value" id="stat-remaining">Rp 0</div>
-              <div class="progress-track">
-                <div class="progress-fill" id="stat-remaining-bar" style="width:0%;"></div>
-              </div>
-              <div class="progress-caption" id="stat-remaining-pct">0% terpakai</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-label">SKOR KESEHATAN FINANSIAL <i class="ti ti-heart-rate-monitor"
-                  style="color:var(--success);font-size:20px;"></i></div>
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
-                <div style="font-size:44px;font-weight:700;color:var(--success);" id="stat-health">85</div>
-                <div style="text-align:right;">
-                  <div style="font-size:13px;font-weight:600;color:var(--success);font-family:'Geist',sans-serif;"
-                    id="stat-health-label">Sangat Baik</div>
-                  <div style="font-size:12.5px;color:var(--text-muted);">Top 15% mahasiswa</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="dash-grid">
-            <div class="card">
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-                <div class="panel-title" style="margin-bottom:0;">Tren Pengeluaran</div>
-                <div
-                  style="font-size:13px;color:var(--text-muted);background:var(--primary-light);padding:7px 14px;border-radius:8px;font-weight:500;">
-                  7 hari terakhir</div>
-              </div>
-              <div class="chart-box">
-                <canvas id="trendChart"></canvas>
-              </div>
-            </div>
-            <div class="card">
-              <div class="panel-title">Pengeluaran per Kategori</div>
-              <div class="cat-list" id="dash-cat-list"></div>
-            </div>
-          </div>
-
-          <div class="card tx-recent">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-              <div class="panel-title" style="margin-bottom:0;">Transaksi Terbaru</div>
-              <button class="nav-item" style="width:auto;color:var(--primary);" data-page="transactions">Lihat semua <i
-                  class="ti ti-arrow-right"></i></button>
-            </div>
-            <div id="dash-recent-list"></div>
+      <!-- ===== DASHBOARD ===== -->
+      <div class="page" id="page-dashboard">
+        <div class="page-header">
+          <div>
+            <h1 id="dash-greeting">Selamat datang kembali, Dimas!</h1>
+            <div class="sub">Ringkasan keuanganmu bulan ini.</div>
           </div>
         </div>
-
-        <!-- TRANSACTIONS -->
-        <div class="page hidden" id="page-transactions">
-          <div class="page-header">
-            <div>
-              <h1>Transaksi</h1>
-              <div class="sub">Tinjau dan kelola aktivitas keuanganmu.</div>
-            </div>
-            <button class="btn-secondary" style="display:flex;align-items:center;gap:8px;width:auto;padding:9px 16px;"
-              id="btn-export">
-              <i class="ti ti-download"></i> Export
-            </button>
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-label">SALDO TOTAL <i class="ti ti-wallet" style="color:var(--primary);font-size:18px;"></i></div>
+            <div class="stat-value" id="stat-balance">Rp 0</div>
+            <div class="stat-sub up"><i class="ti ti-trending-up"></i><span id="stat-balance-note">Tetap terkendali</span></div>
           </div>
-
-          <div class="tx-toolbar">
-            <select id="filter-category">
-              <option value="all">Semua Kategori</option>
-            </select>
-            <select id="filter-account">
-              <option value="all">Semua Akun</option>
-            </select>
-            <select id="filter-type">
-              <option value="all">Semua Tipe</option>
-              <option value="expense">Pengeluaran</option>
-              <option value="income">Pemasukan</option>
-            </select>
-            <button class="clear-filters" id="btn-clear-filters">Hapus Filter</button>
+          <div class="stat-card">
+            <div class="stat-label">SISA ANGGARAN <i class="ti ti-pig-money" style="color:var(--warning);font-size:18px;"></i></div>
+            <div class="stat-value" id="stat-remaining">Rp 0</div>
+            <div class="progress-track"><div class="progress-fill" id="stat-remaining-bar" style="width:0%"></div></div>
+            <div class="progress-caption" id="stat-remaining-pct">0% terpakai</div>
           </div>
-
-          <div class="tx-table-wrap">
-            <table class="tx-table">
-              <thead>
-                <tr>
-                  <th>TANGGAL</th>
-                  <th>DESKRIPSI</th>
-                  <th>KATEGORI</th>
-                  <th>AKUN</th>
-                  <th class="right">JUMLAH (IDR)</th>
-                </tr>
-              </thead>
-              <tbody id="tx-table-body"></tbody>
-            </table>
-            <div class="empty-state hidden" id="tx-empty">
-              <i class="ti ti-receipt-off"></i>
-              Tidak ada transaksi yang cocok dengan filter ini.
+          <div class="stat-card">
+            <div class="stat-label">SKOR FINANSIAL <i class="ti ti-heart-rate-monitor" style="color:var(--success);font-size:18px;"></i></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+              <div style="font-size:42px;font-weight:700;color:var(--success);" id="stat-health">85</div>
+              <div style="text-align:right;">
+                <div style="font-size:13px;font-weight:700;color:var(--success);font-family:'Geist',sans-serif;" id="stat-health-label">Sangat Baik</div>
+                <div style="font-size:12px;color:var(--text-muted);">Top 15% mahasiswa</div>
+              </div>
             </div>
           </div>
         </div>
-
-        <!-- BUDGETS -->
-        <div class="page hidden" id="page-budgets">
-          <div class="page-header">
-            <div>
-              <h1>Kelola Anggaran</h1>
-              <div class="sub">Pantau dan atur target pengeluaran bulananmu.</div>
+        <div class="dash-grid">
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+              <div class="panel-title" style="margin-bottom:0;">Tren Pengeluaran</div>
+              <div style="font-size:12px;color:var(--text-muted);background:var(--primary-light);padding:6px 12px;border-radius:8px;font-weight:600;font-family:'Geist',sans-serif;">7 hari terakhir</div>
             </div>
-          </div>
-
-          <div class="stat-grid" style="grid-template-columns:1fr 1fr;">
-            <div class="stat-card">
-              <div class="stat-label">TOTAL ALOKASI BULANAN</div>
-              <div class="stat-value" id="budget-total-alloc">Rp 0</div>
-              <div class="stat-sub up"><i class="ti ti-info-circle"></i> <span>Berlaku untuk bulan ini</span></div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-label">TOTAL TERPAKAI</div>
-              <div class="stat-value" id="budget-total-spent">Rp 0</div>
-              <div class="progress-track">
-                <div class="progress-fill" id="budget-total-bar" style="width:0%;"></div>
-              </div>
-              <div class="progress-caption" id="budget-total-pct">0% terpakai</div>
-            </div>
-          </div>
-
-          <div class="panel-title">Anggaran per Kategori</div>
-          <div class="budget-grid" id="budget-cards"></div>
-        </div>
-
-        <!-- INSIGHT -->
-        <div class="page hidden" id="page-insight">
-          <div class="page-header">
-            <div>
-              <h1>Insight & Analitik</h1>
-              <div class="sub">Pahami pola perilaku dan tren keuanganmu secara mendalam.</div>
-            </div>
-            <div
-              style="padding:9px 16px;border:1px solid var(--border);border-radius:8px;font-family:'Geist',sans-serif;font-size:13px;font-weight:600;color:var(--text-muted);">
-              6 Bulan Terakhir</div>
-          </div>
-          <div class="insight-hero">
-            <div class="insight-hero-blob"></div>
-            <div class="insight-tag"><i class="ti ti-brain"></i>ANALISIS PERILAKU FINANSIAL</div>
-            <div class="insight-headline" id="insight-headline">Pengeluaran weekendmu <span class="red">40% lebih
-                tinggi</span><br />dibanding hari kerja, terutama untuk Makan &amp; Minum.</div>
-            <div class="insight-sub">Pertimbangkan membuat anggaran khusus weekend. Tingkat tabunganmu saat ini
-              15%—cukup solid, tapi mengoptimalkan pengeluaran weekend bisa membawamu lebih dekat ke target 20%.</div>
-            <div class="insight-badges">
-              <div class="badge primary"><i class="ti ti-trending-up" style="font-size:13px;"></i>Pengeluaran Weekend
-              </div>
-              <div class="badge green"><i class="ti ti-leaf" style="font-size:13px;"></i>15% Saving Rate</div>
-            </div>
-          </div>
-          <div class="dash-grid" style="margin-bottom:24px;">
-            <div class="card">
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-                <div
-                  style="font-family:'Geist',sans-serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);">
-                  TREN PEMASUKAN VS PENGELUARAN</div>
-              </div>
-              <div style="height:200px;position:relative;"><canvas id="incomeExpenseChart"></canvas></div>
-              <div style="display:flex;gap:20px;justify-content:center;margin-top:12px;">
-                <div
-                  style="display:flex;align-items:center;gap:6px;font-family:'Geist',sans-serif;font-size:12px;font-weight:600;">
-                  <div style="width:12px;height:12px;border-radius:9999px;background:var(--success);"></div>Pemasukan
-                </div>
-                <div
-                  style="display:flex;align-items:center;gap:6px;font-family:'Geist',sans-serif;font-size:12px;font-weight:600;">
-                  <div style="width:12px;height:12px;border-radius:9999px;background:var(--primary);"></div>Pengeluaran
-                </div>
-              </div>
-            </div>
-            <div style="display:flex;flex-direction:column;gap:20px;">
-              <div class="card">
-                <div
-                  style="font-family:'Geist',sans-serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);margin-bottom:12px;">
-                  BREAKDOWN KATEGORI</div>
-                <div style="display:flex;align-items:center;gap:16px;">
-                  <div style="position:relative;width:120px;height:120px;flex-shrink:0;">
-                    <canvas id="donutChart"></canvas>
-                    <div
-                      style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
-                      <div style="font-size:10px;color:var(--text-muted);">Total</div>
-                      <div style="font-size:13px;font-weight:700;" id="donut-center">Rp 0</div>
-                    </div>
-                  </div>
-                  <div id="donut-legend" style="flex:1;display:flex;flex-direction:column;gap:6px;"></div>
-                </div>
-              </div>
-              <div class="insight-smart-action">
-                <div class="blob2"></div>
-                <div class="action-icon"><i class="ti ti-sparkles"></i></div>
-                <div class="action-title">Smart Action</div>
-                <div class="action-body" id="smart-action-text">Alihkan Rp 500.000 dari 'Nongkrong' ke tabungan bulan
-                  ini untuk mempercepat pencapaian target finansialmu.</div>
-                <button class="action-btn"
-                  onclick="showToast('Saran diterapkan ke budget!', 'ti-circle-check')">Terapkan Saran</button>
-              </div>
-            </div>
+            <div class="chart-box"><canvas id="trendChart"></canvas></div>
           </div>
           <div class="card">
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
-              <div>
-                <div
-                  style="font-family:'Geist',sans-serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);">
-                  POLA PENGELUARAN</div>
-                <div style="font-size:13px;color:var(--text-muted);margin-top:4px;">Frekuensi transaksi per hari &amp;
-                  waktu</div>
-              </div>
-              <div style="display:flex;align-items:center;gap:8px;">
-                <span style="font-size:11px;color:var(--text-faint);">Sedikit</span>
-                <div style="display:flex;gap:4px;">
-                  <div style="width:12px;height:12px;background:#F0ECF9;border-radius:2px;"></div>
-                  <div style="width:12px;height:12px;background:#E2DFFF;border-radius:2px;"></div>
-                  <div style="width:12px;height:12px;background:#C3C0FF;border-radius:2px;"></div>
-                  <div style="width:12px;height:12px;background:#4F46E5;border-radius:2px;"></div>
-                  <div style="width:12px;height:12px;background:var(--primary);border-radius:2px;"></div>
-                </div>
-                <span style="font-size:11px;color:var(--text-faint);">Banyak</span>
-              </div>
-            </div>
-            <div class="heatmap-wrap">
-              <div class="heatmap-grid" id="heatmap-grid"></div>
-            </div>
+            <div class="panel-title">Per Kategori</div>
+            <div class="cat-list" id="dash-cat-list"></div>
           </div>
         </div>
-
-        <!-- SAVINGS GOALS -->
-        <div class="page hidden" id="page-savings">
-          <div class="page-header">
-            <div>
-              <h1>Target Tabungan</h1>
-              <div class="sub">Pantau perkembangan dan proyeksi pencapaian finansialmu.</div>
-            </div>
-            <button class="btn-quickadd" id="btn-add-goal" style="border:none;"><i class="ti ti-plus"></i> Tambah
-              Target</button>
+        <div class="card tx-recent">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <div class="panel-title" style="margin-bottom:0;">Transaksi Terbaru</div>
+            <button class="nav-item" style="width:auto;color:var(--primary);padding:6px 10px;" data-page="transactions">Lihat semua <i class="ti ti-arrow-right"></i></button>
           </div>
-          <div class="goals-grid">
-            <div id="goals-list" style="display:flex;flex-direction:column;gap:20px;"></div>
-            <div style="display:flex;flex-direction:column;gap:20px;">
-              <div class="forecasting-card">
-                <div class="forecast-label">PERKIRAAN PENCAPAIAN</div>
-                <div style="height:160px;position:relative;"><canvas id="forecastChart"></canvas></div>
-                <div class="forecast-info">
-                  Berdasarkan tingkat tabungan <strong>Rp 2,5jt/bulan</strong>, kamu akan mencapai seluruh target pada:
-                  <div class="forecast-date"><i class="ti ti-calendar-check" style="font-size:20px;"></i><span
-                      id="forecast-date">April 2025</span></div>
-                </div>
-              </div>
-              <div class="liquidity-card">
-                <div
-                  style="font-family:'Geist',sans-serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);margin-bottom:8px;">
-                  TOTAL TERKUNCI DI TABUNGAN</div>
-                <div style="font-size:26px;font-weight:700;margin:8px 0;" id="total-locked">Rp 0</div>
-                <button class="deposit-btn" onclick="showToast('Deposit diarahkan ke tabungan', 'ti-circle-check')"><i
-                    class="ti ti-arrow-down"></i> Deposit ke Target</button>
-              </div>
-            </div>
+          <div id="dash-recent-list"></div>
+        </div>
+      </div>
+
+      <!-- ===== TRANSACTIONS ===== -->
+      <div class="page hidden" id="page-transactions">
+        <div class="page-header">
+          <div>
+            <h1>Transaksi</h1>
+            <div class="sub">Tinjau dan kelola semua aktivitas keuangan.</div>
+          </div>
+          <button class="btn-cancel" style="width:auto;padding:9px 16px;display:flex;align-items:center;gap:7px;" id="btn-export">
+            <i class="ti ti-download"></i> Export
+          </button>
+        </div>
+        <div class="tx-toolbar">
+          <select id="filter-category"><option value="all">Semua Kategori</option></select>
+          <select id="filter-account"><option value="all">Semua Akun</option></select>
+          <select id="filter-type">
+            <option value="all">Semua Tipe</option>
+            <option value="expense">Pengeluaran</option>
+            <option value="income">Pemasukan</option>
+          </select>
+          <select id="filter-tag">
+            <option value="all">Semua Tag</option>
+            <option value="pribadi">Pribadi</option>
+            <option value="organisasi">Organisasi</option>
+            <option value="panitia">Panitia</option>
+            <option value="kuliah">Kuliah</option>
+            <option value="lainnya">Lainnya</option>
+          </select>
+          <button class="clear-filters" id="btn-clear-filters">Hapus Filter</button>
+        </div>
+        <div class="tx-table-wrap">
+          <table class="tx-table">
+            <thead>
+              <tr>
+                <th>TANGGAL</th>
+                <th>DESKRIPSI</th>
+                <th>KATEGORI</th>
+                <th>TAG</th>
+                <th>AKUN</th>
+                <th class="right">JUMLAH (IDR)</th>
+              </tr>
+            </thead>
+            <tbody id="tx-table-body"></tbody>
+          </table>
+          <div class="empty-state hidden" id="tx-empty">
+            <i class="ti ti-receipt-off"></i>
+            Tidak ada transaksi yang cocok.
           </div>
         </div>
+      </div>
 
-        <!-- ACCOUNTS -->
-        <div class="page hidden" id="page-accounts">
-          <div class="page-header">
-            <div>
-              <h1>Akun</h1>
-              <div class="sub">Kelola institusi dan dompet yang terhubung.</div>
-            </div>
-            <button class="btn-secondary" style="width:auto;padding:9px 16px;display:flex;align-items:center;gap:8px;"
-              onclick="showToast('Sinkronisasi selesai', 'ti-cloud-check')"><i class="ti ti-refresh"></i> Sync
-              Semua</button>
-          </div>
-          <div class="accounts-top">
-            <div class="liquidity-card" style="display:flex;flex-direction:column;gap:16px;">
-              <div>
-                <div
-                  style="font-family:'Geist',sans-serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);">
-                  TOTAL LIKUIDITAS</div>
-                <div style="font-size:28px;font-weight:700;margin:10px 0;" id="acc-total">Rp 18.450.000</div>
-                <div
-                  style="display:flex;align-items:center;gap:6px;font-family:'Geist',sans-serif;font-size:12px;font-weight:600;color:var(--success);">
-                  <i class="ti ti-trending-up" style="font-size:14px;"></i>+2.4% bulan ini</div>
-              </div>
-              <div>
-                <div
-                  style="font-family:'Geist',sans-serif;font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:12px;">
-                  Distribusi</div>
-                <div class="dist-bar-wrap">
-                  <div class="dist-row"><span style="display:flex;align-items:center;gap:6px;"><span
-                        style="width:10px;height:10px;border-radius:9999px;background:var(--primary);display:inline-block;"></span>Banking</span><strong>65%</strong>
-                  </div>
-                  <div class="progress-track" style="margin-bottom:12px;">
-                    <div class="progress-fill" style="width:65%;background:var(--primary);"></div>
-                  </div>
-                  <div class="dist-row"><span style="display:flex;align-items:center;gap:6px;"><span
-                        style="width:10px;height:10px;border-radius:9999px;background:var(--success);display:inline-block;"></span>E-Wallet</span><strong>25%</strong>
-                  </div>
-                  <div class="progress-track" style="margin-bottom:12px;">
-                    <div class="progress-fill" style="width:25%;background:var(--success);"></div>
-                  </div>
-                  <div class="dist-row"><span style="display:flex;align-items:center;gap:6px;"><span
-                        style="width:10px;height:10px;border-radius:9999px;background:#684000;display:inline-block;"></span>Tunai</span><strong>10%</strong>
-                  </div>
-                  <div class="progress-track">
-                    <div class="progress-fill" style="width:10%;background:#684000;"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="acc-list-card">
-              <div class="acc-list-header">
-                <span>Institusi Terhubung</span>
-                <span style="color:var(--primary);font-size:13px;cursor:pointer;"
-                  onclick="showToast('Kelola koneksi belum tersedia', 'ti-info-circle')">Kelola Koneksi</span>
-              </div>
-              <div id="acc-rows"></div>
-            </div>
+      <!-- ===== BUDGETS ===== -->
+      <div class="page hidden" id="page-budgets">
+        <div class="page-header">
+          <div>
+            <h1>Kelola Anggaran</h1>
+            <div class="sub">Pantau dan atur target pengeluaran bulananmu.</div>
           </div>
         </div>
+        <div class="stat-grid" style="grid-template-columns:1fr 1fr;">
+          <div class="stat-card">
+            <div class="stat-label">TOTAL ALOKASI</div>
+            <div class="stat-value" id="budget-total-alloc">Rp 0</div>
+            <div class="stat-sub up"><i class="ti ti-info-circle"></i>Berlaku bulan ini</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">TOTAL TERPAKAI</div>
+            <div class="stat-value" id="budget-total-spent">Rp 0</div>
+            <div class="progress-track"><div class="progress-fill" id="budget-total-bar" style="width:0%"></div></div>
+            <div class="progress-caption" id="budget-total-pct">0% terpakai</div>
+          </div>
+        </div>
+        <div class="panel-title">Anggaran per Kategori</div>
+        <div class="budget-grid" id="budget-cards"></div>
+      </div>
 
-        <!-- MONTHLY REPORT -->
-        <div class="page hidden" id="page-reports">
-          <div class="page-header" style="border-bottom:1px solid var(--border);padding-bottom:24px;">
-            <div>
-              <h1 id="report-title">Ringkasan Bulan Ini</h1>
-              <div class="sub">Laporan performa keuangan bulanan. Analisis tren, tinjau pengeluaran, dan optimalkan
-                anggaran.</div>
-            </div>
-            <button class="btn-primary" style="width:auto;padding:12px 20px;"
-              onclick="showToast('Export PDF belum tersedia di prototype', 'ti-info-circle')"><i
-                class="ti ti-download"></i> Download PDF</button>
+      <!-- ===== INSIGHT ===== -->
+      <div class="page hidden" id="page-insight">
+        <div class="page-header">
+          <div>
+            <h1>Insight & Analitik</h1>
+            <div class="sub">Pahami pola perilaku dan tren keuanganmu.</div>
           </div>
-          <div class="report-top-stats" style="margin-top:28px;">
-            <div class="report-stat">
-              <div class="report-stat-label">TOTAL PENGELUARAN <div
-                  style="width:30px;height:30px;background:rgba(255,218,214,0.3);border-radius:9999px;display:flex;align-items:center;justify-content:center;">
-                  <i class="ti ti-arrow-up" style="color:var(--danger);font-size:14px;"></i></div>
-              </div>
-              <div class="report-stat-value" id="report-spent">Rp 0</div>
-              <div class="report-stat-foot"><span class="vs-tag vs-up"><i class="ti ti-trending-up"
-                    style="font-size:11px;"></i>+12%</span><span style="color:var(--text-muted);">vs bulan lalu</span>
-              </div>
-            </div>
-            <div class="report-stat">
-              <div class="report-stat-label">TOTAL PEMASUKAN <div
-                  style="width:30px;height:30px;background:rgba(108,248,187,0.3);border-radius:9999px;display:flex;align-items:center;justify-content:center;">
-                  <i class="ti ti-arrow-down" style="color:var(--success);font-size:14px;"></i></div>
-              </div>
-              <div class="report-stat-value" id="report-income" style="color:var(--success);">Rp 0</div>
-              <div class="report-stat-foot"><span class="vs-tag vs-down"><i class="ti ti-trending-up"
-                    style="font-size:11px;"></i>+5%</span><span style="color:var(--text-muted);">vs bulan lalu</span>
-              </div>
-            </div>
-            <div class="report-stat primary-bg">
-              <div class="report-stat-label">PERFORMA TABUNGAN</div>
-              <div class="report-stat-value">On Track</div>
-              <div style="font-size:13px;color:#DAD7FF;margin-top:4px;">Laptop Fund</div>
-              <div style="margin-top:14px;">
-                <div style="display:flex;justify-content:space-between;font-size:13px;color:#DAD7FF;margin-bottom:6px;">
-                  <span>Progress</span><span>69%</span></div>
-                <div style="height:8px;background:rgba(15,0,105,0.4);border-radius:9999px;overflow:hidden;">
-                  <div style="height:100%;width:69%;background:#6FFBBE;border-radius:9999px;"></div>
-                </div>
-              </div>
+          <div style="padding:8px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'Geist',sans-serif;font-size:12.5px;font-weight:700;color:var(--text-muted);">6 Bulan Terakhir</div>
+        </div>
+        <div class="insight-hero">
+          <div class="insight-hero-blob"></div>
+          <div class="insight-tag"><i class="ti ti-brain"></i>ANALISIS PERILAKU FINANSIAL</div>
+          <div class="insight-headline">Pengeluaran weekendmu <span class="red">40% lebih tinggi</span><br/>dibanding hari kerja, terutama Makan & Minum.</div>
+          <div class="insight-sub">Pertimbangkan anggaran khusus weekend. Tingkat tabunganmu 15%—solid, tapi optimasi weekend bisa membawamu ke target 20%.</div>
+          <div class="insight-badges">
+            <div class="badge primary"><i class="ti ti-trending-up" style="font-size:12px;"></i>Pengeluaran Weekend</div>
+            <div class="badge green"><i class="ti ti-leaf" style="font-size:12px;"></i>15% Saving Rate</div>
+          </div>
+        </div>
+        <div class="dash-grid" style="margin-bottom:20px;">
+          <div class="card">
+            <div style="font-family:'Geist',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);margin-bottom:14px;">TREN PEMASUKAN VS PENGELUARAN</div>
+            <div style="height:190px;position:relative;"><canvas id="incomeExpenseChart"></canvas></div>
+            <div style="display:flex;gap:16px;justify-content:center;margin-top:10px;">
+              <div style="display:flex;align-items:center;gap:5px;font-family:'Geist',sans-serif;font-size:12px;font-weight:700;"><div style="width:10px;height:10px;border-radius:9999px;background:var(--success);"></div>Pemasukan</div>
+              <div style="display:flex;align-items:center;gap:5px;font-family:'Geist',sans-serif;font-size:12px;font-weight:700;"><div style="width:10px;height:10px;border-radius:9999px;background:var(--primary);"></div>Pengeluaran</div>
             </div>
           </div>
-          <div class="dash-grid" style="margin-top:0;">
+          <div style="display:flex;flex-direction:column;gap:16px;">
             <div class="card">
-              <div class="panel-title">Ringkasan Pengeluaran</div>
-              <div id="report-cat-list"></div>
-            </div>
-            <div class="ai-insight-card">
-              <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
-                <i class="ti ti-sparkles" style="font-size:22px;color:#FFB95F;"></i>
-                <div style="font-size:18px;font-weight:600;">AI Insights</div>
+              <div style="font-family:'Geist',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);margin-bottom:10px;">BREAKDOWN KATEGORI</div>
+              <div style="display:flex;align-items:center;gap:14px;">
+                <div style="position:relative;width:110px;height:110px;flex-shrink:0;">
+                  <canvas id="donutChart"></canvas>
+                  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
+                    <div style="font-size:9px;color:var(--text-muted);">Total</div>
+                    <div style="font-size:12px;font-weight:700;" id="donut-center">Rp 0</div>
+                  </div>
+                </div>
+                <div id="donut-legend" style="flex:1;display:flex;flex-direction:column;gap:5px;"></div>
               </div>
-              <div id="ai-insights-list"></div>
-              <button
-                style="width:100%;padding:12px;border-radius:12px;border:1px solid var(--border);margin-top:16px;font-family:'Geist',sans-serif;font-size:13.5px;font-weight:500;color:var(--primary);background:transparent;cursor:pointer;"
-                onclick="showToast('Lihat semua rekomendasi', 'ti-list-check')">Lihat Semua Rekomendasi</button>
+            </div>
+            <div class="insight-smart-action">
+              <div class="blob2"></div>
+              <div class="action-icon"><i class="ti ti-sparkles"></i></div>
+              <div class="action-title">Smart Action</div>
+              <div class="action-body" id="smart-action-text">Alihkan Rp 500.000 dari 'Nongkrong' ke tabungan bulan ini untuk mempercepat pencapaian target finansialmu.</div>
+              <button class="action-btn" onclick="showToast('Saran diterapkan ke budget!','ti-circle-check')">Terapkan Saran</button>
             </div>
           </div>
-          <div class="card" style="margin-top:24px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-              <div class="panel-title" style="margin-bottom:0;">Laporan Sebelumnya</div>
-              <span
-                style="color:var(--primary);font-family:'Geist',sans-serif;font-size:13px;font-weight:500;cursor:pointer;">Lihat
-                Semua</span>
+        </div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
+            <div>
+              <div style="font-family:'Geist',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);">POLA PENGELUARAN</div>
+              <div style="font-size:12.5px;color:var(--text-muted);margin-top:3px;">Frekuensi transaksi per hari & waktu</div>
             </div>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span style="font-size:10.5px;color:var(--text-faint);">Sedikit</span>
+              <div style="display:flex;gap:3px;">
+                <div style="width:11px;height:11px;background:var(--surface-2);border-radius:2px;"></div>
+                <div style="width:11px;height:11px;background:rgba(123,110,255,.2);border-radius:2px;"></div>
+                <div style="width:11px;height:11px;background:rgba(123,110,255,.5);border-radius:2px;"></div>
+                <div style="width:11px;height:11px;background:var(--primary);border-radius:2px;"></div>
+              </div>
+              <span style="font-size:10.5px;color:var(--text-faint);">Banyak</span>
+            </div>
+          </div>
+          <div class="heatmap-wrap"><div class="heatmap-grid" id="heatmap-grid"></div></div>
+        </div>
+      </div>
+
+      <!-- ===== SAVINGS ===== -->
+      <div class="page hidden" id="page-savings">
+        <div class="page-header">
+          <div>
+            <h1>Target Tabungan</h1>
+            <div class="sub">Pantau perkembangan dan proyeksi pencapaianmu.</div>
+          </div>
+          <button class="btn-quickadd" id="btn-add-goal"><i class="ti ti-plus"></i>Tambah Target</button>
+        </div>
+        <div class="goals-grid">
+          <div id="goals-list" style="display:flex;flex-direction:column;gap:16px;"></div>
+          <div style="display:flex;flex-direction:column;gap:16px;">
+            <div class="forecasting-card">
+              <div class="forecast-label">PERKIRAAN PENCAPAIAN</div>
+              <div style="height:150px;position:relative;"><canvas id="forecastChart"></canvas></div>
+              <div class="forecast-info">
+                Berdasarkan tabungan <strong>Rp 2,5jt/bulan</strong>, kamu akan mencapai target pada:
+                <div class="forecast-date"><i class="ti ti-calendar-check" style="font-size:19px;"></i><span id="forecast-date">April 2025</span></div>
+              </div>
+            </div>
+            <div class="liquidity-card">
+              <div style="font-family:'Geist',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);margin-bottom:7px;">TOTAL TERKUNCI DI TABUNGAN</div>
+              <div style="font-size:24px;font-weight:700;margin:7px 0;" id="total-locked">Rp 0</div>
+              <button class="deposit-btn" onclick="showToast('Deposit diarahkan','ti-circle-check')"><i class="ti ti-arrow-down"></i>Deposit ke Target</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== ACCOUNTS ===== -->
+      <div class="page hidden" id="page-accounts">
+        <div class="page-header">
+          <div>
+            <h1>Akun</h1>
+            <div class="sub">Kelola institusi dan dompet yang terhubung.</div>
+          </div>
+          <button class="btn-cancel" style="width:auto;padding:9px 16px;display:flex;align-items:center;gap:7px;" onclick="showToast('Sinkronisasi selesai','ti-cloud-check')">
+            <i class="ti ti-refresh"></i>Sync Semua
+          </button>
+        </div>
+        <div class="accounts-top">
+          <div class="liquidity-card" style="display:flex;flex-direction:column;gap:14px;">
+            <div>
+              <div style="font-family:'Geist',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);">TOTAL LIKUIDITAS</div>
+              <div style="font-size:26px;font-weight:700;margin:9px 0;" id="acc-total">Rp 0</div>
+              <div style="display:flex;align-items:center;gap:5px;font-family:'Geist',sans-serif;font-size:12px;font-weight:700;color:var(--success);">
+                <i class="ti ti-trending-up" style="font-size:13px;"></i>+2.4% bulan ini
+              </div>
+            </div>
+            <div>
+              <div style="font-family:'Geist',sans-serif;font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:10px;">Distribusi</div>
+              <div class="dist-bar-wrap">
+                <div class="dist-row"><span style="display:flex;align-items:center;gap:5px;"><span style="width:8px;height:8px;border-radius:9999px;background:var(--primary);display:inline-block;"></span>Banking</span><strong>65%</strong></div>
+                <div class="progress-track" style="margin-bottom:10px;"><div class="progress-fill" style="width:65%;background:var(--primary);"></div></div>
+                <div class="dist-row"><span style="display:flex;align-items:center;gap:5px;"><span style="width:8px;height:8px;border-radius:9999px;background:var(--success);display:inline-block;"></span>E-Wallet</span><strong>25%</strong></div>
+                <div class="progress-track" style="margin-bottom:10px;"><div class="progress-fill" style="width:25%;background:var(--success);"></div></div>
+                <div class="dist-row"><span style="display:flex;align-items:center;gap:5px;"><span style="width:8px;height:8px;border-radius:9999px;background:#E65100;display:inline-block;"></span>Tunai</span><strong>10%</strong></div>
+                <div class="progress-track"><div class="progress-fill" style="width:10%;background:#E65100;"></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="acc-list-card">
+            <div class="acc-list-header">
+              <span>Institusi Terhubung</span>
+              <span style="color:var(--primary);font-size:13px;cursor:pointer;" onclick="showToast('Kelola koneksi belum tersedia','ti-info-circle')">Kelola Koneksi</span>
+            </div>
+            <div id="acc-rows"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== REPORTS ===== -->
+      <div class="page hidden" id="page-reports">
+        <div class="page-header" style="border-bottom:1px solid var(--border);padding-bottom:22px;">
+          <div>
+            <h1 id="report-title">Ringkasan Bulan Ini</h1>
+            <div class="sub">Laporan performa keuangan bulanan.</div>
+          </div>
+          <button class="btn-primary" style="width:auto;padding:11px 18px;" onclick="showToast('Export PDF belum tersedia','ti-info-circle')">
+            <i class="ti ti-download"></i>Download PDF
+          </button>
+        </div>
+        <div class="report-top-stats" style="margin-top:24px;">
+          <div class="report-stat">
+            <div class="report-stat-label">TOTAL PENGELUARAN <div style="width:28px;height:28px;background:var(--danger-bg);border-radius:9999px;display:flex;align-items:center;justify-content:center;"><i class="ti ti-arrow-up" style="color:var(--danger);font-size:13px;"></i></div></div>
+            <div class="report-stat-value" id="report-spent">Rp 0</div>
+            <div class="report-stat-foot"><span class="vs-tag vs-up"><i class="ti ti-trending-up" style="font-size:10px;"></i>+12%</span><span style="color:var(--text-muted);">vs bulan lalu</span></div>
+          </div>
+          <div class="report-stat">
+            <div class="report-stat-label">TOTAL PEMASUKAN <div style="width:28px;height:28px;background:var(--success-bg);border-radius:9999px;display:flex;align-items:center;justify-content:center;"><i class="ti ti-arrow-down" style="color:var(--success);font-size:13px;"></i></div></div>
+            <div class="report-stat-value" id="report-income" style="color:var(--success);">Rp 0</div>
+            <div class="report-stat-foot"><span class="vs-tag vs-down"><i class="ti ti-trending-up" style="font-size:10px;"></i>+5%</span><span style="color:var(--text-muted);">vs bulan lalu</span></div>
+          </div>
+          <div class="report-stat primary-bg">
+            <div class="report-stat-label">PERFORMA TABUNGAN</div>
+            <div class="report-stat-value">On Track</div>
+            <div style="font-size:12.5px;color:#DAD7FF;margin-top:3px;">Laptop Fund</div>
+            <div style="margin-top:12px;">
+              <div style="display:flex;justify-content:space-between;font-size:12.5px;color:#DAD7FF;margin-bottom:5px;"><span>Progress</span><span>69%</span></div>
+              <div style="height:7px;background:rgba(15,0,105,0.4);border-radius:9999px;overflow:hidden;"><div style="height:100%;width:69%;background:#6FFBBE;border-radius:9999px;"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="dash-grid" style="margin-top:0;">
+          <div class="card">
+            <div class="panel-title">Ringkasan Pengeluaran</div>
+            <div id="report-cat-list"></div>
+          </div>
+          <div class="ai-insight-card">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+              <i class="ti ti-sparkles" style="font-size:20px;color:#FFB95F;"></i>
+              <div style="font-size:17px;font-weight:700;">AI Insights</div>
+            </div>
+            <div id="ai-insights-list"></div>
+            <button style="width:100%;padding:11px;border-radius:10px;border:1.5px solid var(--border);margin-top:14px;font-family:'Geist',sans-serif;font-size:13px;font-weight:700;color:var(--primary);background:transparent;cursor:pointer;" onclick="showToast('Lihat semua rekomendasi','ti-list-check')">Lihat Semua Rekomendasi</button>
+          </div>
+        </div>
+        <div class="card" style="margin-top:20px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+            <div class="panel-title" style="margin-bottom:0;">Laporan Sebelumnya</div>
+            <span style="color:var(--primary);font-family:'Geist',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">Lihat Semua</span>
+          </div>
+          <div style="overflow-x:auto;">
             <table class="prev-reports-table">
-              <thead>
-                <tr>
-                  <th>BULAN</th>
-                  <th>PENGELUARAN</th>
-                  <th>NET FLOW</th>
-                  <th>AKSI</th>
-                </tr>
-              </thead>
+              <thead><tr><th>BULAN</th><th>PENGELUARAN</th><th>NET FLOW</th><th style="text-align:right;">AKSI</th></tr></thead>
               <tbody id="prev-reports-body"></tbody>
             </table>
           </div>
         </div>
+      </div>
 
-        <!-- UPGRADE -->
-        <div class="page hidden" id="page-upgrade">
-          <div class="upgrade-hero" style="max-width:660px;margin:0 auto;text-align:center;padding:48px 0 32px;">
-            <div class="badge-tag"><i class="ti ti-sparkles" style="font-size:14px;color:#FFB95F;"></i>Pro Features
-            </div>
-            <h1 style="font-size:32px;font-weight:700;margin:12px 0;">Tingkatkan Perjalanan Finansialmu</h1>
-            <div style="font-size:17px;color:var(--text-muted);line-height:1.6;">Kendalikan penuh budget dengan akun tak
-              terbatas, insight bertenaga AI, dan alat pelaporan canggih.</div>
-            <div class="billing-toggle" id="billing-toggle" style="margin:24px auto 0;display:inline-flex;">
-              <div class="billing-opt active" data-billing="monthly">Bulanan</div>
-              <div class="billing-opt" data-billing="yearly">Tahunan <span class="discount-badge">-20%</span></div>
-            </div>
-          </div>
-          <div class="plans-grid">
-            <div class="plan-card">
-              <div class="plan-name">Free</div>
-              <div class="plan-desc">Alat esensial untuk budgeting mahasiswa dasar.</div>
-              <div class="plan-price">Rp 0</div>
-              <div class="plan-period">/bulan</div>
-              <div class="plan-divider"></div>
-              <div class="plan-feature"><i class="ti ti-check" style="color:var(--success);"></i><span>Sampai 2
-                  Akun</span></div>
-              <div class="plan-feature"><i class="ti ti-check" style="color:var(--success);"></i><span>Budgeting
-                  Dasar</span></div>
-              <div class="plan-feature"><i class="ti ti-check" style="color:var(--success);"></i><span>Kategori
-                  Standar</span></div>
-              <div style="flex:1;"></div>
-              <button class="plan-btn outline" style="cursor:default;margin-top:24px;">Paket Saat Ini</button>
-            </div>
-            <div class="plan-card featured">
-              <div class="most-popular-tag">Paling Populer</div>
-              <div class="plan-name">Pro</div>
-              <div class="plan-desc">Alat canggih, insight, dan tanpa batasan.</div>
-              <div class="plan-price" id="pro-price">Rp 29.000</div>
-              <div class="plan-period">/bulan</div>
-              <div class="plan-divider"></div>
-              <div class="plan-feature"><i class="ti ti-check"></i><span>Akun &amp; Dompet Tak Terbatas</span></div>
-              <div class="plan-feature"><i class="ti ti-check"></i><span>Insight Finansial Bertenaga AI</span></div>
-              <div class="plan-feature"><i class="ti ti-check"></i><span>Kategori Budget Kustom</span></div>
-              <div class="plan-feature"><i class="ti ti-check"></i><span>Export CSV Otomatis</span></div>
-              <div class="plan-feature"><i class="ti ti-check"></i><span>Prioritas Support</span></div>
-              <button class="plan-btn solid-white" style="margin-top:auto;"
-                onclick="showToast('Fitur Pro belum tersedia di prototype ini', 'ti-lock')">Upgrade ke Pro</button>
-            </div>
-            <div class="plan-card">
-              <div class="plan-name">Household</div>
-              <div class="plan-desc">Budget bersama untuk anak kos atau keluarga.</div>
-              <div class="plan-price" id="household-price">Rp 59.000</div>
-              <div class="plan-period">/bulan</div>
-              <div class="plan-divider"></div>
-              <div class="plan-feature"><i class="ti ti-check" style="color:var(--success);"></i><span>Semua yang ada di
-                  Pro</span></div>
-              <div class="plan-feature"><i class="ti ti-check" style="color:var(--success);"></i><span>Sampai 5 Pengguna
-                  Bersama</span></div>
-              <div class="plan-feature"><i class="ti ti-check" style="color:var(--success);"></i><span>Pelacakan Budget
-                  Bersama</span></div>
-              <div style="flex:1;"></div>
-              <button class="plan-btn solid-primary" style="margin-top:24px;"
-                onclick="showToast('Fitur Household belum tersedia', 'ti-lock')">Mulai Trial</button>
-            </div>
+      <!-- ===== UPGRADE ===== -->
+      <div class="page hidden" id="page-upgrade">
+        <div style="max-width:600px;margin:0 auto;text-align:center;padding:40px 0 28px;">
+          <div style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:9999px;background:var(--primary-light);color:var(--primary);font-family:'Geist',sans-serif;font-size:11.5px;font-weight:700;margin-bottom:14px;letter-spacing:.04em;"><i class="ti ti-sparkles" style="font-size:13px;color:#FFB95F;"></i>PRO FEATURES</div>
+          <h1 style="font-size:30px;font-weight:700;margin-bottom:10px;">Tingkatkan Perjalanan Finansialmu</h1>
+          <div style="font-size:16px;color:var(--text-muted);line-height:1.6;">Kendalikan penuh budget dengan akun tak terbatas, insight AI, dan laporan canggih.</div>
+          <div class="billing-toggle" id="billing-toggle">
+            <div class="billing-opt active" data-billing="monthly">Bulanan</div>
+            <div class="billing-opt" data-billing="yearly">Tahunan <span class="discount-badge">-20%</span></div>
           </div>
         </div>
-
+        <div class="plans-grid">
+          <div class="plan-card">
+            <div class="plan-name">Free</div>
+            <div class="plan-desc">Alat esensial untuk budgeting dasar.</div>
+            <div class="plan-price">Rp 0</div>
+            <div class="plan-period">/bulan</div>
+            <div class="plan-divider"></div>
+            <div class="plan-feature"><i class="ti ti-check" style="color:var(--success);"></i><span>Sampai 2 Akun</span></div>
+            <div class="plan-feature"><i class="ti ti-check" style="color:var(--success);"></i><span>Budgeting Dasar</span></div>
+            <div class="plan-feature"><i class="ti ti-check" style="color:var(--success);"></i><span>Kategori Standar</span></div>
+            <div style="flex:1;"></div>
+            <button class="plan-btn outline" style="cursor:default;margin-top:22px;">Paket Saat Ini</button>
+          </div>
+          <div class="plan-card featured">
+            <div class="most-popular-tag">Paling Populer</div>
+            <div class="plan-name">Pro</div>
+            <div class="plan-desc">Alat canggih, insight AI, dan tanpa batasan.</div>
+            <div class="plan-price" id="pro-price">Rp 29.000</div>
+            <div class="plan-period">/bulan</div>
+            <div class="plan-divider"></div>
+            <div class="plan-feature"><i class="ti ti-check"></i><span>Akun & Dompet Tak Terbatas</span></div>
+            <div class="plan-feature"><i class="ti ti-check"></i><span>Insight Finansial AI</span></div>
+            <div class="plan-feature"><i class="ti ti-check"></i><span>Kategori Budget Kustom</span></div>
+            <div class="plan-feature"><i class="ti ti-check"></i><span>Export CSV Otomatis</span></div>
+            <div class="plan-feature"><i class="ti ti-check"></i><span>Prioritas Support</span></div>
+            <button class="plan-btn solid-white" style="margin-top:auto;" onclick="showToast('Fitur Pro belum tersedia di prototype','ti-lock')">Upgrade ke Pro</button>
+          </div>
+          <div class="plan-card">
+            <div class="plan-name">Household</div>
+            <div class="plan-desc">Budget bersama untuk anak kos atau keluarga.</div>
+            <div class="plan-price" id="household-price">Rp 59.000</div>
+            <div class="plan-period">/bulan</div>
+            <div class="plan-divider"></div>
+            <div class="plan-feature"><i class="ti ti-check" style="color:var(--success);"></i><span>Semua di Pro</span></div>
+            <div class="plan-feature"><i class="ti ti-check" style="color:var(--success);"></i><span>Sampai 5 Pengguna</span></div>
+            <div class="plan-feature"><i class="ti ti-check" style="color:var(--success);"></i><span>Budget Bersama</span></div>
+            <div style="flex:1;"></div>
+            <button class="plan-btn solid-primary" style="margin-top:22px;" onclick="showToast('Fitur Household belum tersedia','ti-lock')">Mulai Trial</button>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
 
-  <!-- QUICK ADD MODAL -->
-  <div class="modal-overlay" id="modal-overlay">
-    <div class="modal-box">
-      <div class="modal-head">
-        <h3>Tambah Pengeluaran</h3>
+    </div><!-- /main-area -->
+  </div><!-- /app-shell -->
+
+  <!-- Mobile bottom nav -->
+  <div class="mobile-nav" id="mobile-nav">
+    <div class="mobile-nav-item" data-page="dashboard"><i class="ti ti-layout-dashboard"></i>Home</div>
+    <div class="mobile-nav-item" data-page="transactions"><i class="ti ti-receipt"></i>Transaksi</div>
+    <div class="mobile-nav-item" data-page="budgets"><i class="ti ti-wallet"></i>Anggaran</div>
+    <div class="mobile-nav-item" data-page="savings"><i class="ti ti-target-arrow"></i>Tabungan</div>
+    <div class="mobile-nav-item" data-page="reports"><i class="ti ti-file-text"></i>Laporan</div>
+  </div>
+</div><!-- /screen-app -->
+
+<!-- ===== QUICK ADD MODAL (redesigned) ===== -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box">
+    <!-- Gradient header with live amount -->
+    <div class="modal-header">
+      <div class="modal-header-inner">
+        <div class="modal-title-group">
+          <div class="modal-eyebrow">Catat Pengeluaran</div>
+          <div class="modal-title">Berapa yang kamu keluarkan?</div>
+        </div>
         <button class="modal-close" id="modal-close"><i class="ti ti-x"></i></button>
       </div>
-      <div class="modal-label">Jumlah</div>
-      <div class="amount-input-wrap">
-        <span class="prefix">Rp</span>
-        <input type="text" id="qa-amount" inputmode="numeric" placeholder="0" autocomplete="off" />
-      </div>
-      <div class="modal-label">Kategori</div>
-      <div class="cat-grid" id="qa-cat-grid"></div>
-      <div class="modal-label">Catatan (opsional)</div>
-      <input type="text" class="desc-input" id="qa-desc" placeholder="cth. Makan siang di kantin" autocomplete="off" />
-      <div class="modal-actions">
-        <button class="btn-secondary" id="qa-cancel">Batal</button>
-        <button class="btn-primary" id="qa-submit"><i class="ti ti-check"></i> Simpan Transaksi</button>
+      <div class="modal-amount-display" id="amount-display-wrap" onclick="document.getElementById('qa-amount').focus()">
+        <div class="modal-amount-currency">Rp</div>
+        <div class="modal-amount-value" id="amount-display">0<span class="modal-amount-cursor" id="amount-cursor"></span></div>
+        <input type="text" id="qa-amount" class="modal-amount-input" inputmode="numeric" autocomplete="off" placeholder="0"/>
       </div>
     </div>
+
+    <!-- Body -->
+    <div class="modal-body">
+      <!-- Category -->
+      <div class="modal-section">
+        <div class="modal-label"><i class="ti ti-category"></i>Kategori</div>
+        <div class="cat-grid" id="qa-cat-grid"></div>
+      </div>
+
+      <!-- Tag -->
+      <div class="modal-section">
+        <div class="modal-label"><i class="ti ti-tag"></i>Tag Pengeluaran</div>
+        <div class="tag-selector" id="qa-tag-selector">
+          <button class="tag-option" data-tag="pribadi">👤 Pribadi</button>
+          <button class="tag-option" data-tag="organisasi">🏢 Organisasi</button>
+          <button class="tag-option" data-tag="panitia">🎪 Panitia</button>
+          <button class="tag-option" data-tag="kuliah">📚 Kuliah</button>
+          <button class="tag-option" data-tag="lainnya">· · · Lainnya</button>
+        </div>
+      </div>
+
+      <!-- Note -->
+      <div class="modal-section" style="margin-bottom:0;">
+        <div class="modal-label"><i class="ti ti-pencil"></i>Catatan <span style="font-size:10.5px;opacity:.6;text-transform:none;letter-spacing:0;font-weight:500;">(opsional)</span></div>
+        <input type="text" class="note-input" id="qa-desc" placeholder="cth. Makan siang di kantin, bayar iuran UKM…" autocomplete="off"/>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="modal-footer">
+      <button class="btn-cancel" id="qa-cancel">Batal</button>
+      <button class="btn-save" id="qa-submit"><i class="ti ti-check"></i>Simpan Transaksi</button>
+    </div>
   </div>
+</div>
 
-  <div class="toast" id="toast"><i class="ti ti-circle-check"></i><span id="toast-text"></span></div>
+<div class="toast" id="toast"><i class="ti ti-circle-check"></i><span id="toast-text"></span></div>
 
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/dist/tabler-icons.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <script src="app.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/dist/tabler-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="app.js"></script>
 </body>
-
 </html>
