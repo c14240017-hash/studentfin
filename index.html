@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>StudentFin — Prototype</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.6.0/dist/tabler-icons.min.css">
   <style>
     /* ============================================================
        THEME TOKENS — light & dark
@@ -48,8 +50,8 @@
       --border: #2E2D48;
       --border-soft: rgba(46,45,72,0.7);
       --text: #EDE9FF;
-      --text-muted: #9B99B8;
-      --text-faint: #6B6988;
+      --text-muted: #ABA9C4;
+      --text-faint: #908EAD;
       --success: #4ADE80;
       --success-bg: #0D2B1C;
       --danger: #FF6B6B;
@@ -141,17 +143,12 @@
 
     .brand-mark {
       width: 32px; height: 28px;
-      background: var(--primary); border-radius: 6px;
-      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
     }
 
-    .brand-mark::after {
-      content: '';
-      width: 12px; height: 12px;
-      border-radius: 3px;
-      background: rgba(255,255,255,0.5);
-      transform: rotate(15deg);
-    }
+    .brand-mark svg { display: block; width: 100%; height: 100%; }
+
+    [data-theme="dark"] .brand-mark svg rect:first-child { fill: #7B6EFF; }
 
     .brand-name {
       font-size: 26px; font-weight: 700; color: var(--primary);
@@ -250,9 +247,11 @@
       padding: 20px 0;
       position: fixed; top: 0; left: 0; bottom: 0;
       z-index: 50;
-      transition: transform .3s cubic-bezier(.4,0,.2,1), background .25s;
+      transition: width .3s cubic-bezier(.4,0,.2,1), background .25s;
       overflow-y: auto;
+      overflow-x: hidden;
     }
+
 
     .sidebar-brand {
       padding: 0 20px 20px;
@@ -347,7 +346,10 @@
     .sidebar-overlay.show { display: block; }
 
     /* ---- Topbar ---- */
-    .main-area { margin-left: var(--sidebar-w); flex: 1; min-width: 0; }
+    .main-area {
+      margin-left: var(--sidebar-w); flex: 1; min-width: 0;
+      transition: margin-left .3s cubic-bezier(.4,0,.2,1);
+    }
 
     .topbar {
       height: 60px; padding: 0 24px;
@@ -364,6 +366,12 @@
     }
 
     .topbar-left { display: flex; align-items: center; gap: 12px; }
+
+    .topbar-brand-mobile {
+      display: none; align-items: center; gap: 6px;
+    }
+
+    .topbar-brand-mobile .brand-mark { width: 26px; height: 22px; }
 
     .hamburger {
       display: none;
@@ -408,18 +416,43 @@
     .btn-quickadd:hover { background: #2c1ea8; }
     .btn-quickadd:active { transform: scale(.97); }
 
-    /* Dark mode toggle */
-    .theme-toggle {
-      width: 36px; height: 36px;
-      border-radius: 9px;
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: center;
-      color: var(--text-muted); font-size: 17px;
-      transition: background .12s, color .12s;
+    /* Dark mode toggle switch */
+    .theme-switch {
+      display: flex; align-items: center; gap: 6px; cursor: pointer;
+      padding: 4px 8px; border-radius: 9999px;
+      background: var(--surface-2); border: 1px solid var(--border);
+      transition: background .25s, border-color .25s;
+      -webkit-user-select: none; user-select: none;
     }
 
-    .theme-toggle:hover { background: var(--primary-tint); color: var(--primary); }
+    .theme-switch:hover { border-color: var(--primary); }
+
+    .theme-switch .icon-sun,
+    .theme-switch .icon-moon { font-size: 14px; transition: color .25s, opacity .25s; }
+
+    .theme-switch .icon-sun { color: #FFB347; opacity: 1; }
+    .theme-switch .icon-moon { color: var(--text-faint); opacity: .5; }
+
+    [data-theme="dark"] .theme-switch .icon-sun { color: var(--text-faint); opacity: .5; }
+    [data-theme="dark"] .theme-switch .icon-moon { color: #A89AFF; opacity: 1; }
+
+    .theme-switch-track {
+      width: 36px; height: 20px;
+      background: var(--chip-bg); border-radius: 9999px;
+      position: relative; transition: background .3s;
+    }
+
+    [data-theme="dark"] .theme-switch-track { background: var(--primary); }
+
+    .theme-switch-thumb {
+      width: 16px; height: 16px;
+      background: white; border-radius: 9999px;
+      position: absolute; top: 2px; left: 2px;
+      transition: transform .3s cubic-bezier(.4,0,.2,1);
+      box-shadow: 0 1px 3px rgba(0,0,0,.15);
+    }
+
+    [data-theme="dark"] .theme-switch-thumb { transform: translateX(16px); }
 
     .icon-btn {
       position: relative; color: var(--text-muted);
@@ -924,9 +957,9 @@
 
     .acc-logo {
       width: 44px; height: 44px; border-radius: var(--radius-md);
-      background: var(--chip-bg); border: 1px solid var(--border);
       display: flex; align-items: center; justify-content: center;
-      font-size: 18px; font-weight: 700;
+      font-size: 14px; font-weight: 800; color: white;
+      font-family: 'Geist', sans-serif; letter-spacing: -.02em;
     }
 
     .acc-name { font-size: 14.5px; font-weight: 600; }
@@ -1348,22 +1381,536 @@
     .mobile-nav-item i { font-size: 20px; }
     .mobile-nav-item.active { background: var(--primary-tint); color: var(--primary); }
 
-    /* ---- Responsive ---- */
+    /* Mobile center "+" button */
+    .mobile-nav-add {
+      background: var(--primary) !important; color: white !important;
+      width: 48px; height: 48px; border-radius: 9999px !important;
+      flex: 0 0 48px !important;
+      margin: -18px 4px 0; padding: 0 !important;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 12px rgba(53,37,205,.35);
+      font-size: 0;
+    }
+
+    .mobile-nav-add i { font-size: 24px !important; }
+
+    /* Mobile "More" bottom sheet */
+    .mobile-more-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.45);
+      z-index: 200; display: none;
+      align-items: flex-end; justify-content: center;
+    }
+
+    .mobile-more-overlay.show { display: flex; }
+
+    .mobile-more-sheet {
+      background: var(--surface);
+      border-radius: 20px 20px 0 0;
+      width: 100%; max-width: 480px;
+      padding: 12px 20px 28px;
+      animation: sheetUp .25s ease both;
+      border: 1px solid var(--border);
+      border-bottom: none;
+    }
+
+    @keyframes sheetUp {
+      from { transform: translateY(100%); }
+      to   { transform: translateY(0); }
+    }
+
+    .mobile-more-handle {
+      width: 36px; height: 4px;
+      background: var(--chip-bg); border-radius: 9999px;
+      margin: 0 auto 16px;
+    }
+
+    .mobile-more-grid {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      gap: 8px;
+    }
+
+    .mobile-more-item {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 6px;
+      padding: 14px 8px; border-radius: 14px;
+      cursor: pointer; transition: background .12s;
+      color: var(--text-muted);
+    }
+
+    .mobile-more-item:hover,
+    .mobile-more-item:active { background: var(--primary-tint); color: var(--primary); }
+
+    .mobile-more-item i { font-size: 24px; }
+
+    .mobile-more-item span {
+      font-family: 'Geist', sans-serif;
+      font-size: 11px; font-weight: 600;
+    }
+
+    /* Mobile transaction cards (replaces table on mobile) */
+    .tx-mobile-list { display: none; }
+
+    .tx-mobile-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px; padding: 14px;
+      display: flex; align-items: flex-start; gap: 12px;
+      margin-bottom: 10px; transition: background .12s;
+    }
+
+    .tx-mobile-card:last-child { margin-bottom: 0; }
+
+    .tx-mobile-icon {
+      width: 40px; height: 40px; border-radius: 9999px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px; flex-shrink: 0;
+    }
+
+    .tx-mobile-body { flex: 1; min-width: 0; }
+
+    .tx-mobile-top {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      gap: 8px; margin-bottom: 4px;
+    }
+
+    .tx-mobile-name {
+      font-weight: 600; font-size: 14px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    .tx-mobile-amount { font-weight: 700; font-size: 14px; white-space: nowrap; flex-shrink: 0; }
+    .tx-mobile-amount.expense { color: var(--text); }
+    .tx-mobile-amount.income { color: var(--success); }
+
+    .tx-mobile-meta {
+      display: flex; align-items: center; gap: 6px;
+      flex-wrap: wrap; margin-top: 2px;
+    }
+
+    .tx-mobile-meta .chip { font-size: 10px; padding: 2px 7px; }
+    .tx-mobile-meta .tag-pill { font-size: 9.5px; padding: 1px 6px; }
+
+    .tx-mobile-date {
+      font-size: 11px; color: var(--text-faint);
+    }
+
+    .tx-mobile-actions {
+      display: flex; gap: 2px; margin-top: 8px;
+      padding-top: 8px; border-top: 1px solid var(--border-soft);
+    }
+
+    .tx-mobile-actions .tx-action-btn { width: 28px; height: 28px; font-size: 14px; }
+
+    /* ---- Skeleton loader ---- */
+    .skeleton-wrap {
+      position: relative; min-height: 200px;
+      display: flex; flex-direction: column; gap: 16px;
+      padding: 8px 0;
+    }
+
+    .skeleton-row {
+      display: flex; gap: 16px; align-items: center;
+    }
+
+    .skeleton {
+      background: var(--chip-bg);
+      border-radius: 8px;
+      position: relative; overflow: hidden;
+    }
+
+    .skeleton::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.15), transparent);
+      animation: shimmer 1.5s infinite;
+    }
+
+    [data-theme="dark"] .skeleton::after {
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.06), transparent);
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .skeleton-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+    }
+
+    .skeleton-line { height: 14px; border-radius: 6px; }
+    .skeleton-line.w-40 { width: 40%; }
+    .skeleton-line.w-60 { width: 60%; }
+    .skeleton-line.w-80 { width: 80%; }
+    .skeleton-line.w-full { width: 100%; }
+    .skeleton-line.h-lg { height: 28px; }
+    .skeleton-circle { width: 40px; height: 40px; border-radius: 9999px; }
+    .skeleton-rect { width: 100%; height: 120px; border-radius: var(--radius-md); }
+
+    .skeleton-grid {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 20px;
+    }
+
+    /* ---- Nav dropdown ---- */
+    .nav-group { position: relative; }
+
+    .nav-group-toggle {
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%; padding: 10px 14px; border-radius: 10px;
+      font-family: 'Geist', sans-serif; font-size: 14px; font-weight: 500;
+      color: var(--text-muted); cursor: pointer;
+      transition: background .12s, color .12s;
+      gap: 8px;
+    }
+
+    .nav-group-toggle i:first-child { font-size: 18px; width: 18px; text-align: center; flex-shrink: 0; }
+
+    .nav-group-toggle .nav-arrow {
+      font-size: 14px; margin-left: auto;
+      transition: transform .2s;
+    }
+
+    .nav-group-toggle:hover { background: var(--primary-tint); color: var(--primary); }
+
+    .nav-group.active > .nav-group-toggle { color: var(--primary); }
+
+    .nav-group.open > .nav-group-toggle .nav-arrow { transform: rotate(180deg); }
+
+    .nav-sub {
+      max-height: 0; overflow: hidden;
+      transition: max-height .25s ease;
+      padding-left: 12px;
+    }
+
+    .nav-group.open > .nav-sub { max-height: 200px; }
+
+    .nav-sub .nav-item {
+      font-size: 13px; padding: 8px 14px 8px 30px;
+    }
+
+    /* ---- Scroll indicator for tables ---- */
+    .scroll-indicator-wrap {
+      position: relative;
+    }
+
+    .scroll-indicator-wrap::after {
+      content: '';
+      position: absolute; right: 0; top: 0; bottom: 0; width: 32px;
+      background: linear-gradient(90deg, transparent, var(--surface));
+      pointer-events: none; border-radius: 0 14px 14px 0;
+      opacity: 1; transition: opacity .3s;
+    }
+
+    .scroll-indicator-wrap.scrolled-end::after { opacity: 0; }
+
+    .scroll-indicator-wrap::before {
+      content: '';
+      position: absolute; left: 0; top: 0; bottom: 0; width: 32px;
+      background: linear-gradient(270deg, transparent, var(--surface));
+      pointer-events: none; border-radius: 14px 0 0 14px;
+      opacity: 0; transition: opacity .3s; z-index: 1;
+    }
+
+    .scroll-indicator-wrap.scrolled-start::before { opacity: 1; }
+
+    /* ---- Transaction action buttons ---- */
+    .tx-actions {
+      display: flex; gap: 4px; align-items: center;
+    }
+
+    .tx-action-btn {
+      width: 30px; height: 30px; border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; color: var(--text-faint);
+      transition: all .15s; cursor: pointer;
+      background: transparent; border: none;
+    }
+
+    .tx-action-btn:hover {
+      background: var(--primary-tint); color: var(--primary);
+    }
+
+    .tx-action-btn.delete:hover {
+      background: var(--danger-bg); color: var(--danger);
+    }
+
+    /* ---- Confirm delete overlay ---- */
+    .confirm-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.5); backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center;
+      z-index: 110; padding: 16px;
+    }
+
+    .confirm-overlay.show { display: flex; }
+
+    .confirm-box {
+      background: var(--surface); border-radius: 20px;
+      padding: 28px; max-width: 380px; width: 100%;
+      box-shadow: var(--shadow-modal); border: 1px solid var(--border);
+      text-align: center;
+      animation: modalIn .22s cubic-bezier(.34,1.3,.64,1) both;
+    }
+
+    .confirm-icon {
+      width: 52px; height: 52px; border-radius: 9999px;
+      background: var(--danger-bg); color: var(--danger);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; margin: 0 auto 16px;
+    }
+
+    .confirm-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .confirm-desc { font-size: 14px; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px; }
+
+    .confirm-btns { display: flex; gap: 10px; }
+
+    .confirm-btns .btn-cancel { flex: 1; }
+
+    .confirm-btns .btn-danger {
+      flex: 1; padding: 12px;
+      background: var(--danger); color: white;
+      border-radius: 10px; font-family: 'Geist', sans-serif;
+      font-weight: 700; font-size: 14px; border: none; cursor: pointer;
+      transition: opacity .15s;
+    }
+
+    .confirm-btns .btn-danger:hover { opacity: .9; }
+
+    /* ---- Typography utility ---- */
+    .section-label {
+      font-family: 'Geist', sans-serif; font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted);
+    }
+
+    .section-title { font-size: 18px; font-weight: 600; }
+
+    .text-big { font-size: 26px; font-weight: 700; }
+    .text-body { font-size: 14px; line-height: 1.5; }
+    .text-small { font-size: 12px; color: var(--text-muted); }
+    .text-success { color: var(--success); }
+    .text-danger { color: var(--danger); }
+
+    /* ---- Notification panel ---- */
+    .notif-panel {
+      position: absolute; top: calc(100% + 8px); right: 0;
+      width: 340px; max-height: 420px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; box-shadow: var(--shadow-modal);
+      z-index: 100; display: none; overflow: hidden;
+    }
+
+    .notif-panel.show { display: block; }
+
+    .notif-header {
+      padding: 14px 16px; border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+
+    .notif-header-title { font-family: 'Geist',sans-serif; font-size: 14px; font-weight: 700; }
+
+    .notif-clear {
+      font-family: 'Geist',sans-serif; font-size: 12px; font-weight: 600;
+      color: var(--primary); cursor: pointer; background: none; border: none;
+    }
+
+    .notif-list { max-height: 340px; overflow-y: auto; }
+
+    .notif-item {
+      display: flex; gap: 12px; padding: 12px 16px;
+      border-bottom: 1px solid var(--border-soft);
+      transition: background .1s; cursor: default;
+    }
+
+    .notif-item:last-child { border-bottom: none; }
+    .notif-item:hover { background: var(--surface-2); }
+    .notif-item.unread { background: var(--primary-tint); }
+
+    .notif-icon {
+      width: 36px; height: 36px; border-radius: 9999px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; flex-shrink: 0;
+    }
+
+    .notif-icon.warn { background: var(--danger-bg); color: var(--danger); }
+    .notif-icon.info { background: var(--primary-light); color: var(--primary); }
+    .notif-icon.success { background: var(--success-bg); color: var(--success); }
+
+    .notif-body { flex: 1; min-width: 0; }
+
+    .notif-text { font-size: 13px; line-height: 1.4; margin-bottom: 3px; }
+    .notif-text strong { font-weight: 700; }
+
+    .notif-time { font-size: 11px; color: var(--text-faint); font-family: 'Geist',sans-serif; }
+
+    .notif-empty {
+      padding: 32px 16px; text-align: center;
+      color: var(--text-faint); font-size: 13px;
+    }
+
+    .notif-empty i { font-size: 28px; display: block; margin-bottom: 8px; }
+
+    /* ---- Budget edit inline ---- */
+    .budget-edit-row {
+      display: flex; align-items: center; gap: 8px; margin-top: 10px;
+    }
+
+    .budget-edit-input {
+      flex: 1; padding: 8px 10px;
+      border: 1.5px solid var(--border); border-radius: 8px;
+      font-size: 13px; font-family: 'Geist',sans-serif;
+      background: var(--surface); color: var(--text);
+      outline: none; transition: border-color .15s;
+    }
+
+    .budget-edit-input:focus { border-color: var(--primary); }
+
+    .budget-edit-save {
+      padding: 8px 14px; background: var(--primary); color: white;
+      border-radius: 8px; font-family: 'Geist',sans-serif;
+      font-size: 12px; font-weight: 700; border: none; cursor: pointer;
+      transition: background .15s; white-space: nowrap;
+    }
+
+    .budget-edit-save:hover { background: #2c1ea8; }
+
+    .budget-edit-btn {
+      font-size: 15px; color: var(--text-faint); cursor: pointer;
+      background: none; border: none; padding: 4px;
+      border-radius: 6px; transition: color .12s, background .12s;
+    }
+
+    .budget-edit-btn:hover { color: var(--primary); background: var(--primary-tint); }
+
+    /* ---- Page transitions ---- */
+    .page:not(.hidden) {
+      animation: pageIn .3s ease both;
+    }
+
+    @keyframes pageIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---- Auto-sync indicator ---- */
+    .auto-sync-indicator {
+      display: flex; align-items: center; gap: 6px;
+      font-family: 'Geist', sans-serif; font-size: 12px; font-weight: 600;
+      color: var(--success); padding: 6px 12px;
+      background: var(--success-bg); border-radius: 9999px;
+    }
+
+    .sync-dot {
+      width: 8px; height: 8px;
+      background: var(--success); border-radius: 9999px;
+      animation: syncPulse 2s ease infinite;
+    }
+
+    @keyframes syncPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: .4; transform: scale(.8); }
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .acc-row {
+      transition: background .15s, transform .15s;
+    }
+
+    .acc-balance-updating {
+      animation: balanceFlash .6s ease;
+    }
+
+    @keyframes balanceFlash {
+      0%, 100% { color: inherit; }
+      50% { color: var(--success); }
+    }
+
+    .sync-status-live {
+      display: flex; align-items: center; gap: 4px;
+      font-size: 11px; color: var(--success);
+    }
+
+    .sync-status-live i { font-size: 12px; }
+
+    /* ---- Focus & accessibility ---- */
+    :focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+
+    button:focus-visible, input:focus-visible, select:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+
+    /* ---- Better interactive feedback ---- */
+    .nav-item { transition: background .15s, color .15s, transform .1s; }
+    .nav-item:active { transform: scale(.97); }
+
+    .stat-card { transition: box-shadow .2s, border-color .2s; }
+    .stat-card:hover { border-color: var(--primary); }
+
+    .budget-card { transition: box-shadow .2s, border-color .2s; }
+    .budget-card:hover:not(.over) { border-color: var(--primary); }
+
+    .goal-card { transition: box-shadow .2s, border-color .2s; }
+    .goal-card:hover { border-color: var(--primary); }
+
+    /* ---- Scroll behavior ---- */
+    html { scroll-behavior: smooth; }
+
+    /* ---- Responsive: Login split ---- */
+    @media (max-width: 900px) {
+      .login-visual { display: none; }
+      .login-form-side {
+        padding: 48px 32px;
+        justify-content: center;
+      }
+      .login-form-wrap { max-width: 400px; }
+    }
+
+    /* ---- Responsive: Tablet ---- */
+    @media (max-width: 1024px) {
+      .stat-grid { grid-template-columns: repeat(2,1fr); }
+      .dash-grid { grid-template-columns: 1fr; }
+      .budget-grid { grid-template-columns: repeat(2,1fr); }
+      .report-top-stats { grid-template-columns: repeat(2,1fr); }
+      .plans-grid { grid-template-columns: 1fr 1fr; }
+      .goals-grid { grid-template-columns: 1fr; }
+      .accounts-top { grid-template-columns: 1fr; }
+
+      .login-copy h1 { font-size: 24px; }
+      .login-form-side { padding: 40px 48px; }
+
+      .page { padding: 24px 20px; }
+
+      .skeleton-grid { grid-template-columns: repeat(2,1fr); }
+
+      .tx-table th:nth-child(5),
+      .tx-table td:nth-child(5) { display: none; }
+    }
+
+    /* ---- Responsive: Mobile ---- */
     @media (max-width: 768px) {
       :root { --sidebar-w: 0px; }
 
-      .sidebar {
-        width: 264px;
-        transform: translateX(-100%);
-      }
+      .sidebar { display: none !important; }
+      .sidebar-overlay { display: none !important; }
 
-      .sidebar.open { transform: translateX(0); }
+      .main-area { margin-left: 0 !important; }
 
-      .main-area { margin-left: 0; }
+      .hamburger { display: none; }
 
-      .hamburger { display: flex; }
+      .topbar-brand-mobile { display: flex !important; }
 
-      .search-box { width: 160px; }
+      .search-box { width: 120px; }
 
       .topbar { padding: 0 14px; }
 
@@ -1382,11 +1929,12 @@
 
       .mobile-nav { display: flex; }
 
-      .topbar-actions .btn-quickadd span { display: none; }
-      .btn-quickadd { padding: 8px 10px; }
+      .btn-quickadd { display: none !important; }
 
-      .login-visual { display: none; }
       .login-form-side { padding: 28px 20px; }
+      .login-form-wrap h2 { font-size: 24px; }
+
+      .skeleton-grid { grid-template-columns: 1fr; }
 
       .cat-grid { grid-template-columns: repeat(4,1fr); }
 
@@ -1394,8 +1942,37 @@
       .modal-overlay { align-items: flex-end; }
       .modal-box { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
 
-      .tx-toolbar { gap: 8px; }
-      .tx-toolbar select { font-size: 12px; padding: 7px 10px; }
+      .tx-toolbar {
+        gap: 6px; display: grid !important;
+        grid-template-columns: 1fr 1fr;
+      }
+      .tx-toolbar select { font-size: 12px; padding: 8px 10px; width: 100%; }
+      .clear-filters { grid-column: 1 / -1; text-align: center; }
+
+      .scroll-indicator-wrap,
+      .tx-table-wrap { display: none !important; }
+      .tx-mobile-list { display: block !important; }
+
+      .theme-switch { padding: 3px 6px; gap: 4px; }
+      .theme-switch .icon-sun,
+      .theme-switch .icon-moon { font-size: 12px; }
+      .theme-switch-track { width: 30px; height: 18px; }
+      .theme-switch-thumb { width: 14px; height: 14px; }
+      [data-theme="dark"] .theme-switch-thumb { transform: translateX(12px); }
+
+      .auto-sync-indicator .sync-label { display: none; }
+      .auto-sync-indicator { padding: 6px; background: transparent; }
+
+      .page-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .page-header h1 { font-size: 20px; }
+
+      .stat-value { font-size: 22px; }
+
+      .notif-panel { width: calc(100vw - 24px); right: -8px; }
+
+      .toast { bottom: 80px; }
+
+
     }
 
     @media (max-width: 480px) {
@@ -1417,20 +1994,35 @@
         </linearGradient>
       </defs>
       <rect width="640" height="1024" fill="url(#bgGrad)"/>
-      <circle cx="540" cy="150" r="240" fill="#fff" opacity="0.04"/>
-      <circle cx="80" cy="650" r="320" fill="#fff" opacity="0.04"/>
-      <circle cx="450" cy="800" r="140" fill="#6CF8BB" opacity="0.05"/>
-      <g opacity="0.9">
-        <rect x="100" y="360" width="210" height="140" rx="16" fill="#fff" opacity="0.07"/>
-        <rect x="120" y="392" width="110" height="10" rx="5" fill="#fff" opacity="0.25"/>
-        <rect x="120" y="416" width="170" height="8" rx="4" fill="#fff" opacity="0.13"/>
-        <rect x="120" y="436" width="70" height="8" rx="4" fill="#6CF8BB" opacity="0.7"/>
+      <circle cx="540" cy="150" r="240" fill="#fff" opacity="0.08"/>
+      <circle cx="80" cy="650" r="320" fill="#fff" opacity="0.07"/>
+      <circle cx="450" cy="800" r="140" fill="#6CF8BB" opacity="0.12"/>
+      <g opacity="1">
+        <rect x="100" y="360" width="210" height="140" rx="16" fill="#fff" opacity="0.12"/>
+        <rect x="120" y="392" width="110" height="10" rx="5" fill="#fff" opacity="0.35"/>
+        <rect x="120" y="416" width="170" height="8" rx="4" fill="#fff" opacity="0.2"/>
+        <rect x="120" y="436" width="70" height="8" rx="4" fill="#6CF8BB" opacity="0.85"/>
       </g>
-      <g opacity="0.9">
-        <rect x="340" y="460" width="190" height="125" rx="16" fill="#fff" opacity="0.06"/>
-        <circle cx="378" cy="498" r="15" fill="#6CF8BB" opacity="0.45"/>
-        <rect x="406" y="490" width="100" height="9" rx="4" fill="#fff" opacity="0.18"/>
-        <rect x="406" y="510" width="68" height="7" rx="3" fill="#fff" opacity="0.1"/>
+      <g opacity="1">
+        <rect x="340" y="460" width="190" height="125" rx="16" fill="#fff" opacity="0.1"/>
+        <circle cx="378" cy="498" r="15" fill="#6CF8BB" opacity="0.6"/>
+        <rect x="406" y="490" width="100" height="9" rx="4" fill="#fff" opacity="0.3"/>
+        <rect x="406" y="510" width="68" height="7" rx="3" fill="#fff" opacity="0.18"/>
+      </g>
+      <!-- Finance illustration -->
+      <g transform="translate(140, 550)">
+        <rect width="180" height="120" rx="14" fill="#fff" opacity="0.1"/>
+        <rect x="16" y="80" width="20" height="24" rx="4" fill="#6CF8BB" opacity="0.7"/>
+        <rect x="44" y="60" width="20" height="44" rx="4" fill="#6CF8BB" opacity="0.8"/>
+        <rect x="72" y="40" width="20" height="64" rx="4" fill="#6CF8BB" opacity="0.9"/>
+        <rect x="100" y="24" width="20" height="80" rx="4" fill="#fff" opacity="0.5"/>
+        <rect x="128" y="50" width="20" height="54" rx="4" fill="#fff" opacity="0.35"/>
+        <rect x="16" y="14" width="80" height="8" rx="4" fill="#fff" opacity="0.25"/>
+      </g>
+      <g transform="translate(380, 280)">
+        <circle cx="50" cy="50" r="50" fill="#fff" opacity="0.08"/>
+        <circle cx="50" cy="50" r="36" fill="none" stroke="#6CF8BB" stroke-width="6" opacity="0.5" stroke-dasharray="150 80"/>
+        <text x="50" y="56" text-anchor="middle" fill="#fff" opacity="0.5" font-size="16" font-weight="700" font-family="Geist,sans-serif">69%</text>
       </g>
     </svg>
     <div class="overlay"></div>
@@ -1443,7 +2035,7 @@
   <div class="login-form-side">
     <div class="login-form-wrap">
       <div class="brand-row">
-        <div class="brand-mark"></div>
+        <div class="brand-mark"><svg viewBox="0 0 32 28" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="32" height="28" rx="7" fill="#3525CD"/><rect x="6" y="15" width="5" height="7" rx="1.5" fill="rgba(255,255,255,.45)"/><rect x="13.5" y="10" width="5" height="12" rx="1.5" fill="rgba(255,255,255,.7)"/><rect x="21" y="5" width="5" height="17" rx="1.5" fill="#fff"/></svg></div>
         <div class="brand-name">StudentFin</div>
       </div>
       <h2>Selamat datang kembali</h2>
@@ -1476,18 +2068,28 @@
 
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-brand">
-        <div class="brand-mark"></div>
+        <div class="brand-mark"><svg viewBox="0 0 32 28" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="32" height="28" rx="7" fill="#3525CD"/><rect x="6" y="15" width="5" height="7" rx="1.5" fill="rgba(255,255,255,.45)"/><rect x="13.5" y="10" width="5" height="12" rx="1.5" fill="rgba(255,255,255,.7)"/><rect x="21" y="5" width="5" height="17" rx="1.5" fill="#fff"/></svg></div>
         <div class="brand-name" style="font-size:20px;">StudentFin</div>
       </div>
-      <nav class="sidebar-nav">
-        <button class="nav-item" data-page="dashboard"><i class="ti ti-layout-dashboard"></i>Dashboard</button>
-        <button class="nav-item" data-page="transactions"><i class="ti ti-receipt"></i>Transaksi</button>
-        <button class="nav-item" data-page="budgets"><i class="ti ti-wallet"></i>Anggaran</button>
-        <button class="nav-item" data-page="insight"><i class="ti ti-chart-bar"></i>Insight</button>
-        <button class="nav-item" data-page="savings"><i class="ti ti-target-arrow"></i>Target Tabungan</button>
-        <button class="nav-item" data-page="accounts"><i class="ti ti-building-bank"></i>Akun</button>
-        <button class="nav-item" data-page="reports"><i class="ti ti-file-text"></i>Laporan</button>
-        <button class="nav-item" data-page="upgrade"><i class="ti ti-sparkles"></i>Upgrade Pro</button>
+      <nav class="sidebar-nav" role="navigation" aria-label="Menu utama">
+        <button class="nav-item" data-page="dashboard" data-tooltip="Dashboard"><i class="ti ti-layout-dashboard"></i><span>Dashboard</span></button>
+        <button class="nav-item" data-page="transactions" data-tooltip="Transaksi"><i class="ti ti-receipt-2"></i><span>Transaksi</span></button>
+        <button class="nav-item" data-page="budgets" data-tooltip="Anggaran"><i class="ti ti-wallet"></i><span>Anggaran</span></button>
+        <div class="nav-group" id="nav-group-analitik">
+          <button class="nav-group-toggle" aria-expanded="false" data-tooltip="Analitik"><i class="ti ti-chart-dots-3"></i><span>Analitik</span><i class="ti ti-chevron-down nav-arrow"></i></button>
+          <div class="nav-sub">
+            <button class="nav-item" data-page="insight" data-tooltip="Insight"><i class="ti ti-chart-bar"></i><span>Insight</span></button>
+            <button class="nav-item" data-page="reports" data-tooltip="Laporan"><i class="ti ti-file-analytics"></i><span>Laporan</span></button>
+          </div>
+        </div>
+        <div class="nav-group" id="nav-group-keuangan">
+          <button class="nav-group-toggle" aria-expanded="false" data-tooltip="Keuangan"><i class="ti ti-coin"></i><span>Keuangan</span><i class="ti ti-chevron-down nav-arrow"></i></button>
+          <div class="nav-sub">
+            <button class="nav-item" data-page="savings" data-tooltip="Tabungan"><i class="ti ti-target-arrow"></i><span>Target Tabungan</span></button>
+            <button class="nav-item" data-page="accounts" data-tooltip="Akun"><i class="ti ti-building-bank"></i><span>Akun</span></button>
+          </div>
+        </div>
+        <button class="nav-item" data-page="upgrade" data-tooltip="Upgrade Pro"><i class="ti ti-sparkles"></i><span>Upgrade Pro</span></button>
       </nav>
       <div class="sidebar-bottom">
         <div class="upgrade-card">
@@ -1511,16 +2113,33 @@
     <div class="main-area">
       <div class="topbar">
         <div class="topbar-left">
-          <button class="hamburger" id="btn-hamburger"><i class="ti ti-menu-2"></i></button>
+          <button class="hamburger" id="btn-hamburger" aria-label="Buka menu navigasi"><i class="ti ti-menu-2"></i></button>
+          <div class="topbar-brand-mobile">
+            <div class="brand-mark"><svg viewBox="0 0 32 28" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="32" height="28" rx="7" fill="#3525CD"/><rect x="6" y="15" width="5" height="7" rx="1.5" fill="rgba(255,255,255,.45)"/><rect x="13.5" y="10" width="5" height="12" rx="1.5" fill="rgba(255,255,255,.7)"/><rect x="21" y="5" width="5" height="17" rx="1.5" fill="#fff"/></svg></div>
+            <span class="brand-name" style="font-size:16px;">StudentFin</span>
+          </div>
           <div class="search-box">
             <i class="ti ti-search"></i>
-            <input type="text" id="global-search" placeholder="Cari transaksi..."/>
+            <input type="text" id="global-search" placeholder="Cari..." aria-label="Pencarian global"/>
           </div>
         </div>
         <div class="topbar-actions">
           <button class="btn-quickadd" id="btn-quickadd"><i class="ti ti-plus"></i><span>Tambah</span></button>
-          <button class="theme-toggle" id="btn-theme" title="Ganti tema"><i class="ti ti-moon"></i></button>
-          <button class="icon-btn"><i class="ti ti-bell"></i><span class="dot"></span></button>
+          <div class="theme-switch" id="btn-theme" role="switch" aria-label="Ganti tema gelap/terang" tabindex="0">
+            <i class="ti ti-sun icon-sun"></i>
+            <div class="theme-switch-track"><div class="theme-switch-thumb"></div></div>
+            <i class="ti ti-moon icon-moon"></i>
+          </div>
+          <div style="position:relative;">
+            <button class="icon-btn" id="btn-notif" aria-label="Notifikasi"><i class="ti ti-bell"></i><span class="dot" id="notif-dot"></span></button>
+            <div class="notif-panel" id="notif-panel">
+              <div class="notif-header">
+                <div class="notif-header-title">Notifikasi</div>
+                <button class="notif-clear" id="notif-clear">Tandai dibaca</button>
+              </div>
+              <div class="notif-list" id="notif-list"></div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1606,25 +2225,30 @@
           </select>
           <button class="clear-filters" id="btn-clear-filters">Hapus Filter</button>
         </div>
-        <div class="tx-table-wrap">
-          <table class="tx-table">
-            <thead>
-              <tr>
-                <th>TANGGAL</th>
-                <th>DESKRIPSI</th>
-                <th>KATEGORI</th>
-                <th>TAG</th>
-                <th>AKUN</th>
-                <th class="right">JUMLAH (IDR)</th>
-              </tr>
-            </thead>
-            <tbody id="tx-table-body"></tbody>
-          </table>
-          <div class="empty-state hidden" id="tx-empty">
-            <i class="ti ti-receipt-off"></i>
-            Tidak ada transaksi yang cocok.
+        <div class="scroll-indicator-wrap" id="tx-scroll-wrap">
+          <div class="tx-table-wrap" id="tx-table-scroll">
+            <table class="tx-table">
+              <thead>
+                <tr>
+                  <th>TANGGAL</th>
+                  <th>DESKRIPSI</th>
+                  <th>KATEGORI</th>
+                  <th>TAG</th>
+                  <th>AKUN</th>
+                  <th class="right">JUMLAH (IDR)</th>
+                  <th style="width:80px;">AKSI</th>
+                </tr>
+              </thead>
+              <tbody id="tx-table-body"></tbody>
+            </table>
+            <div class="empty-state hidden" id="tx-empty">
+              <i class="ti ti-receipt-off"></i>
+              Tidak ada transaksi yang cocok.
+            </div>
           </div>
         </div>
+        <!-- Mobile card list (shown on mobile only) -->
+        <div class="tx-mobile-list" id="tx-mobile-list"></div>
       </div>
 
       <!-- ===== BUDGETS ===== -->
@@ -1648,7 +2272,10 @@
             <div class="progress-caption" id="budget-total-pct">0% terpakai</div>
           </div>
         </div>
-        <div class="panel-title">Anggaran per Kategori</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+          <div class="panel-title" style="margin-bottom:0;">Anggaran per Kategori</div>
+          <button class="btn-quickadd" id="btn-add-budget" style="padding:8px 14px;font-size:12px;"><i class="ti ti-plus"></i><span>Tambah Kategori</span></button>
+        </div>
         <div class="budget-grid" id="budget-cards"></div>
       </div>
 
@@ -1760,9 +2387,15 @@
             <h1>Akun</h1>
             <div class="sub">Kelola institusi dan dompet yang terhubung.</div>
           </div>
-          <button class="btn-cancel" style="width:auto;padding:9px 16px;display:flex;align-items:center;gap:7px;" onclick="showToast('Sinkronisasi selesai','ti-cloud-check')">
-            <i class="ti ti-refresh"></i>Sync Semua
-          </button>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <div class="auto-sync-indicator" id="auto-sync-status">
+              <span class="sync-dot"></span>
+              <span class="sync-label">Auto-sync aktif</span>
+            </div>
+            <button class="btn-cancel" style="width:auto;padding:9px 16px;display:flex;align-items:center;gap:7px;" id="btn-sync-all">
+              <i class="ti ti-refresh" id="sync-icon"></i><span>Sync Semua</span>
+            </button>
+          </div>
         </div>
         <div class="accounts-top">
           <div class="liquidity-card" style="display:flex;flex-direction:column;gap:14px;">
@@ -1914,10 +2547,24 @@
   <!-- Mobile bottom nav -->
   <div class="mobile-nav" id="mobile-nav">
     <div class="mobile-nav-item" data-page="dashboard"><i class="ti ti-layout-dashboard"></i>Home</div>
-    <div class="mobile-nav-item" data-page="transactions"><i class="ti ti-receipt"></i>Transaksi</div>
+    <div class="mobile-nav-item" data-page="transactions"><i class="ti ti-receipt-2"></i>Transaksi</div>
+    <div class="mobile-nav-item mobile-nav-add" id="mobile-add-btn" aria-label="Tambah transaksi"><i class="ti ti-plus"></i></div>
     <div class="mobile-nav-item" data-page="budgets"><i class="ti ti-wallet"></i>Anggaran</div>
-    <div class="mobile-nav-item" data-page="savings"><i class="ti ti-target-arrow"></i>Tabungan</div>
-    <div class="mobile-nav-item" data-page="reports"><i class="ti ti-file-text"></i>Laporan</div>
+    <div class="mobile-nav-item" id="mobile-more-btn"><i class="ti ti-grid-dots"></i>Lainnya</div>
+  </div>
+
+  <!-- Mobile "More" bottom sheet -->
+  <div class="mobile-more-overlay" id="mobile-more-overlay">
+    <div class="mobile-more-sheet">
+      <div class="mobile-more-handle"></div>
+      <div class="mobile-more-grid">
+        <div class="mobile-more-item" data-page="insight"><i class="ti ti-chart-bar"></i><span>Insight</span></div>
+        <div class="mobile-more-item" data-page="reports"><i class="ti ti-file-analytics"></i><span>Laporan</span></div>
+        <div class="mobile-more-item" data-page="savings"><i class="ti ti-target-arrow"></i><span>Tabungan</span></div>
+        <div class="mobile-more-item" data-page="accounts"><i class="ti ti-building-bank"></i><span>Akun</span></div>
+        <div class="mobile-more-item" data-page="upgrade"><i class="ti ti-sparkles"></i><span>Upgrade</span></div>
+      </div>
+    </div>
   </div>
 </div><!-- /screen-app -->
 
@@ -1975,9 +2622,51 @@
   </div>
 </div>
 
+<!-- ===== ADD BUDGET CATEGORY ===== -->
+<div class="modal-overlay" id="add-budget-overlay">
+  <div class="modal-box" style="max-width:400px;">
+    <div class="modal-header" style="background:linear-gradient(135deg,#006C49 0%,#00A86B 100%);">
+      <div class="modal-header-inner">
+        <div class="modal-title-group">
+          <div class="modal-eyebrow">Anggaran Baru</div>
+          <div class="modal-title">Tambah Kategori</div>
+        </div>
+        <button class="modal-close" id="add-budget-close"><i class="ti ti-x"></i></button>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section">
+        <div class="modal-label"><i class="ti ti-category"></i>Pilih Kategori</div>
+        <select id="add-budget-cat" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;background:var(--surface);color:var(--text);font-family:'Geist',sans-serif;outline:none;">
+        </select>
+      </div>
+      <div class="modal-section" style="margin-bottom:0;">
+        <div class="modal-label"><i class="ti ti-coin"></i>Target Anggaran (Rp)</div>
+        <input type="text" class="note-input" id="add-budget-amount" placeholder="cth. 500000" inputmode="numeric" autocomplete="off"/>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" id="add-budget-cancel">Batal</button>
+      <button class="btn-save" id="add-budget-save" style="background:#006C49;"><i class="ti ti-check"></i>Tambah Anggaran</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CONFIRM DELETE ===== -->
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-box">
+    <div class="confirm-icon"><i class="ti ti-trash"></i></div>
+    <div class="confirm-title">Hapus Transaksi?</div>
+    <div class="confirm-desc" id="confirm-desc">Transaksi ini akan dihapus permanen dan tidak bisa dikembalikan.</div>
+    <div class="confirm-btns">
+      <button class="btn-cancel" id="confirm-cancel">Batal</button>
+      <button class="btn-danger" id="confirm-delete"><i class="ti ti-trash" style="font-size:14px;"></i> Hapus</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"><i class="ti ti-circle-check"></i><span id="toast-text"></span></div>
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/dist/tabler-icons.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script src="app.js"></script>
 </body>

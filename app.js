@@ -1,8 +1,12 @@
 /* ============================================================
-   StudentFin Prototype — State & Logic (v2)
-   + Dark Mode toggle
-   + Transaction Tags (pribadi, organisasi, panitia, kuliah, lainnya)
-   + Improved Quick Add modal
+   StudentFin Prototype — State & Logic (v3)
+   + Dark Mode toggle switch
+   + Skeleton loading on page navigation
+   + Nav dropdown groups
+   + Edit / Delete transactions
+   + Global search across all pages
+   + CSV export
+   + Auto-sync all pages
    + Responsive sidebar & mobile nav
    ============================================================ */
 
@@ -25,11 +29,11 @@ function getCat(id) {
 
 /* ---- TAGS ---- */
 const TAGS = [
-  { id:"pribadi",    label:"Pribadi",    emoji:"👤" },
-  { id:"organisasi", label:"Organisasi", emoji:"🏢" },
-  { id:"panitia",    label:"Panitia",    emoji:"🎪" },
-  { id:"kuliah",     label:"Kuliah",     emoji:"📚" },
-  { id:"lainnya",    label:"Lainnya",    emoji:"·" },
+  { id:"pribadi",    label:"Pribadi",    emoji:"\u{1F464}" },
+  { id:"organisasi", label:"Organisasi", emoji:"\u{1F3E2}" },
+  { id:"panitia",    label:"Panitia",    emoji:"\u{1F3AA}" },
+  { id:"kuliah",     label:"Kuliah",     emoji:"\u{1F4DA}" },
+  { id:"lainnya",    label:"Lainnya",    emoji:"\u{00B7}" },
 ];
 
 function getTag(id) {
@@ -72,7 +76,7 @@ const state = {
   monthlyBudgetTotal: 1500000+800000+600000+500000+200000+400000+300000+150000,
   categoryBudgets: {
     makan:1500000, kos:800000, transport:600000, nongkrong:500000,
-    pulsa:200000, belanja:400000, kuliah:300000, kesehatan:150000,
+    pulsa:200000, belanja:400000, kuliah:300000, kesehatan:150000, lainnya:200000,
   },
   startingBalance: 4250000,
   transactions: [
@@ -134,14 +138,13 @@ function rupiahShort(n) {
 let currentPage = "dashboard";
 
 /* ============================================================
-   DARK MODE
+   DARK MODE — Toggle switch
 ============================================================ */
 function applyTheme(theme) {
   document.documentElement.setAttribute("data-theme", theme);
   const btn = document.getElementById("btn-theme");
-  if (btn) btn.querySelector("i").className = theme === "dark" ? "ti ti-sun" : "ti ti-moon";
+  if (btn) btn.setAttribute("aria-checked", theme === "dark" ? "true" : "false");
   localStorage.setItem("sf-theme", theme);
-  // Redraw charts when theme changes so colors update
   if (currentPage === "dashboard") renderTrendChart();
   if (currentPage === "insight") { renderIncomeExpenseChart(); renderDonutChart(); }
   if (currentPage === "savings") renderForecastChart();
@@ -158,23 +161,44 @@ document.getElementById("btn-theme").addEventListener("click", () => {
   applyTheme(current === "dark" ? "light" : "dark");
 });
 
+document.getElementById("btn-theme").addEventListener("keydown", e => {
+  if (e.key === "Enter" || e.key === " ") {
+    e.preventDefault();
+    document.getElementById("btn-theme").click();
+  }
+});
+
+
 /* ============================================================
-   RESPONSIVE SIDEBAR
+   NAV DROPDOWN GROUPS
 ============================================================ */
-function openSidebar() {
-  document.getElementById("sidebar").classList.add("open");
-  document.getElementById("sidebar-overlay").classList.add("show");
-  document.body.style.overflow = "hidden";
-}
+document.querySelectorAll(".nav-group-toggle").forEach(toggle => {
+  toggle.addEventListener("click", () => {
+    const group = toggle.closest(".nav-group");
+    const isOpen = group.classList.contains("open");
+    group.classList.toggle("open", !isOpen);
+    toggle.setAttribute("aria-expanded", !isOpen);
+  });
+});
 
-function closeSidebar() {
-  document.getElementById("sidebar").classList.remove("open");
-  document.getElementById("sidebar-overlay").classList.remove("show");
-  document.body.style.overflow = "";
+function autoOpenNavGroup(page) {
+  const analitikPages = ["insight", "reports"];
+  const keuanganPages = ["savings", "accounts"];
+  const gAnalitik = document.getElementById("nav-group-analitik");
+  const gKeuangan = document.getElementById("nav-group-keuangan");
+  if (gAnalitik) {
+    gAnalitik.classList.toggle("open", analitikPages.includes(page));
+    gAnalitik.classList.toggle("active", analitikPages.includes(page));
+    const t = gAnalitik.querySelector(".nav-group-toggle");
+    if (t) t.setAttribute("aria-expanded", analitikPages.includes(page));
+  }
+  if (gKeuangan) {
+    gKeuangan.classList.toggle("open", keuanganPages.includes(page));
+    gKeuangan.classList.toggle("active", keuanganPages.includes(page));
+    const t = gKeuangan.querySelector(".nav-group-toggle");
+    if (t) t.setAttribute("aria-expanded", keuanganPages.includes(page));
+  }
 }
-
-document.getElementById("btn-hamburger").addEventListener("click", openSidebar);
-document.getElementById("sidebar-overlay").addEventListener("click", closeSidebar);
 
 /* ============================================================
    LOGIN
@@ -203,6 +227,16 @@ document.getElementById("btn-login").addEventListener("click", () => {
 document.getElementById("btn-upgrade").addEventListener("click", () => showPage("upgrade"));
 
 /* ============================================================
+   SKELETON LOADING — lightweight, non-destructive
+============================================================ */
+function removeSkeleton(pageId) {
+  const page = document.getElementById("page-" + pageId);
+  if (!page) return;
+  const skeleton = page.querySelector(".skeleton-wrap");
+  if (skeleton) skeleton.remove();
+}
+
+/* ============================================================
    INIT APP
 ============================================================ */
 let appInitialized = false;
@@ -213,7 +247,9 @@ function initApp() {
   initTheme();
   populateFilterDropdowns();
   buildQuickAddCategoryGrid();
+  initScrollIndicator();
   showPage("dashboard");
+  initNotifications();
 }
 
 /* ============================================================
@@ -234,21 +270,69 @@ function showPage(page) {
   document.querySelectorAll(".mobile-nav-item[data-page]").forEach(btn => {
     btn.classList.toggle("active", btn.dataset.page === page);
   });
+  autoOpenNavGroup(page);
+
   if (page === "dashboard")    renderDashboard();
   if (page === "transactions") renderTransactions();
   if (page === "budgets")      renderBudgets();
   if (page === "insight")      renderInsight();
   if (page === "savings")      renderSavings();
-  if (page === "accounts")     renderAccounts();
+  if (page === "accounts")   { renderAccounts(); startAutoSync(); }
   if (page === "reports")      renderReports();
   if (page === "upgrade")      renderUpgrade();
+  if (page !== "accounts")     stopAutoSync();
+
   window.scrollTo(0, 0);
-  // Close sidebar on mobile after navigation
-  if (window.innerWidth <= 768) closeSidebar();
 }
 
 document.querySelectorAll("[data-page]").forEach(btn => {
-  btn.addEventListener("click", () => showPage(btn.dataset.page));
+  btn.addEventListener("click", () => {
+    showPage(btn.dataset.page);
+    closeMobileMore();
+  });
+});
+
+/* ============================================================
+   MOBILE NAV — "+" button & "More" sheet
+============================================================ */
+document.getElementById("mobile-add-btn").addEventListener("click", openQuickAdd);
+
+function openMobileMore() {
+  document.getElementById("mobile-more-overlay").classList.add("show");
+}
+
+function closeMobileMore() {
+  document.getElementById("mobile-more-overlay").classList.remove("show");
+}
+
+document.getElementById("mobile-more-btn").addEventListener("click", openMobileMore);
+document.getElementById("mobile-more-overlay").addEventListener("click", e => {
+  if (e.target.id === "mobile-more-overlay") closeMobileMore();
+});
+
+/* ============================================================
+   GLOBAL SEARCH — works across all pages
+============================================================ */
+const globalSearch = document.getElementById("global-search");
+
+globalSearch.addEventListener("input", () => {
+  const q = globalSearch.value.trim().toLowerCase();
+  if (!q) {
+    if (currentPage === "transactions") renderTransactions();
+    return;
+  }
+  if (currentPage !== "transactions") {
+    showPage("transactions");
+  } else {
+    renderTransactions();
+  }
+});
+
+globalSearch.addEventListener("keydown", e => {
+  if (e.key === "Enter") {
+    const q = globalSearch.value.trim().toLowerCase();
+    if (q && currentPage !== "transactions") showPage("transactions");
+  }
 });
 
 /* ============================================================
@@ -360,7 +444,7 @@ function getChartColors() {
   const dark = document.documentElement.getAttribute("data-theme") === "dark";
   return {
     grid:  dark ? "rgba(255,255,255,0.06)" : "#EAE6F4",
-    tick:  dark ? "#9B99B8" : "#464555",
+    tick:  dark ? "#ABA9C4" : "#464555",
   };
 }
 
@@ -401,7 +485,7 @@ function renderTrendChart() {
 }
 
 /* ============================================================
-   TRANSACTIONS PAGE
+   TRANSACTIONS PAGE — with edit/delete
 ============================================================ */
 function populateFilterDropdowns() {
   const catSelect = document.getElementById("filter-category");
@@ -423,7 +507,7 @@ function getFilteredTransactions() {
   const acc    = document.getElementById("filter-account").value;
   const type   = document.getElementById("filter-type").value;
   const tag    = document.getElementById("filter-tag").value;
-  const search = document.getElementById("global-search").value.trim().toLowerCase();
+  const search = globalSearch.value.trim().toLowerCase();
 
   return [...state.transactions]
     .sort((a,b) => b.date-a.date)
@@ -439,9 +523,11 @@ function getFilteredTransactions() {
 
 function renderTransactions() {
   const tbody = document.getElementById("tx-table-body");
+  const mobileList = document.getElementById("tx-mobile-list");
   const empty = document.getElementById("tx-empty");
   const rows  = getFilteredTransactions();
   tbody.innerHTML = "";
+  if (mobileList) mobileList.innerHTML = "";
 
   if (!rows.length) {
     empty.classList.remove("hidden");
@@ -452,6 +538,8 @@ function renderTransactions() {
   rows.forEach(t => {
     const c   = getCat(t.cat);
     const acc = ACCOUNTS.find(a => a.id===t.account);
+
+    // Desktop table row
     const tr  = document.createElement("tr");
     tr.innerHTML = `
       <td style="color:var(--text-muted);white-space:nowrap;">${fmtDate(t.date)}</td>
@@ -459,8 +547,38 @@ function renderTransactions() {
       <td><span class="chip">${c.name}</span></td>
       <td>${t.tag ? tagPillHTML(t.tag) : '<span style="color:var(--text-faint);font-size:12px;">—</span>'}</td>
       <td style="color:var(--text-muted);">${acc?acc.name:t.account}</td>
-      <td class="right amt-cell ${t.type}">${t.type==="income"?"+":""}${rupiah(t.amount)}</td>`;
+      <td class="right amt-cell ${t.type}">${t.type==="income"?"+":""}${rupiah(t.amount)}</td>
+      <td>
+        <div class="tx-actions">
+          <button class="tx-action-btn" data-edit="${t.id}" title="Edit" aria-label="Edit transaksi"><i class="ti ti-pencil"></i></button>
+          <button class="tx-action-btn delete" data-delete="${t.id}" title="Hapus" aria-label="Hapus transaksi"><i class="ti ti-trash"></i></button>
+        </div>
+      </td>`;
     tbody.appendChild(tr);
+
+    // Mobile card
+    if (mobileList) {
+      const card = document.createElement("div");
+      card.className = "tx-mobile-card";
+      card.innerHTML = `
+        <div class="tx-mobile-icon" style="background:${c.bg};color:${c.color};"><i class="ti ${c.icon}"></i></div>
+        <div class="tx-mobile-body">
+          <div class="tx-mobile-top">
+            <div class="tx-mobile-name">${t.desc}</div>
+            <div class="tx-mobile-amount ${t.type}">${t.type==="income"?"+":""}${rupiah(t.amount)}</div>
+          </div>
+          <div class="tx-mobile-meta">
+            <span class="tx-mobile-date">${fmtDate(t.date)}</span>
+            <span class="chip">${c.name}</span>
+            ${t.tag ? tagPillHTML(t.tag) : ""}
+          </div>
+          <div class="tx-mobile-actions">
+            <button class="tx-action-btn" data-edit="${t.id}" aria-label="Edit"><i class="ti ti-pencil"></i></button>
+            <button class="tx-action-btn delete" data-delete="${t.id}" aria-label="Hapus"><i class="ti ti-trash"></i></button>
+          </div>
+        </div>`;
+      mobileList.appendChild(card);
+    }
   });
 }
 
@@ -468,28 +586,152 @@ function renderTransactions() {
   document.getElementById(id).addEventListener("change", renderTransactions);
 });
 
-document.getElementById("global-search").addEventListener("input", () => {
-  if (currentPage === "transactions") renderTransactions();
-});
-
 document.getElementById("btn-clear-filters").addEventListener("click", () => {
   ["filter-category","filter-account","filter-type","filter-tag"].forEach(id => {
     document.getElementById(id).value = "all";
   });
-  document.getElementById("global-search").value = "";
+  globalSearch.value = "";
   renderTransactions();
 });
 
+/* ---- Scroll indicator for table ---- */
+function initScrollIndicator() {
+  const scrollEl = document.getElementById("tx-table-scroll");
+  const wrap = document.getElementById("tx-scroll-wrap");
+  if (!scrollEl || !wrap) return;
+  scrollEl.addEventListener("scroll", () => {
+    const atStart = scrollEl.scrollLeft > 10;
+    const atEnd = scrollEl.scrollLeft + scrollEl.clientWidth >= scrollEl.scrollWidth - 10;
+    wrap.classList.toggle("scrolled-start", atStart);
+    wrap.classList.toggle("scrolled-end", atEnd);
+  });
+}
+
+/* ---- Edit transaction ---- */
+let editingTxId = null;
+
+document.addEventListener("click", e => {
+  const editBtn = e.target.closest("[data-edit]");
+  if (editBtn) {
+    const tx = state.transactions.find(t => t.id === editBtn.dataset.edit);
+    if (tx) openEditTransaction(tx);
+    return;
+  }
+
+  const deleteBtn = e.target.closest("[data-delete]");
+  if (deleteBtn) {
+    openDeleteConfirm(deleteBtn.dataset.delete);
+    return;
+  }
+});
+
+function openEditTransaction(tx) {
+  editingTxId = tx.id;
+  document.getElementById("modal-overlay").classList.add("show");
+  qaRawAmount = String(Math.abs(tx.amount));
+  qaAmountInput.value = qaRawAmount;
+  document.getElementById("qa-desc").value = tx.desc;
+
+  selectedQACategory = tx.cat;
+  document.querySelectorAll(".cat-btn").forEach(b => {
+    b.classList.toggle("selected", b.dataset.cat === tx.cat);
+  });
+
+  selectedQATag = tx.tag || null;
+  document.querySelectorAll(".tag-option").forEach(b => {
+    b.classList.toggle("selected-tag", b.dataset.tag === tx.tag);
+  });
+
+  updateAmountDisplay();
+
+  const eyebrow = document.querySelector(".modal-eyebrow");
+  const title = document.querySelector(".modal-title");
+  const submitBtn = document.getElementById("qa-submit");
+  if (eyebrow) eyebrow.textContent = "Edit Transaksi";
+  if (title) title.textContent = "Ubah detail transaksi";
+  if (submitBtn) submitBtn.innerHTML = '<i class="ti ti-check"></i>Simpan Perubahan';
+}
+
+/* ---- Delete transaction ---- */
+let deletingTxId = null;
+
+function openDeleteConfirm(txId) {
+  const tx = state.transactions.find(t => t.id === txId);
+  if (!tx) return;
+  deletingTxId = txId;
+  const desc = document.getElementById("confirm-desc");
+  if (desc) desc.textContent = `"${tx.desc}" (${rupiah(Math.abs(tx.amount))}) akan dihapus permanen.`;
+  document.getElementById("confirm-overlay").classList.add("show");
+}
+
+document.getElementById("confirm-cancel").addEventListener("click", () => {
+  document.getElementById("confirm-overlay").classList.remove("show");
+  deletingTxId = null;
+});
+
+document.getElementById("confirm-delete").addEventListener("click", () => {
+  if (deletingTxId) {
+    state.transactions = state.transactions.filter(t => t.id !== deletingTxId);
+    showToast("Transaksi berhasil dihapus", "ti-trash");
+    refreshAllPages();
+  }
+  document.getElementById("confirm-overlay").classList.remove("show");
+  deletingTxId = null;
+});
+
+document.getElementById("confirm-overlay").addEventListener("click", e => {
+  if (e.target.id === "confirm-overlay") {
+    document.getElementById("confirm-overlay").classList.remove("show");
+    deletingTxId = null;
+  }
+});
+
+/* ---- CSV Export ---- */
 document.getElementById("btn-export").addEventListener("click", () => {
-  showToast("Export CSV belum tersedia di prototype", "ti-info-circle");
+  const rows = getFilteredTransactions();
+  if (!rows.length) {
+    showToast("Tidak ada transaksi untuk di-export", "ti-alert-circle");
+    return;
+  }
+
+  const headers = ["Tanggal","Deskripsi","Kategori","Tag","Akun","Tipe","Jumlah"];
+  const csvRows = [headers.join(",")];
+
+  rows.forEach(t => {
+    const c = getCat(t.cat);
+    const acc = ACCOUNTS.find(a => a.id === t.account);
+    const tag = t.tag ? getTag(t.tag).label : "";
+    csvRows.push([
+      fmtDate(t.date),
+      '"' + t.desc.replace(/"/g, '""') + '"',
+      c.name,
+      tag,
+      acc ? acc.name : t.account,
+      t.type === "expense" ? "Pengeluaran" : "Pemasukan",
+      t.amount,
+    ].join(","));
+  });
+
+  const blob = new Blob(["﻿" + csvRows.join("\n")], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "studentfin-transaksi-" + new Date().toISOString().slice(0,10) + ".csv";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  showToast(`${rows.length} transaksi berhasil di-export ke CSV`, "ti-download");
 });
 
 /* ============================================================
-   BUDGETS
+   BUDGETS — with inline edit
 ============================================================ */
 function renderBudgets() {
   const spent     = getSpentByCategory();
   const totalSpent = getTotalSpent();
+  state.monthlyBudgetTotal = Object.values(state.categoryBudgets).reduce((a,b)=>a+b,0);
   const totalAlloc = state.monthlyBudgetTotal;
   const pct       = Math.min(Math.round((totalSpent/totalAlloc)*100), 999);
 
@@ -519,7 +761,10 @@ function renderBudgets() {
           <div class="cat-icon" style="width:38px;height:38px;background:${c.bg};color:${c.color};font-size:17px;"><i class="ti ${c.icon}"></i></div>
           <div style="font-weight:600;font-family:'Geist',sans-serif;font-size:13.5px;">${c.name}</div>
         </div>
-        ${isOver?`<div class="budget-overspent-tag"><i class="ti ti-alert-triangle"></i>Lebih</div>`:""}
+        <div style="display:flex;align-items:center;gap:6px;">
+          ${isOver?'<div class="budget-overspent-tag"><i class="ti ti-alert-triangle"></i>Lebih</div>':""}
+          <button class="budget-edit-btn" data-budget-edit="${catId}" aria-label="Edit anggaran ${c.name}"><i class="ti ti-pencil"></i></button>
+        </div>
       </div>
       <div class="budget-figures">
         <div>
@@ -527,19 +772,98 @@ function renderBudgets() {
           <div class="budget-spent-amt ${isOver?"over":""}">${rupiah(used)}</div>
         </div>
         <div>
-          <div class="budget-of">dari ${rupiah(budget)}</div>
+          <div class="budget-of" id="budget-of-${catId}">dari ${rupiah(budget)}</div>
           <div class="budget-left ${isOver?"over":""}">${isOver?rupiah(remaining)+" lebih":rupiah(remaining)+" sisa"}</div>
         </div>
       </div>
       <div class="progress-track">
         <div class="progress-fill ${isOver?"danger":usedPct>=80?"warn":""}" style="width:${Math.min(usedPct,100)}%;"></div>
+      </div>
+      <div class="budget-edit-row" id="budget-edit-${catId}" style="display:none;">
+        <input class="budget-edit-input" type="text" inputmode="numeric" placeholder="Jumlah anggaran baru" value="${budget}" data-cat="${catId}"/>
+        <button class="budget-edit-save" data-budget-save="${catId}">Simpan</button>
       </div>`;
     grid.appendChild(card);
   });
 }
 
+document.addEventListener("click", e => {
+  const editBtn = e.target.closest("[data-budget-edit]");
+  if (editBtn) {
+    const catId = editBtn.dataset.budgetEdit;
+    const row = document.getElementById("budget-edit-" + catId);
+    if (row) {
+      const isVisible = row.style.display !== "none";
+      row.style.display = isVisible ? "none" : "flex";
+      if (!isVisible) row.querySelector("input").focus();
+    }
+    return;
+  }
+
+  const saveBtn = e.target.closest("[data-budget-save]");
+  if (saveBtn) {
+    const catId = saveBtn.dataset.budgetSave;
+    const row = document.getElementById("budget-edit-" + catId);
+    const input = row.querySelector("input");
+    const val = parseInt(input.value.replace(/[^\d]/g, ""), 10);
+    if (!val || val < 10000) {
+      showToast("Minimum anggaran Rp 10.000", "ti-alert-circle");
+      return;
+    }
+    state.categoryBudgets[catId] = val;
+    showToast("Anggaran " + getCat(catId).name + " diubah ke " + rupiah(val), "ti-circle-check");
+    renderBudgets();
+    checkBudgetAlerts();
+    return;
+  }
+});
+
+/* ---- Add budget category ---- */
+document.getElementById("btn-add-budget").addEventListener("click", () => {
+  const select = document.getElementById("add-budget-cat");
+  select.innerHTML = "";
+  const existing = Object.keys(state.categoryBudgets);
+  const available = CATEGORIES.filter(c => !existing.includes(c.id));
+  if (!available.length) {
+    showToast("Semua kategori sudah memiliki anggaran", "ti-info-circle");
+    return;
+  }
+  available.forEach(c => {
+    const opt = document.createElement("option");
+    opt.value = c.id; opt.textContent = c.name;
+    select.appendChild(opt);
+  });
+  document.getElementById("add-budget-amount").value = "";
+  document.getElementById("add-budget-overlay").classList.add("show");
+});
+
+document.getElementById("add-budget-close").addEventListener("click", () => {
+  document.getElementById("add-budget-overlay").classList.remove("show");
+});
+document.getElementById("add-budget-cancel").addEventListener("click", () => {
+  document.getElementById("add-budget-overlay").classList.remove("show");
+});
+document.getElementById("add-budget-overlay").addEventListener("click", e => {
+  if (e.target.id === "add-budget-overlay") document.getElementById("add-budget-overlay").classList.remove("show");
+});
+
+document.getElementById("add-budget-save").addEventListener("click", () => {
+  const catId = document.getElementById("add-budget-cat").value;
+  const raw = document.getElementById("add-budget-amount").value.replace(/[^\d]/g, "");
+  const amount = parseInt(raw, 10);
+  if (!catId) { showToast("Pilih kategori", "ti-alert-circle"); return; }
+  if (!amount || amount < 10000) { showToast("Minimum anggaran Rp 10.000", "ti-alert-circle"); return; }
+  state.categoryBudgets[catId] = amount;
+  const c = getCat(catId);
+  document.getElementById("add-budget-overlay").classList.remove("show");
+  showToast("Anggaran " + c.name + " ditambahkan: " + rupiah(amount), "ti-circle-check");
+  addNotification("Kategori anggaran baru: <strong>" + c.name + "</strong> (" + rupiah(amount) + ")", "success", "ti-circle-check");
+  renderBudgets();
+  checkBudgetAlerts();
+});
+
 /* ============================================================
-   QUICK ADD MODAL (redesigned)
+   QUICK ADD MODAL — with edit mode support
 ============================================================ */
 let selectedQACategory = null;
 let selectedQATag      = null;
@@ -563,7 +887,6 @@ function buildQuickAddCategoryGrid() {
   });
 }
 
-// Tag selector
 document.querySelectorAll(".tag-option").forEach(btn => {
   btn.addEventListener("click", () => {
     selectedQATag = btn.dataset.tag;
@@ -572,7 +895,6 @@ document.querySelectorAll(".tag-option").forEach(btn => {
   });
 });
 
-// Amount input — display formatted value in header
 const qaAmountInput  = document.getElementById("qa-amount");
 const amountDisplay  = document.getElementById("amount-display");
 const amountCursor   = document.getElementById("amount-cursor");
@@ -586,10 +908,8 @@ function updateAmountDisplay() {
   const num = Number(qaRawAmount);
   if (num > 0) {
     amountDisplay.innerHTML = num.toLocaleString("id-ID") + '<span class="modal-amount-cursor" id="amount-cursor"></span>';
-    amountCursor.style.display = "none";
   } else {
     amountDisplay.innerHTML = '0<span class="modal-amount-cursor" id="amount-cursor"></span>';
-    amountCursor.style.display = "";
   }
 }
 
@@ -598,6 +918,7 @@ qaAmountInput.addEventListener("focus", () => {
 });
 
 function openQuickAdd() {
+  editingTxId = null;
   document.getElementById("modal-overlay").classList.add("show");
   qaRawAmount = "";
   selectedQACategory = null;
@@ -607,11 +928,20 @@ function openQuickAdd() {
   document.querySelectorAll(".cat-btn").forEach(b => b.classList.remove("selected"));
   document.querySelectorAll(".tag-option").forEach(b => b.classList.remove("selected-tag"));
   updateAmountDisplay();
+
+  const eyebrow = document.querySelector(".modal-eyebrow");
+  const title = document.querySelector(".modal-title");
+  const submitBtn = document.getElementById("qa-submit");
+  if (eyebrow) eyebrow.textContent = "Catat Pengeluaran";
+  if (title) title.textContent = "Berapa yang kamu keluarkan?";
+  if (submitBtn) submitBtn.innerHTML = '<i class="ti ti-check"></i>Simpan Transaksi';
+
   setTimeout(() => qaAmountInput.focus(), 80);
 }
 
 function closeQuickAdd() {
   document.getElementById("modal-overlay").classList.remove("show");
+  editingTxId = null;
 }
 
 document.getElementById("btn-quickadd").addEventListener("click", openQuickAdd);
@@ -622,8 +952,13 @@ document.getElementById("modal-overlay").addEventListener("click", e => {
 });
 
 document.addEventListener("keydown", e => {
-  if (e.key === "Escape" && document.getElementById("modal-overlay").classList.contains("show")) {
-    closeQuickAdd();
+  if (e.key === "Escape") {
+    if (document.getElementById("confirm-overlay").classList.contains("show")) {
+      document.getElementById("confirm-overlay").classList.remove("show");
+      deletingTxId = null;
+    } else if (document.getElementById("modal-overlay").classList.contains("show")) {
+      closeQuickAdd();
+    }
   }
 });
 
@@ -642,23 +977,31 @@ document.getElementById("qa-submit").addEventListener("click", () => {
   const cat      = getCat(selectedQACategory);
   const finalDesc = desc || cat.name;
 
-  state.transactions.push({
-    id:      newTxId(),
-    date:    new Date(),
-    desc:    finalDesc,
-    cat:     selectedQACategory,
-    account: "gopay",
-    amount:  -amount,
-    type:    "expense",
-    tag:     selectedQATag || "pribadi",
-  });
+  if (editingTxId) {
+    const tx = state.transactions.find(t => t.id === editingTxId);
+    if (tx) {
+      tx.desc = finalDesc;
+      tx.cat = selectedQACategory;
+      tx.amount = tx.type === "income" ? amount : -amount;
+      tx.tag = selectedQATag || "pribadi";
+      showToast(`Transaksi berhasil diubah`, "ti-circle-check");
+    }
+  } else {
+    state.transactions.push({
+      id:      newTxId(),
+      date:    new Date(),
+      desc:    finalDesc,
+      cat:     selectedQACategory,
+      account: "gopay",
+      amount:  -amount,
+      type:    "expense",
+      tag:     selectedQATag || "pribadi",
+    });
+    showToast(`Tersimpan: ${finalDesc} · ${rupiah(amount)}`, "ti-circle-check");
+  }
 
   closeQuickAdd();
-  showToast(`Tersimpan: ${finalDesc} · ${rupiah(amount)}`, "ti-circle-check");
-
-  if (currentPage === "dashboard")    renderDashboard();
-  if (currentPage === "transactions") renderTransactions();
-  if (currentPage === "budgets")      renderBudgets();
+  refreshAllPages();
 });
 
 ["qa-desc"].forEach(id => {
@@ -666,6 +1009,20 @@ document.getElementById("qa-submit").addEventListener("click", () => {
     if (e.key === "Enter") document.getElementById("qa-submit").click();
   });
 });
+
+/* ============================================================
+   AUTO-REFRESH — sync all visible pages when data changes
+============================================================ */
+function refreshAllPages() {
+  if (currentPage === "dashboard")    renderDashboard();
+  if (currentPage === "transactions") renderTransactions();
+  if (currentPage === "budgets")      renderBudgets();
+  if (currentPage === "insight")      renderInsight();
+  if (currentPage === "savings")      renderSavings();
+  if (currentPage === "accounts")     renderAccounts();
+  if (currentPage === "reports")      renderReports();
+  checkBudgetAlerts();
+}
 
 /* ============================================================
    TOAST
@@ -684,11 +1041,11 @@ function showToast(text, icon="ti-circle-check") {
    STATIC DATA — other pages
 ============================================================ */
 const ACCOUNTS_DATA = [
-  { id:"bca",     name:"Bank Central Asia (BCA)", type:"Rekening •••• 4589", letter:"B", color:"#3525CD", balance:8500000,  sync:"Sync 2j lalu",      syncOk:true  },
-  { id:"mandiri", name:"Bank Mandiri",             type:"Tabungan •••• 1204", letter:"M", color:"#006C49", balance:3500000,  sync:"Sync 5j lalu",      syncOk:true  },
-  { id:"gopay",   name:"GoPay",                   type:"E-Wallet",           letter:"G", color:"#4F46E5", balance:2800000,  sync:"Sync gagal",        syncOk:false },
-  { id:"ovo",     name:"OVO",                     type:"E-Wallet",           letter:"O", color:"#3525CD", balance:1800000,  sync:"Sync 1h lalu",      syncOk:true  },
-  { id:"cash",    name:"Dompet Tunai",             type:"Akun Manual",        letter:"💵",color:"#464555", balance:1850000,  sync:"Diperbarui manual", syncOk:true  },
+  { id:"bca",     name:"Bank Central Asia (BCA)", type:"Rekening •••• 4589", letter:"BCA", bg:"#003d79", balance:8500000,  sync:"Sync 2j lalu",      syncOk:true  },
+  { id:"mandiri", name:"Bank Mandiri",             type:"Tabungan •••• 1204", letter:"MDR", bg:"#003366", balance:3500000,  sync:"Sync 5j lalu",      syncOk:true  },
+  { id:"gopay",   name:"GoPay",                   type:"E-Wallet",           letter:"GP",  bg:"#00880e", balance:2800000,  sync:"Sync gagal",        syncOk:false },
+  { id:"ovo",     name:"OVO",                     type:"E-Wallet",           letter:"OVO", bg:"#4c3494", balance:1800000,  sync:"Sync 1h lalu",      syncOk:true  },
+  { id:"cash",    name:"Dompet Tunai",             type:"Akun Manual",        letter:"IDR", bg:"#5F5E5A", balance:1850000,  sync:"Diperbarui manual", syncOk:true  },
 ];
 
 const SAVINGS_GOALS = [
@@ -834,7 +1191,7 @@ function renderSavings() {
             <div class="goal-status" style="color:${statusColor};"><i class="ti ${statusIcon}" style="font-size:11px;"></i>${g.statusText}</div>
           </div>
         </div>
-        <button style="color:var(--text-faint);font-size:17px;" onclick="showToast('Edit target belum tersedia','ti-info-circle')"><i class="ti ti-dots-vertical"></i></button>
+        <button style="color:var(--text-faint);font-size:17px;" aria-label="Opsi target" onclick="showToast('Edit target belum tersedia','ti-info-circle')"><i class="ti ti-dots-vertical"></i></button>
       </div>
       <div>
         <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:7px;">
@@ -886,7 +1243,7 @@ document.getElementById("btn-add-goal").addEventListener("click", () => {
 });
 
 /* ============================================================
-   ACCOUNTS
+   ACCOUNTS — with auto-sync
 ============================================================ */
 function renderAccounts() {
   const totalBal = ACCOUNTS_DATA.reduce((s,a) => s+a.balance, 0);
@@ -898,7 +1255,7 @@ function renderAccounts() {
     row.className = "acc-row";
     row.innerHTML = `
       <div style="display:flex;align-items:center;gap:14px;">
-        <div class="acc-logo" style="color:${a.color};">${a.letter}</div>
+        <div class="acc-logo" style="background:${a.bg};">${a.letter}</div>
         <div>
           <div class="acc-name">${a.name}</div>
           <div class="acc-type">${a.type}</div>
@@ -906,7 +1263,9 @@ function renderAccounts() {
       </div>
       <div style="text-align:right;">
         <div class="acc-balance">${rupiah(a.balance)}</div>
-        <div class="acc-sync ${a.syncOk?"":"fail"}">${a.sync}</div>
+        <div class="acc-sync ${a.syncOk?"":"fail"}">
+          ${a.syncOk?'<span class="sync-status-live"><i class="ti ti-circle-check"></i></span>':''}<span class="acc-sync-text">${a.sync}</span>
+        </div>
       </div>`;
     container.appendChild(row);
   });
@@ -981,7 +1340,7 @@ function renderReports() {
         </div>
       </td>
       <td style="text-align:right;">
-        <button style="font-size:17px;color:var(--text-faint);" onclick="showToast('Download PDF ${r.month}','ti-download')"><i class="ti ti-download"></i></button>
+        <button style="font-size:17px;color:var(--text-faint);" aria-label="Download laporan ${r.month}" onclick="showToast('Download PDF ${r.month}','ti-download')"><i class="ti ti-download"></i></button>
       </td>`;
     tbody.appendChild(tr);
   });
@@ -1009,3 +1368,267 @@ document.getElementById("billing-toggle").addEventListener("click", e => {
   billingMode = opt.dataset.billing;
   renderUpgrade();
 });
+
+/* ============================================================
+   AUTO-SYNC — Accounts page
+============================================================ */
+let autoSyncInterval = null;
+let syncTimestampInterval = null;
+let lastSyncTime = Date.now();
+
+function startAutoSync() {
+  if (autoSyncInterval) return;
+  lastSyncTime = Date.now();
+  updateAllSyncTimestamps();
+
+  autoSyncInterval = setInterval(() => {
+    performSync(true);
+  }, 30000);
+
+  syncTimestampInterval = setInterval(() => {
+    updateAllSyncTimestamps();
+    refreshSyncDisplay();
+  }, 5000);
+}
+
+function stopAutoSync() {
+  if (autoSyncInterval) {
+    clearInterval(autoSyncInterval);
+    autoSyncInterval = null;
+  }
+  if (syncTimestampInterval) {
+    clearInterval(syncTimestampInterval);
+    syncTimestampInterval = null;
+  }
+}
+
+const SYNC_TX_POOL = [
+  { desc:"Transfer masuk dari Shopee",    cat:"lainnya",   type:"income",  min:50000,  max:350000  },
+  { desc:"Cashback GoPay",                cat:"lainnya",   type:"income",  min:5000,   max:25000   },
+  { desc:"Top-up OVO dari BCA",           cat:"lainnya",   type:"expense", min:50000,  max:200000  },
+  { desc:"Pembayaran QRIS Warteg",        cat:"makan",     type:"expense", min:12000,  max:30000   },
+  { desc:"Auto-debit Spotify",            cat:"pulsa",     type:"expense", min:54990,  max:54990   },
+  { desc:"Transfer dari orang tua",       cat:"lainnya",   type:"income",  min:500000, max:1500000 },
+  { desc:"Bayar parkir kampus",           cat:"transport", type:"expense", min:2000,   max:5000    },
+  { desc:"Beli snack Indomaret",          cat:"makan",     type:"expense", min:10000,  max:45000   },
+  { desc:"Refund belanja online",         cat:"belanja",   type:"income",  min:30000,  max:150000  },
+  { desc:"Iuran Wi-Fi kos",              cat:"pulsa",     type:"expense", min:50000,  max:100000  },
+  { desc:"Jual buku bekas",              cat:"lainnya",   type:"income",  min:25000,  max:80000   },
+  { desc:"Bayar laundry express",         cat:"kos",       type:"expense", min:15000,  max:35000   },
+];
+
+function generateSyncTransaction() {
+  const template = SYNC_TX_POOL[Math.floor(Math.random() * SYNC_TX_POOL.length)];
+  const amount = Math.round((template.min + Math.random() * (template.max - template.min)) / 1000) * 1000;
+  const accountIds = ["gopay","bca","dana","cash"];
+  const tagIds = ["pribadi","organisasi","kuliah","lainnya"];
+
+  return {
+    id:      newTxId(),
+    date:    new Date(),
+    desc:    template.desc,
+    cat:     template.cat,
+    account: accountIds[Math.floor(Math.random() * accountIds.length)],
+    amount:  template.type === "income" ? amount : -amount,
+    type:    template.type,
+    tag:     tagIds[Math.floor(Math.random() * tagIds.length)],
+  };
+}
+
+function performSync(silent) {
+  lastSyncTime = Date.now();
+
+  ACCOUNTS_DATA.forEach(a => {
+    if (a.id !== "cash") {
+      const delta = Math.round((Math.random() - 0.35) * 80000);
+      a.balance = Math.max(100000, a.balance + delta);
+    }
+    a.syncOk = true;
+  });
+
+  if (!silent) {
+    const newTx = generateSyncTransaction();
+    state.transactions.push(newTx);
+    refreshAllPages();
+  }
+
+  updateAllSyncTimestamps();
+
+  const icon = document.getElementById("sync-icon");
+  if (icon) {
+    icon.style.animation = "spin .8s ease";
+    icon.addEventListener("animationend", () => { icon.style.animation = ""; }, { once: true });
+  }
+
+  renderAccounts();
+
+  document.querySelectorAll(".acc-balance").forEach(el => {
+    el.classList.add("acc-balance-updating");
+    el.addEventListener("animationend", () => el.classList.remove("acc-balance-updating"), { once: true });
+  });
+
+  if (!silent) {
+    const tx = state.transactions[state.transactions.length - 1];
+    const label = tx.type === "income" ? "+" + rupiah(tx.amount) : rupiah(tx.amount);
+    showToast(`Sync selesai — "${tx.desc}" (${label})`, "ti-cloud-check");
+  }
+}
+
+function updateAllSyncTimestamps() {
+  const elapsed = Math.round((Date.now() - lastSyncTime) / 1000);
+  ACCOUNTS_DATA.forEach(a => {
+    if (a.id === "cash") {
+      a.sync = "Diperbarui otomatis";
+    } else if (elapsed < 5) {
+      a.sync = "Baru saja";
+    } else if (elapsed < 60) {
+      a.sync = elapsed + " detik lalu";
+    } else if (elapsed < 3600) {
+      a.sync = Math.floor(elapsed / 60) + " menit lalu";
+    } else {
+      a.sync = Math.floor(elapsed / 3600) + " jam lalu";
+    }
+  });
+}
+
+function refreshSyncDisplay() {
+  const rows = document.querySelectorAll(".acc-sync-text");
+  ACCOUNTS_DATA.forEach((a, i) => {
+    if (rows[i]) rows[i].textContent = a.sync;
+  });
+}
+
+document.addEventListener("click", e => {
+  if (e.target.closest("#btn-sync-all")) {
+    performSync(false);
+  }
+});
+
+/* ============================================================
+   NOTIFICATION SYSTEM
+============================================================ */
+const notifications = [];
+
+function addNotification(text, type, icon) {
+  notifications.unshift({
+    id: Date.now(),
+    text: text,
+    type: type || "info",
+    icon: icon || "ti-info-circle",
+    time: new Date(),
+    read: false,
+  });
+  if (notifications.length > 20) notifications.pop();
+  updateNotifBadge();
+  renderNotifPanel();
+}
+
+function updateNotifBadge() {
+  const dot = document.getElementById("notif-dot");
+  const unread = notifications.filter(n => !n.read).length;
+  if (dot) dot.style.display = unread > 0 ? "" : "none";
+}
+
+function renderNotifPanel() {
+  const list = document.getElementById("notif-list");
+  if (!list) return;
+  if (!notifications.length) {
+    list.innerHTML = '<div class="notif-empty"><i class="ti ti-bell-off"></i>Belum ada notifikasi</div>';
+    return;
+  }
+  list.innerHTML = "";
+  notifications.forEach(n => {
+    const ago = getTimeAgo(n.time);
+    const item = document.createElement("div");
+    item.className = "notif-item" + (n.read ? "" : " unread");
+    item.innerHTML = `
+      <div class="notif-icon ${n.type}"><i class="ti ${n.icon}"></i></div>
+      <div class="notif-body">
+        <div class="notif-text">${n.text}</div>
+        <div class="notif-time">${ago}</div>
+      </div>`;
+    list.appendChild(item);
+  });
+}
+
+function getTimeAgo(date) {
+  const s = Math.round((Date.now() - date.getTime()) / 1000);
+  if (s < 10) return "Baru saja";
+  if (s < 60) return s + " detik lalu";
+  if (s < 3600) return Math.floor(s/60) + " menit lalu";
+  if (s < 86400) return Math.floor(s/3600) + " jam lalu";
+  return Math.floor(s/86400) + " hari lalu";
+}
+
+document.getElementById("btn-notif").addEventListener("click", e => {
+  e.stopPropagation();
+  const panel = document.getElementById("notif-panel");
+  panel.classList.toggle("show");
+  renderNotifPanel();
+});
+
+document.getElementById("notif-clear").addEventListener("click", () => {
+  notifications.forEach(n => n.read = true);
+  updateNotifBadge();
+  renderNotifPanel();
+});
+
+document.addEventListener("click", e => {
+  const panel = document.getElementById("notif-panel");
+  if (panel.classList.contains("show") && !e.target.closest("#notif-panel") && !e.target.closest("#btn-notif")) {
+    panel.classList.remove("show");
+  }
+});
+
+/* ============================================================
+   BUDGET ALERTS — check after each data change
+============================================================ */
+const alertedCategories = new Set();
+
+function checkBudgetAlerts() {
+  const spent = getSpentByCategory();
+  Object.keys(state.categoryBudgets).forEach(catId => {
+    const budget = state.categoryBudgets[catId];
+    const used = spent[catId] || 0;
+    const pct = Math.round((used/budget)*100);
+    const c = getCat(catId);
+
+    if (pct >= 100 && !alertedCategories.has(catId + "-over")) {
+      alertedCategories.add(catId + "-over");
+      addNotification(
+        `<strong>${c.name}</strong> melebihi anggaran! Terpakai ${rupiah(used)} dari ${rupiah(budget)} (${pct}%)`,
+        "warn", "ti-alert-triangle"
+      );
+    } else if (pct >= 80 && pct < 100 && !alertedCategories.has(catId + "-warn")) {
+      alertedCategories.add(catId + "-warn");
+      addNotification(
+        `<strong>${c.name}</strong> hampir habis — ${pct}% terpakai (${rupiah(used)} dari ${rupiah(budget)})`,
+        "warn", "ti-alert-circle"
+      );
+    }
+  });
+
+  const totalSpent = getTotalSpent();
+  const totalPct = Math.round((totalSpent/state.monthlyBudgetTotal)*100);
+  if (totalPct >= 100 && !alertedCategories.has("total-over")) {
+    alertedCategories.add("total-over");
+    addNotification(
+      `<strong>Total anggaran bulan ini terlampaui!</strong> Pengeluaran ${rupiah(totalSpent)} dari ${rupiah(state.monthlyBudgetTotal)}`,
+      "warn", "ti-urgent"
+    );
+  } else if (totalPct >= 80 && totalPct < 100 && !alertedCategories.has("total-warn")) {
+    alertedCategories.add("total-warn");
+    addNotification(
+      `Total anggaran sudah <strong>${totalPct}%</strong> terpakai. Sisa ${rupiah(state.monthlyBudgetTotal - totalSpent)}`,
+      "info", "ti-info-circle"
+    );
+  }
+}
+
+
+// Initial alerts on first load
+function initNotifications() {
+  addNotification("Selamat datang kembali! Ini ringkasan keuanganmu hari ini.", "info", "ti-hand-wave");
+  checkBudgetAlerts();
+}
+
