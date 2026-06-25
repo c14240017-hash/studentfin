@@ -1,502 +1,2731 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>StudentFin – Budgeting Mahasiswa Kos</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <title>StudentFin — Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Geist:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --primary: #3525CD;
+      --primary-light: #F5F2FF;
+      --primary-tint: rgba(53, 37, 205, 0.1);
+      --bg: #FCF8FF;
+      --surface: #FFFFFF;
+      --border: #C7C4D8;
+      --border-soft: rgba(199, 196, 216, 0.5);
+      --text: #1B1B24;
+      --text-muted: #464555;
+      --text-faint: #777587;
+      --success: #006C49;
+      --success-bg: #E1F0E9;
+      --danger: #BA1A1A;
+      --danger-bg: #FFDAD6;
+      --warning: #684000;
+      --warning-bg: #FFF3E0;
+      --indigo-soft: #E2DFFF;
+      --chip-bg: #E4E1EE;
+      --radius-lg: 24px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+      --shadow-card: 0 2px 4px -2px rgba(0, 0, 0, 0.10), 0 4px 6px -1px rgba(0, 0, 0, 0.10);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: inherit;
+    }
+
+    input,
+    select {
+      font-family: inherit;
+    }
+
+    /* ============ LOGIN ============ */
+    #screen-login {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+    }
+
+    .login-visual {
+      flex: 1;
+      position: relative;
+      background: #F0ECF9;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+      min-height: 100vh;
+    }
+
+    .login-visual img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .login-visual .overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(30, 22, 100, 0) 0%, rgba(30, 22, 100, 0.55) 100%);
+    }
+
+    .login-visual .blob {
+      position: absolute;
+      width: 384px;
+      height: 384px;
+      left: -96px;
+      top: -96px;
+      background: rgba(79, 70, 229, 0.3);
+      border-radius: 9999px;
+      filter: blur(60px);
+    }
+
+    .login-copy {
+      position: relative;
+      z-index: 2;
+      color: white;
+      padding: 64px;
+      max-width: 560px;
+    }
+
+    .login-copy .dash {
+      width: 64px;
+      height: 4px;
+      background: #6CF8BB;
+      border-radius: 9999px;
+      margin-bottom: 24px;
+    }
+
+    .login-copy h1 {
+      font-size: 32px;
+      font-weight: 700;
+      line-height: 1.25;
+      margin-bottom: 16px;
+    }
+
+    .login-copy p {
+      font-size: 18px;
+      color: #DAD7FF;
+      line-height: 1.55;
+    }
+
+    .login-form-side {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 96px;
+      background: white;
+    }
+
+    .login-form-wrap {
+      width: 100%;
+      max-width: 384px;
+    }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 30px;
+      background: var(--primary);
+      border-radius: 6px;
+    }
+
+    .brand-name {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .login-form-wrap h2 {
+      font-size: 30px;
+      font-weight: 700;
+      margin: 12px 0 6px;
+    }
+
+    .login-form-wrap .sub {
+      color: var(--text-muted);
+      font-size: 15px;
+      margin-bottom: 28px;
+    }
+
+    .field {
+      margin-bottom: 20px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 6px;
+      letter-spacing: 0.02em;
+      font-family: 'Geist', sans-serif;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 13px 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 15px;
+      outline: none;
+      transition: border-color .15s;
+    }
+
+    .field input:focus {
+      border-color: var(--primary);
+    }
+
+    .field-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      font-size: 13.5px;
+    }
+
+    .field-row label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .field-row a {
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: none;
+      font-family: 'Geist', sans-serif;
+      font-size: 13.5px;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 13px;
+      background: var(--primary);
+      color: white;
+      border-radius: 8px;
+      font-weight: 500;
+      font-size: 14px;
+      font-family: 'Geist', sans-serif;
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background .15s;
+    }
+
+    .btn-primary:hover {
+      background: #2c1ea8;
+    }
+
+    .login-hint {
+      margin-top: 16px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-faint);
+      background: var(--primary-light);
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .login-error {
+      margin-top: 12px;
+      padding: 10px 12px;
+      background: var(--danger-bg);
+      color: var(--danger);
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      display: none;
+    }
+
+    /* ============ APP SHELL ============ */
+    #screen-app {
+      display: none;
+    }
+
+    .app-shell {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 264px;
+      flex-shrink: 0;
+      background: var(--bg);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 24px 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+    }
+
+    .sidebar-brand {
+      padding: 0 24px 24px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 12px 8px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 16px;
+      border-radius: 8px;
+      font-family: 'Geist', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-muted);
+      transition: background .12s, color .12s;
+      width: 100%;
+      text-align: left;
+    }
+
+    .nav-item i {
+      font-size: 18px;
+      width: 18px;
+      text-align: center;
+    }
+
+    .nav-item:hover {
+      background: rgba(53, 37, 205, 0.06);
+    }
+
+    .nav-item.active {
+      background: var(--primary-tint);
+      color: var(--primary);
+    }
+
+    .nav-item.disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .nav-item.disabled:hover {
+      background: none;
+    }
+
+    .sidebar-upgrade {
+      margin: 12px 16px 0;
+    }
+
+    .upgrade-card {
+      background: var(--primary);
+      color: white;
+      border-radius: 12px;
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    .upgrade-card i {
+      font-size: 24px;
+      color: #FFB95F;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .upgrade-card .t {
+      font-family: 'Geist', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .upgrade-card .d {
+      font-size: 11.5px;
+      opacity: 0.85;
+      line-height: 1.4;
+      margin-bottom: 12px;
+    }
+
+    .upgrade-card button {
+      width: 100%;
+      background: var(--bg);
+      color: var(--primary);
+      border-radius: 8px;
+      padding: 8px;
+      font-family: 'Geist', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .sidebar-user {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+
+    .sidebar-user-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px;
+      border-radius: 8px;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 9999px;
+      background: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 14px;
+      flex-shrink: 0;
+      border: 1px solid var(--border);
+    }
+
+    .sidebar-user .name {
+      font-family: 'Geist', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .sidebar-user .email {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .main-area {
+      margin-left: 264px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .topbar {
+      height: 64px;
+      padding: 0 24px;
+      background: rgba(252, 248, 255, 0.85);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .search-box {
+      position: relative;
+      width: 256px;
+    }
+
+    .search-box i {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-faint);
+      font-size: 16px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 9px 12px 9px 38px;
+      background: var(--primary-light);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .btn-quickadd {
+      background: #4F46E5;
+      color: #DAD7FF;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-family: 'Geist', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background .15s;
+    }
+
+    .btn-quickadd:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .icon-btn {
+      position: relative;
+      color: var(--text-muted);
+      font-size: 20px;
+      padding: 4px;
+    }
+
+    .icon-btn .dot {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 8px;
+      height: 8px;
+      background: var(--danger);
+      border-radius: 9999px;
+    }
+
+    .page {
+      padding: 32px;
+      max-width: 1280px;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 48px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .page-header h1 {
+      font-size: 32px;
+      font-weight: 700;
+    }
+
+    .page-header .sub {
+      color: var(--text-muted);
+      font-size: 16px;
+      margin-top: 4px;
+    }
+
+    /* cards */
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-card);
+      padding: 24px;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: var(--bg);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-label {
+      font-family: 'Geist', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      margin-top: 8px;
+    }
+
+    .stat-sub {
+      font-size: 13px;
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-weight: 500;
+    }
+
+    .stat-sub.up {
+      color: var(--success);
+    }
+
+    .progress-track {
+      height: 8px;
+      background: #E4E1EE;
+      border-radius: 9999px;
+      overflow: hidden;
+      margin-top: 12px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 9999px;
+      transition: width .4s ease;
+    }
+
+    .progress-fill.warn {
+      background: #E65100;
+    }
+
+    .progress-fill.danger {
+      background: var(--danger);
+    }
+
+    .progress-caption {
+      display: flex;
+      justify-content: flex-end;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    .dash-grid {
+      display: grid;
+      grid-template-columns: 1.6fr 1fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .panel-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .chart-box {
+      height: 240px;
+      position: relative;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .cat-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .cat-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px;
+      border-radius: 12px;
+      transition: background .12s;
+    }
+
+    .cat-row:hover {
+      background: var(--bg);
+    }
+
+    .cat-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .cat-row-main {
+      flex: 1;
+    }
+
+    .cat-row-top {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'Geist', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    .cat-row-top .amt {
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+    }
+
+    .cat-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cat-bar {
+      flex: 1;
+      height: 6px;
+      background: #E4E1EE;
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+
+    .cat-bar-fill {
+      height: 100%;
+      border-radius: 9999px;
+    }
+
+    .cat-pct {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      width: 36px;
+      text-align: right;
+    }
+
+    .tx-recent {
+      margin-top: 24px;
+    }
+
+    .tx-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 4px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .tx-row:last-child {
+      border-bottom: none;
+    }
+
+    .tx-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .tx-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+
+    .tx-name {
+      font-weight: 500;
+      font-size: 14.5px;
+    }
+
+    .tx-meta {
+      font-size: 12.5px;
+      color: var(--text-faint);
+      margin-top: 2px;
+    }
+
+    .tx-amt {
+      font-weight: 600;
+      font-size: 14.5px;
+    }
+
+    .tx-amt.expense {
+      color: var(--text);
+    }
+
+    .tx-amt.income {
+      color: var(--success);
+    }
+
+    /* TRANSACTIONS page */
+    .tx-toolbar {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .tx-toolbar select {
+      padding: 9px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+      font-family: 'Geist', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      outline: none;
+    }
+
+    .clear-filters {
+      margin-left: auto;
+      color: var(--primary);
+      font-family: 'Geist', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .tx-table-wrap {
+      background: var(--bg);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+    }
+
+    table.tx-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .tx-table thead {
+      background: white;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .tx-table th {
+      text-align: left;
+      padding: 14px 16px;
+      font-family: 'Geist', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+    }
+
+    .tx-table th.right,
+    .tx-table td.right {
+      text-align: right;
+    }
+
+    .tx-table td {
+      padding: 14px 16px;
+      font-size: 14px;
+      border-bottom: 1px solid var(--border-soft);
+      vertical-align: middle;
+    }
+
+    .tx-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .tx-table tbody tr:hover {
+      background: rgba(53, 37, 205, 0.03);
+    }
+
+    .tx-desc {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .chip {
+      padding: 4px 10px;
+      background: var(--chip-bg);
+      border-radius: 100px;
+      font-size: 11px;
+      font-family: 'Geist', sans-serif;
+      color: var(--text-muted);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .amt-cell {
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .amt-cell.expense {
+      color: var(--danger);
+    }
+
+    .amt-cell.income {
+      color: var(--success);
+    }
+
+    .empty-state {
+      padding: 60px 24px;
+      text-align: center;
+      color: var(--text-faint);
+    }
+
+    .empty-state i {
+      font-size: 32px;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    /* BUDGETS page */
+    .budget-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    .budget-card {
+      background: var(--bg);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      padding: 20px;
+      box-shadow: var(--shadow-card);
+      position: relative;
+    }
+
+    .budget-card.over {
+      background: rgba(255, 218, 214, 0.2);
+      border-color: rgba(186, 26, 26, 0.3);
+    }
+
+    .budget-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .budget-icon-name {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .budget-overspent-tag {
+      background: var(--danger);
+      color: white;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: 'Geist', sans-serif;
+      padding: 4px 8px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .budget-figures {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 14px;
+    }
+
+    .budget-spent-label {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .budget-spent-amt {
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    .budget-spent-amt.over {
+      color: var(--danger);
+    }
+
+    .budget-of {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-align: right;
+    }
+
+    .budget-left {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-align: right;
+      margin-top: 1px;
+    }
+
+    .budget-left.over {
+      color: var(--danger);
+    }
+
+    /* MODAL - Quick Add */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(27, 27, 36, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 20px;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal-box {
+      background: white;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 440px;
+      padding: 28px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+    }
+
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-head h3 {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .modal-close {
+      font-size: 20px;
+      color: var(--text-faint);
+      padding: 4px;
+    }
+
+    .modal-label {
+      font-family: 'Geist', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .amount-input-wrap {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .amount-input-wrap .prefix {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 18px;
+    }
+
+    .amount-input-wrap input {
+      width: 100%;
+      padding: 14px 16px 14px 44px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 22px;
+      font-weight: 700;
+      outline: none;
+    }
+
+    .amount-input-wrap input:focus {
+      border-color: var(--primary);
+    }
+
+    .cat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .cat-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 14px 6px;
+      border-radius: 12px;
+      border: 1.5px solid var(--border);
+      background: white;
+      transition: all .12s;
+    }
+
+    .cat-btn i {
+      font-size: 22px;
+    }
+
+    .cat-btn span {
+      font-size: 11.5px;
+      font-weight: 500;
+      font-family: 'Geist', sans-serif;
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    .cat-btn.selected {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .desc-input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 14px;
+      outline: none;
+      margin-bottom: 20px;
+    }
+
+    .desc-input:focus {
+      border-color: var(--primary);
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn-secondary {
+      flex: 1;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-family: 'Geist', sans-serif;
+      font-weight: 500;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .modal-actions .btn-primary {
+      flex: 2;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--text);
+      color: white;
+      padding: 13px 22px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      opacity: 0;
+      pointer-events: none;
+      transition: all .25s ease;
+      z-index: 200;
+      font-family: 'Geist', sans-serif;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .toast i {
+      color: #6CF8BB;
+      font-size: 18px;
+    }
+
+    @media(max-width:1000px) {
+
+      .stat-grid,
+      .dash-grid,
+      .budget-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .main-area {
+        margin-left: 0;
+      }
+
+      .login-visual {
+        display: none;
+      }
+
+      .login-form-side {
+        padding: 32px;
+      }
+    }
+
+    /* ============ INSIGHT PAGE ============ */
+    .insight-hero {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+
+    .insight-hero-blob {
+      position: absolute;
+      width: 256px;
+      height: 256px;
+      right: -40px;
+      top: -80px;
+      background: rgba(226, 223, 255, 0.6);
+      border-radius: 9999px;
+      filter: blur(32px);
+      pointer-events: none;
+    }
+
+    .insight-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      background: var(--primary-light);
+      border: 1px solid var(--indigo-soft);
+      border-radius: 9999px;
+      font-family: 'Geist', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+    }
+
+    .insight-headline {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      line-height: 1.35;
+    }
+
+    .insight-headline span.red {
+      color: var(--danger);
+    }
+
+    .insight-sub {
+      font-size: 14px;
+      color: var(--text-muted);
+      max-width: 560px;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .insight-badges {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-family: 'Geist', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    .badge.primary {
+      background: var(--primary-light);
+      border: 1px solid var(--indigo-soft);
+      color: var(--primary);
+    }
+
+    .badge.green {
+      background: #E1F0E9;
+      color: var(--success);
+    }
+
+    .insight-smart-action {
+      background: var(--primary);
+      color: white;
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .insight-smart-action .blob2 {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      left: -60px;
+      bottom: -60px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 9999px;
+    }
+
+    .action-icon {
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .action-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: white;
+    }
+
+    .action-body {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.88);
+      line-height: 1.6;
+    }
+
+    .action-btn {
+      background: white;
+      color: var(--primary);
+      border-radius: 8px;
+      padding: 10px;
+      font-family: 'Geist', sans-serif;
+      font-size: 13.5px;
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+      transition: opacity .15s;
+      border: none;
+    }
+
+    .action-btn:hover {
+      opacity: 0.9;
+    }
+
+    .heatmap-wrap {
+      overflow-x: auto;
+    }
+
+    .heatmap-grid {
+      display: grid;
+      grid-template-columns: 48px repeat(7, 1fr);
+      gap: 4px;
+      min-width: 520px;
+    }
+
+    .heatmap-label {
+      font-family: 'Geist', sans-serif;
+      font-size: 11px;
+      color: var(--text-faint);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 8px;
+    }
+
+    .heatmap-col-header {
+      font-family: 'Geist', sans-serif;
+      font-size: 11px;
+      color: var(--text-faint);
+      text-align: center;
+      padding-bottom: 4px;
+    }
+
+    .hm-cell {
+      height: 28px;
+      border-radius: 4px;
+      transition: opacity .1s;
+    }
+
+    .hm-0 {
+      background: #F0ECF9;
+    }
+
+    .hm-1 {
+      background: #E2DFFF;
+    }
+
+    .hm-2 {
+      background: #C3C0FF;
+    }
+
+    .hm-3 {
+      background: #4F46E5;
+    }
+
+    .hm-4 {
+      background: var(--primary);
+    }
+
+    /* ============ SAVINGS PAGE ============ */
+    .goals-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 24px;
+    }
+
+    .goal-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-card);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .goal-card-accent {
+      position: absolute;
+      width: 128px;
+      height: 128px;
+      right: 0;
+      top: 0;
+      border-bottom-left-radius: 9999px;
+    }
+
+    .goal-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .goal-name {
+      font-family: 'Geist', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .goal-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Geist', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .goal-amount {
+      font-size: 26px;
+      font-weight: 700;
+    }
+
+    .goal-of {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .goal-progress-bar {
+      height: 12px;
+      background: #E4E1EE;
+      border-radius: 9999px;
+      overflow: hidden;
+      margin: 4px 0;
+    }
+
+    .goal-progress-fill {
+      height: 100%;
+      border-radius: 9999px;
+    }
+
+    .goal-pct-row {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'Geist', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .forecasting-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .forecast-label {
+      font-family: 'Geist', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .forecast-info {
+      background: var(--primary-light);
+      border: 1px solid var(--indigo-soft);
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-top: 16px;
+    }
+
+    .forecast-date {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--success);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .total-locked {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-top: 24px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .deposit-btn {
+      padding: 11px 20px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-family: 'Geist', sans-serif;
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ============ ACCOUNTS PAGE ============ */
+    .accounts-top {
+      display: grid;
+      grid-template-columns: 1.4fr 2fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .liquidity-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .dist-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    .dist-bar-wrap {
+      margin-bottom: 16px;
+    }
+
+    .acc-list-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+    }
+
+    .acc-list-header {
+      background: var(--primary-light);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'Geist', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .acc-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .acc-row:last-child {
+      border-bottom: none;
+    }
+
+    .acc-logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: var(--chip-bg);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .acc-name {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .acc-type {
+      font-family: 'Geist', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .acc-balance {
+      font-family: 'Geist', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      text-align: right;
+    }
+
+    .acc-sync {
+      font-family: 'Geist', sans-serif;
+      font-size: 11.5px;
+      color: var(--text-faint);
+      margin-top: 2px;
+    }
+
+    .acc-sync.fail {
+      color: var(--danger);
+    }
+
+    /* ============ REPORTS PAGE ============ */
+    .report-top-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .report-stat {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+    }
+
+    .report-stat.primary-bg {
+      background: var(--primary);
+      color: white;
+    }
+
+    .report-stat-label {
+      font-family: 'Geist', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .report-stat.primary-bg .report-stat-label {
+      color: #DAD7FF;
+    }
+
+    .report-stat-value {
+      font-size: 26px;
+      font-weight: 700;
+    }
+
+    .report-stat-foot {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border-soft);
+      font-size: 13px;
+    }
+
+    .report-stat.primary-bg .report-stat-foot {
+      border-top-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .vs-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: 'Geist', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .vs-up {
+      background: rgba(255, 218, 214, 0.5);
+      color: var(--danger);
+    }
+
+    .vs-down {
+      background: rgba(108, 248, 187, 0.4);
+      color: var(--success);
+    }
+
+    .spending-summary-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px;
+      border-radius: 12px;
+      transition: background .12s;
+    }
+
+    .spending-summary-row:hover {
+      background: var(--bg);
+    }
+
+    .ss-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .ss-main {
+      flex: 1;
+    }
+
+    .ss-top {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'Geist', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    .ss-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ss-bar {
+      flex: 1;
+      height: 6px;
+      background: #E4E1EE;
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+
+    .ss-bar-fill {
+      height: 100%;
+      border-radius: 9999px;
+    }
+
+    .ss-pct {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      width: 36px;
+      text-align: right;
+    }
+
+    .ai-insight-card {
+      background: var(--primary-light);
+      border: 1px solid var(--indigo-soft);
+      border-radius: 16px;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ai-insight-item {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .ai-insight-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .ai-accent {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      border-radius: 0;
+    }
+
+    .prev-reports-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .prev-reports-table th {
+      text-align: left;
+      padding: 14px 20px;
+      font-family: 'Geist', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      color: var(--text-muted);
+      background: var(--primary-light);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .prev-reports-table th:last-child {
+      text-align: right;
+    }
+
+    .prev-reports-table td {
+      padding: 16px 20px;
+      font-size: 14px;
+      border-bottom: 1px solid var(--border-soft);
+      vertical-align: middle;
+    }
+
+    .prev-reports-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .prev-reports-table tbody tr:hover {
+      background: rgba(53, 37, 205, .03);
+    }
+
+    /* ============ UPGRADE PAGE ============ */
+    .upgrade-hero {
+      text-align: center;
+      padding: 48px 32px 32px;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .upgrade-hero .badge-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 14px;
+      border-radius: 9999px;
+      background: #EAE6F4;
+      color: var(--primary);
+      font-family: 'Geist', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      letter-spacing: .04em;
+    }
+
+    .billing-toggle {
+      display: inline-flex;
+      background: var(--primary-light);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, .05) inset;
+      border-radius: 9999px;
+      padding: 4px;
+      margin: 0 auto;
+      margin-top: 24px;
+    }
+
+    .billing-opt {
+      padding: 8px 24px;
+      border-radius: 9999px;
+      font-family: 'Geist', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all .15s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .billing-opt.active {
+      background: white;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, .08);
+      color: var(--text);
+    }
+
+    .discount-badge {
+      background: var(--indigo-soft);
+      color: var(--primary);
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 9999px;
+    }
+
+    .plans-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    .plan-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      box-shadow: var(--shadow-card);
+    }
+
+    .plan-card.featured {
+      background: var(--primary);
+      border-color: #C3C0FF;
+      color: white;
+    }
+
+    .plan-name {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .plan-card.featured .plan-name {
+      color: white;
+    }
+
+    .plan-desc {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .plan-card.featured .plan-desc {
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .plan-price {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .plan-period {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .plan-card.featured .plan-period {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .plan-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 20px 0;
+    }
+
+    .plan-card.featured .plan-divider {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .plan-feature {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .plan-feature i {
+      font-size: 16px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .plan-card.featured .plan-feature {
+      color: white;
+    }
+
+    .plan-card.featured .plan-feature i {
+      color: #6CF8BB;
+    }
+
+    .plan-btn {
+      margin-top: auto;
+      padding: 12px;
+      border-radius: 10px;
+      font-family: 'Geist', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+      transition: all .15s;
+      display: block;
+      width: 100%;
+      border: none;
+    }
+
+    .plan-btn.outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    .plan-btn.outline:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .plan-btn.solid-white {
+      background: white;
+      color: var(--primary);
+    }
+
+    .plan-btn.solid-white:hover {
+      opacity: .9;
+    }
+
+    .plan-btn.solid-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .plan-btn.solid-primary:hover {
+      background: #2c1ea8;
+    }
+
+    .most-popular-tag {
+      display: inline-block;
+      background: #FFB95F;
+      color: #653E00;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-family: 'Geist', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      margin-bottom: 8px;
+    }
+  </style>
 </head>
+
 <body>
 
-  <div class="app" id="app">
-
-    <!-- ===================== SCREEN: DASHBOARD ===================== -->
-    <div class="screen active" id="screen-dashboard">
-
-      <!-- Top Bar -->
-      <div class="top-bar">
-        <div>
-          <div class="greeting">Selamat pagi 👋</div>
-          <div class="name">Dimas Pratama</div>
-        </div>
-        <div class="notif-btn" onclick="showNotif()">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-          </svg>
-          <div class="notif-dot"></div>
-        </div>
-      </div>
-
-      <!-- Budget Ring -->
-      <div class="ring-section">
-        <div class="ring-wrap">
-          <svg width="200" height="200" viewBox="0 0 200 200">
-            <circle cx="100" cy="100" r="82" fill="none" stroke="#1A2E40" stroke-width="18"/>
-            <circle cx="100" cy="100" r="82" fill="none" stroke="#213648" stroke-width="18"
-              stroke-dasharray="515" stroke-dashoffset="0"/>
-            <circle id="ringUsed" cx="100" cy="100" r="82" fill="none" stroke="#FF6B6B"
-              stroke-width="18" stroke-dasharray="515" stroke-dashoffset="515" stroke-linecap="round"/>
-            <circle id="ringLeft" cx="100" cy="100" r="82" fill="none" stroke="#00D4AA"
-              stroke-width="18" stroke-dasharray="515" stroke-dashoffset="515" stroke-linecap="round"/>
-          </svg>
-          <div class="ring-center">
-            <div class="rlabel">Budget tersisa</div>
-            <div class="ramt" id="ringAmt">Rp 580K</div>
-            <div class="rsub">dari Rp 1.500.000</div>
-          </div>
-        </div>
-        <div class="ring-legend">
-          <div class="leg"><div class="dot" style="background:#00D4AA"></div>Sisa</div>
-          <div class="leg"><div class="dot" style="background:#FF6B6B"></div>Terpakai</div>
-        </div>
-      </div>
-
-      <!-- Overbudget Alert -->
-      <div class="ob-badge warn-pulse">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
-          <line x1="12" y1="9" x2="12" y2="13"/>
-          <line x1="12" y1="17" x2="12.01" y2="17"/>
-        </svg>
-        Pengeluaran "Kopi &amp; Nongkrong" hampir melewati batas budget!
-      </div>
-
-      <!-- Quick Stats -->
-      <div class="stats-row">
-        <div class="stat-card">
-          <div class="slabel">Total Saldo</div>
-          <div class="sval accent">Rp 2,08jt</div>
-          <div class="schange up">↑ Rp 500rb masuk</div>
-        </div>
-        <div class="stat-card">
-          <div class="slabel">Pengeluaran bulan ini</div>
-          <div class="sval danger">Rp 920rb</div>
-          <div class="schange down">↑ 12% vs bulan lalu</div>
-        </div>
-      </div>
-
-      <!-- Recent Transactions -->
-      <div class="sec-header" style="margin-top: 8px">
-        <h3>Transaksi terbaru</h3>
-        <a onclick="switchScreen('transactions')">Lihat semua →</a>
-      </div>
-      <div class="tx-list">
-        <div class="tx-item">
-          <div class="tx-icon icon-food">🍔</div>
-          <div class="tx-info">
-            <div class="tname">GrabFood – Mie Ayam</div>
-            <div class="tcat">Makanan · Hari ini 12:30</div>
-          </div>
-          <div class="tx-amt neg">-Rp 28rb</div>
-        </div>
-        <div class="tx-item">
-          <div class="tx-icon icon-coffee">☕</div>
-          <div class="tx-info">
-            <div class="tname">Kopi Kenangan</div>
-            <div class="tcat">Kopi &amp; Nongkrong · Hari ini 09:15</div>
-          </div>
-          <div class="tx-amt neg">-Rp 35rb</div>
-        </div>
-        <div class="tx-item">
-          <div class="tx-icon icon-income">💰</div>
-          <div class="tx-info">
-            <div class="tname">Kiriman Orang Tua</div>
-            <div class="tcat">Pemasukan · 1 Jun</div>
-          </div>
-          <div class="tx-amt pos">+Rp 1,5jt</div>
-        </div>
-      </div>
-
-    </div>
-    <!-- END SCREEN: DASHBOARD -->
-
-
-    <!-- ===================== SCREEN: TRANSACTIONS ===================== -->
-    <div class="screen" id="screen-transactions">
-
-      <div class="section-pad">
-        <h2>Transaksi</h2>
-        <p>Juni 2026</p>
-      </div>
-
-      <!-- Filter Chips -->
-      <div class="filter-chips">
-        <div class="chip active" onclick="filterTx(this, 'all')">Semua</div>
-        <div class="chip" onclick="filterTx(this, 'Makanan')">🍔 Makanan</div>
-        <div class="chip" onclick="filterTx(this, 'Kopi')">☕ Kopi</div>
-        <div class="chip" onclick="filterTx(this, 'Transport')">🛵 Transport</div>
-        <div class="chip" onclick="filterTx(this, 'Pemasukan')">💰 Pemasukan</div>
-      </div>
-
-      <!-- Transaction List -->
-      <div class="tx-list" id="txList">
-        <div class="tx-item" data-cat="Makanan">
-          <div class="tx-icon icon-food">🍔</div>
-          <div class="tx-info"><div class="tname">GrabFood – Mie Ayam</div><div class="tcat">Makanan · Hari ini</div></div>
-          <div class="tx-amt neg">-Rp 28rb</div>
-        </div>
-        <div class="tx-item" data-cat="Kopi">
-          <div class="tx-icon icon-coffee">☕</div>
-          <div class="tx-info"><div class="tname">Kopi Kenangan</div><div class="tcat">Kopi · Hari ini</div></div>
-          <div class="tx-amt neg">-Rp 35rb</div>
-        </div>
-        <div class="tx-item" data-cat="Transport">
-          <div class="tx-icon icon-transport">🛵</div>
-          <div class="tx-info"><div class="tname">Gojek ke Kampus</div><div class="tcat">Transport · 12 Jun</div></div>
-          <div class="tx-amt neg">-Rp 18rb</div>
-        </div>
-        <div class="tx-item" data-cat="Pemasukan">
-          <div class="tx-icon icon-income">💰</div>
-          <div class="tx-info"><div class="tname">Monthly Allowance</div><div class="tcat">Pemasukan · 1 Jun</div></div>
-          <div class="tx-amt pos">+Rp 1,5jt</div>
-        </div>
-        <div class="tx-item" data-cat="Makanan">
-          <div class="tx-icon icon-food">🍜</div>
-          <div class="tx-info"><div class="tname">Warteg Depot Pak Budi</div><div class="tcat">Makanan · 11 Jun</div></div>
-          <div class="tx-amt neg">-Rp 15rb</div>
-        </div>
-        <div class="tx-item" data-cat="Kopi">
-          <div class="tx-icon icon-coffee">☕</div>
-          <div class="tx-info"><div class="tname">Janji Jiwa – Americano</div><div class="tcat">Kopi · 10 Jun</div></div>
-          <div class="tx-amt neg">-Rp 22rb</div>
-        </div>
-        <div class="tx-item" data-cat="Makanan">
-          <div class="tx-icon icon-food">🍕</div>
-          <div class="tx-info"><div class="tname">ShopeeFood – Pizza Hut</div><div class="tcat">Makanan · 9 Jun</div></div>
-          <div class="tx-amt neg">-Rp 65rb</div>
-        </div>
-        <div class="tx-item" data-cat="Transport">
-          <div class="tx-icon icon-transport">🛵</div>
-          <div class="tx-info"><div class="tname">Grab – Rungkut → Gubeng</div><div class="tcat">Transport · 8 Jun</div></div>
-          <div class="tx-amt neg">-Rp 24rb</div>
-        </div>
-      </div>
-
-    </div>
-    <!-- END SCREEN: TRANSACTIONS -->
-
-
-    <!-- ===================== SCREEN: INSIGHTS ===================== -->
-    <div class="screen" id="screen-insights">
-
-      <div class="insight-header">
-        <h2>Insight keuangan</h2>
-        <p>Analisis pengeluaran Juni 2026</p>
-      </div>
-
-      <!-- Weekly Bar Chart -->
-      <div class="sec-header"><h3>Pengeluaran mingguan</h3></div>
-      <div class="mini-bars">
-        <div class="mbar-col"><div class="mbar" style="height: 40px"></div><div class="mbar-label">M1</div></div>
-        <div class="mbar-col"><div class="mbar" style="height: 60px"></div><div class="mbar-label">M2</div></div>
-        <div class="mbar-col"><div class="mbar active-bar" style="height: 75px"></div><div class="mbar-label">M3</div></div>
-        <div class="mbar-col"><div class="mbar" style="height: 30px"></div><div class="mbar-label">M4</div></div>
-      </div>
-
-      <!-- Donut Chart -->
-      <div class="sec-header"><h3>Kategori terbesar</h3></div>
-      <div class="donut-wrap">
-        <svg width="120" height="120" viewBox="0 0 120 120" style="flex-shrink:0">
-          <circle cx="60" cy="60" r="46" fill="none" stroke="#1A2E40" stroke-width="20"/>
-          <circle cx="60" cy="60" r="46" fill="none" stroke="#FF6B6B" stroke-width="20"
-            stroke-dasharray="289" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>
-          <circle cx="60" cy="60" r="46" fill="none" stroke="#00D4AA" stroke-width="20"
-            stroke-dasharray="289" stroke-dashoffset="202" transform="rotate(-90 60 60)"/>
-          <circle cx="60" cy="60" r="46" fill="none" stroke="#F5C842" stroke-width="20"
-            stroke-dasharray="289" stroke-dashoffset="260" transform="rotate(-90 60 60)"/>
-          <text x="60" y="55" text-anchor="middle" fill="#E8F4F1" font-size="13" font-weight="700">Makan</text>
-          <text x="60" y="70" text-anchor="middle" fill="#7BA4B5" font-size="11">terbesar</text>
-        </svg>
-        <div class="donut-legend">
-          <div class="dleg-item"><div class="dleg-dot" style="background:#FF6B6B"></div><span>Makanan <b class="col-danger">30%</b></span></div>
-          <div class="dleg-item"><div class="dleg-dot" style="background:#00D4AA"></div><span>Kopi/Jajan <b class="col-accent">22%</b></span></div>
-          <div class="dleg-item"><div class="dleg-dot" style="background:#F5C842"></div><span>Transport <b class="col-warn">8%</b></span></div>
-          <div class="dleg-item"><div class="dleg-dot" style="background:#213648"></div><span>Lainnya <b class="col-muted">40%</b></span></div>
-        </div>
-      </div>
-
-      <div class="divider"></div>
-
-      <!-- Category Breakdown -->
-      <div class="sec-header"><h3>Detail kategori</h3></div>
-      <div class="cat-list">
-        <div class="cat-item">
-          <div class="chead"><span>🍔 Makanan</span><span class="camt">Rp 276rb / Rp 400rb</span></div>
-          <div class="cbar-bg"><div class="cbar-fill" style="width:69%; background:#FF6B6B"></div></div>
-        </div>
-        <div class="cat-item">
-          <div class="chead"><span>☕ Kopi &amp; Nongkrong</span><span class="camt col-danger">Rp 198rb / Rp 150rb ⚠️</span></div>
-          <div class="cbar-bg"><div class="cbar-fill" style="width:100%; background:#FF6B6B"></div></div>
-        </div>
-        <div class="cat-item">
-          <div class="chead"><span>🛵 Transport</span><span class="camt">Rp 74rb / Rp 200rb</span></div>
-          <div class="cbar-bg"><div class="cbar-fill" style="width:37%; background:#00D4AA"></div></div>
-        </div>
-        <div class="cat-item">
-          <div class="chead"><span>🏠 Kebutuhan Kos</span><span class="camt">Rp 120rb / Rp 300rb</span></div>
-          <div class="cbar-bg"><div class="cbar-fill" style="width:40%; background:#F5C842"></div></div>
-        </div>
-        <div class="cat-item">
-          <div class="chead"><span>📚 Edukasi</span><span class="camt">Rp 50rb / Rp 200rb</span></div>
-          <div class="cbar-bg"><div class="cbar-fill" style="width:25%; background:#00D4AA"></div></div>
-        </div>
-      </div>
-
-      <!-- AI Insight Card -->
-      <div class="ai-insight-card">
-        <div class="ai-label">💡 INSIGHT AI</div>
-        <div class="ai-text">
-          Kamu ngabisin <b>32%</b> lebih banyak untuk kopi minggu ini dibanding minggu lalu.
-          Kalau dikurangi <b>Rp 50rb/minggu</b>, kamu bisa nabung <b>Rp 200rb/bulan</b> lebih banyak.
-        </div>
-      </div>
-
-    </div>
-    <!-- END SCREEN: INSIGHTS -->
-
-
-    
-<div class="screen" id="screen-health">
-<div class="section-pad"><h2>Financial Health</h2><p>Kondisi keuangan bulan ini</p></div>
-<div class="health-score-card">
-<div class="health-score">82</div>
-<div class="health-status">🟢 Healthy</div>
-</div>
-<div class="health-grid">
-<div class="health-card"><h4>Budget Discipline</h4><div class="health-value">85%</div></div>
-<div class="health-card"><h4>Saving Habit</h4><div class="health-value">90%</div></div>
-<div class="health-card"><h4>Overspending Risk</h4><div class="health-value">65%</div></div>
-</div>
-<div class="ai-insight-card">
-<div class="ai-label">💡 REKOMENDASI</div>
-<div class="ai-text">Kurangi kopi Rp50.000 per minggu agar target Laptop Upgrade tercapai lebih cepat.</div>
-</div>
-</div>
-
-<!-- ===================== SCREEN: SAVINGS ===================== -->
-    <div class="screen" id="screen-savings">
-
-      <div class="section-pad">
-        <h2>Target tabungan</h2>
-        <p>3 target aktif</p>
-      </div>
-
-      <div class="total-all">
-        <div>
-          <div class="tal">Total terkumpul</div>
-          <div class="tav">Rp 1,25jt</div>
-        </div>
-        <div style="text-align:right">
-          <div class="tal">Dari target</div>
-          <div class="tav warn">Rp 5,3jt</div>
-        </div>
-      </div>
-
-      <div class="save-list">
-        <!-- Saving Card 1 -->
-        <div class="save-card">
-          <div class="shead">
-            <div>
-              <div class="sname">💻 Laptop Upgrade</div>
-              <div class="starget">Target: Rp 3.500.000</div><div class="saving-source">🔗 Blu Pocket - Laptop Fund</div>
-            </div>
-            <div class="spct">34%</div>
-          </div>
-          <div class="spbar"><div class="spfill" style="width:34%"></div></div>
-          <div class="sfooter">
-            <span>Terkumpul: Rp 1.200.000</span>
-            <span>Sisa: Rp 2.300.000</span>
-          </div>
-        </div>
-        <!-- Saving Card 2 -->
-        <div class="save-card">
-          <div class="shead">
-            <div>
-              <div class="sname">✈️ Liburan Bali</div>
-              <div class="starget">Target: Rp 1.500.000</div>
-            </div>
-            <div class="spct warn">2%</div>
-          </div>
-          <div class="spbar"><div class="spfill" style="width:2%; background:var(--warn)"></div></div>
-          <div class="sfooter">
-            <span>Terkumpul: Rp 30.000</span>
-            <span>Sisa: Rp 1.470.000</span>
-          </div>
-        </div>
-        <!-- Saving Card 3 -->
-        <div class="save-card">
-          <div class="shead">
-            <div>
-              <div class="sname">📦 Dana Darurat</div>
-              <div class="starget">Target: Rp 300.000</div><div class="saving-source">🔗 Blu Pocket - Emergency Fund</div>
-            </div>
-            <div class="spct">67%</div>
-          </div>
-          <div class="spbar"><div class="spfill" style="width:67%"></div></div>
-          <div class="sfooter">
-            <span>Terkumpul: Rp 200.000</span>
-            <span>Sisa: Rp 100.000</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="btn-wrap">
-        <button class="save-btn" onclick="alert('Fitur tambah target tabungan')">+ Tambah target baru</button>
-      </div>
-
-    </div>
-    <!-- END SCREEN: SAVINGS -->
-
-
-    <!-- ===================== SCREEN: ACCOUNTS ===================== -->
-    <div class="screen" id="screen-accounts">
-
-      <div class="section-pad">
-        <h2>Akun keuangan</h2>
-        <p>Semua sumber keuangan di satu tempat</p>
-      </div>
-
-      <div class="total-all">
-        <div>
-          <div class="tal">Total semua saldo</div>
-          <div class="tav">Rp 2.080.000</div>
-        </div>
-      </div><div class="sync-card"><div><div class="tal">🟢 Auto Synced</div><div class="tav" id="lastSync">Last updated 5 sec ago</div></div></div>
-
-      <div class="sec-header"><h3>Rekening bank</h3></div>
-      <div class="acc-list">
-        <div class="acc-card">
-          <div class="acc-logo" style="background:#0050A0; color:#fff">BCA</div>
-          <div class="acc-info">
-            <div class="aname">BCA – Tabungan</div>
-            <div class="atype">****4821 · Rekening utama</div>
-          </div>
-          <div class="acc-bal">Rp 1.380.000</div>
-        </div>
-        <div class="acc-card">
-          <div class="acc-logo" style="background:#F5821F; color:#fff">MND</div>
-          <div class="acc-info">
-            <div class="aname">Mandiri – Tabungan</div>
-            <div class="atype">****9034 · Rekening sekunder</div>
-          </div>
-          <div class="acc-bal">Rp 350.000</div>
-        </div>
-      </div>
-
-      <div class="sec-header" style="margin-top:12px"><h3>E-Wallet</h3></div>
-      <div class="acc-list">
-        <div class="acc-card">
-          <div class="acc-logo" style="background:#00AED6; color:#fff">GO</div>
-          <div class="acc-info">
-            <div class="aname">GoPay</div>
-            <div class="atype">Sinkronisasi otomatis</div>
-          </div>
-          <div class="acc-bal">Rp 220.000</div>
-        </div>
-        <div class="acc-card">
-          <div class="acc-logo" style="background:#4C3494; color:#fff">OVO</div>
-          <div class="acc-info">
-            <div class="aname">OVO</div>
-            <div class="atype">Sinkronisasi otomatis</div>
-          </div>
-          <div class="acc-bal">Rp 85.000</div>
-        </div>
-        <div class="acc-card">
-          <div class="acc-logo" style="background:#1784FB; color:#fff">DAN</div>
-          <div class="acc-info">
-            <div class="aname">DANA</div>
-            <div class="atype">Sinkronisasi otomatis</div>
-          </div>
-          <div class="acc-bal">Rp 45.000</div>
-        </div>
-      </div>
-
-      <div class="btn-wrap">
-        <button class="save-btn" onclick="alert('Hubungkan akun baru')">+ Hubungkan akun baru</button>
-      </div>
-
-    </div>
-    <!-- END SCREEN: ACCOUNTS -->
-
-
-    <!-- ============ BOTTOM NAVIGATION ============ -->
-    <nav class="bottom-nav">
-      <div class="nav-item active" id="nav-dashboard" onclick="switchScreen('dashboard')">
-        <span class="nav-icon">🏠</span>
-        <span class="nav-label">Beranda</span>
-      </div>
-      <div class="nav-item" id="nav-transactions" onclick="switchScreen('transactions')">
-        <span class="nav-icon">📋</span>
-        <span class="nav-label">Transaksi</span>
-      </div>
-      <div class="nav-item" id="nav-insights" onclick="switchScreen('insights')">
-        <span class="nav-icon">📊</span>
-        <span class="nav-label">Insight</span>
-      </div>
-      <div class="nav-item" id="nav-health" onclick="switchScreen('health')"><span class="nav-icon">❤️</span><span class="nav-label">Health</span></div>
-      <div class="nav-item" id="nav-savings" onclick="switchScreen('savings')">
-        <span class="nav-icon">🎯</span>
-        <span class="nav-label">Tabungan</span>
-      </div>
-      <div class="nav-item" id="nav-accounts" onclick="switchScreen('accounts')">
-        <span class="nav-icon">💳</span>
-        <span class="nav-label">Akun</span>
-      </div>
-    </nav>
-
-    <!-- FAB Button -->
-    <div class="fab" onclick="openModal()">+</div>
-
-
-    <!-- ============ MODAL: ADD TRANSACTION ============ -->
-    <div class="modal-overlay" id="modal">
-      <div class="modal-sheet">
-        <h3>Catat pengeluaran <span class="modal-close" onclick="closeModal()">✕</span></h3>
-
-        <div class="inp-group">
-          <label>Nominal (Rp)</label>
-          <input type="number" placeholder="Contoh: 25000" id="inp-amount" />
-        </div>
-        <div class="inp-group">
-          <label>Kategori</label>
-          <select id="inp-cat">
-            <option>🍔 Makanan</option>
-            <option>☕ Kopi &amp; Nongkrong</option>
-            <option>🛵 Transport</option>
-            <option>🏠 Kebutuhan Kos</option>
-            <option>📚 Edukasi</option>
-            <option>🛍️ Belanja</option>
-            <option>💊 Kesehatan</option>
-            <option>🎮 Hiburan</option>
-          </select>
-        </div>
-        <div class="inp-group">
-          <label>Keterangan (opsional)</label>
-          <input type="text" placeholder="Contoh: Mie goreng di warteg" id="inp-desc" />
-        </div>
-        <div class="inp-group">
-          <label>Bayar lewat</label>
-          <select id="inp-wallet">
-            <option>GoPay</option>
-            <option>QRIS</option>
-            <option>BCA Mobile</option>
-            <option>OVO</option>
-            <option>Cash</option>
-          </select>
-        </div>
-
-        <button class="save-btn" onclick="addTx()">Simpan transaksi</button>
+  <!-- ============ LOGIN SCREEN ============ -->
+  <div id="screen-login">
+    <div class="login-visual">
+      <svg viewBox="0 0 640 1024" preserveAspectRatio="xMidYMid slice"
+        style="position:absolute;inset:0;width:100%;height:100%;">
+        <defs>
+          <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#4F46E5" />
+            <stop offset="100%" stop-color="#1E1664" />
+          </linearGradient>
+        </defs>
+        <rect width="640" height="1024" fill="url(#bgGrad)" />
+        <circle cx="540" cy="150" r="220" fill="#ffffff" opacity="0.04" />
+        <circle cx="80" cy="650" r="300" fill="#ffffff" opacity="0.05" />
+        <circle cx="450" cy="780" r="140" fill="#ffffff" opacity="0.04" />
+        <g opacity="0.9">
+          <rect x="100" y="380" width="200" height="130" rx="14" fill="#ffffff" opacity="0.08" />
+          <rect x="120" y="410" width="100" height="10" rx="5" fill="#ffffff" opacity="0.25" />
+          <rect x="120" y="432" width="160" height="8" rx="4" fill="#ffffff" opacity="0.15" />
+          <rect x="120" y="450" width="60" height="8" rx="4" fill="#6CF8BB" opacity="0.7" />
+        </g>
+        <g opacity="0.9">
+          <rect x="340" y="470" width="180" height="120" rx="14" fill="#ffffff" opacity="0.07" />
+          <circle cx="375" cy="505" r="14" fill="#6CF8BB" opacity="0.5" />
+          <rect x="400" y="498" width="90" height="8" rx="4" fill="#ffffff" opacity="0.2" />
+          <rect x="400" y="516" width="60" height="6" rx="3" fill="#ffffff" opacity="0.12" />
+        </g>
+      </svg>
+      <div class="overlay"></div>
+      <div class="blob"></div>
+      <div class="login-copy">
+        <div class="dash"></div>
+        <h1>Master Your Finances,<br />Focus on Your Future.</h1>
+        <p>StudentFin memberikan kejelasan keuangan tingkat profesional untuk kelola uang bulananmu dengan mudah. Dibuat
+          untuk mahasiswa kos.</p>
       </div>
     </div>
+    <div class="login-form-side">
+      <div class="login-form-wrap">
+        <div class="brand-row">
+          <div class="brand-mark"></div>
+          <div class="brand-name">StudentFin</div>
+        </div>
+        <h2>Selamat datang kembali</h2>
+        <div class="sub">Masukkan detail akunmu untuk masuk.</div>
 
+        <div class="field">
+          <label>Alamat email</label>
+          <input type="email" id="login-email" placeholder="nama@universitas.ac.id" value="dimas@email.com" />
+        </div>
+        <div class="field">
+          <label>Kata sandi</label>
+          <input type="password" id="login-password" placeholder="••••••••" value="studentfin123" />
+        </div>
+        <div class="field-row">
+          <label><input type="checkbox" checked style="width:16px;height:16px;" /> Ingat saya</label>
+          <a href="#">Lupa kata sandi?</a>
+        </div>
+        <button class="btn-primary" id="btn-login"><span>Masuk</span> <i class="ti ti-arrow-right"></i></button>
+        <div class="login-error" id="login-error">Email atau kata sandi salah. Coba lagi.</div>
+        <div class="login-hint">Demo: gunakan email & password apa pun untuk masuk, atau klik langsung Masuk.</div>
+      </div>
+    </div>
   </div>
-  <!-- END APP -->
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="script.js"></script>
+  <!-- ============ APP SHELL ============ -->
+  <div id="screen-app">
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="sidebar-brand">
+          <div class="brand-mark"></div>
+          <div class="brand-name" style="font-size:22px;">StudentFin</div>
+        </div>
+        <nav class="sidebar-nav">
+          <button class="nav-item" data-page="dashboard"><i class="ti ti-layout-dashboard"></i>Dashboard</button>
+          <button class="nav-item" data-page="transactions"><i class="ti ti-receipt"></i>Transaksi</button>
+          <button class="nav-item" data-page="budgets"><i class="ti ti-wallet"></i>Anggaran</button>
+          <button class="nav-item" data-page="insight"><i class="ti ti-chart-bar"></i>Insight</button>
+          <button class="nav-item" data-page="savings"><i class="ti ti-target-arrow"></i>Target Tabungan</button>
+          <button class="nav-item" data-page="accounts"><i class="ti ti-building-bank"></i>Akun</button>
+          <button class="nav-item" data-page="reports"><i class="ti ti-file-text"></i>Laporan Bulanan</button>
+          <button class="nav-item" data-page="upgrade"><i class="ti ti-sparkles"></i>Upgrade Pro</button>
+        </nav>
+        <div class="sidebar-upgrade">
+          <div class="upgrade-card">
+            <i class="ti ti-sparkles"></i>
+            <div class="t">Upgrade ke Pro</div>
+            <div class="d">Buka insight lanjutan, akun tak terbatas, dan lainnya.</div>
+            <button id="btn-upgrade">Upgrade Sekarang</button>
+          </div>
+        </div>
+        <div class="sidebar-user">
+          <div class="sidebar-user-row">
+            <div class="avatar">DP</div>
+            <div>
+              <div class="name">Dimas Pratama</div>
+              <div class="email">dimas@email.com</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <div class="main-area">
+        <div class="topbar">
+          <div class="search-box">
+            <i class="ti ti-search"></i>
+            <input type="text" id="global-search" placeholder="Cari transaksi..." />
+          </div>
+          <div class="topbar-actions">
+            <button class="btn-quickadd" id="btn-quickadd"><i class="ti ti-plus"></i>Tambah Cepat</button>
+            <button class="icon-btn"><i class="ti ti-bell"></i><span class="dot"></span></button>
+            <button class="icon-btn"><i class="ti ti-settings"></i></button>
+          </div>
+        </div>
+
+        <!-- DASHBOARD -->
+        <div class="page" id="page-dashboard">
+          <div class="page-header">
+            <div>
+              <h1 id="dash-greeting">Selamat datang kembali, Dimas!</h1>
+              <div class="sub" id="dash-date-sub">Ini ringkasan keuanganmu bulan ini.</div>
+            </div>
+          </div>
+
+          <div class="stat-grid">
+            <div class="stat-card">
+              <div class="stat-label">SALDO TOTAL <i class="ti ti-wallet"
+                  style="color:var(--primary);font-size:20px;"></i></div>
+              <div class="stat-value" id="stat-balance">Rp 0</div>
+              <div class="stat-sub up"><i class="ti ti-trending-up"></i> <span id="stat-balance-note">Tetap
+                  terkendali</span></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">SISA ANGGARAN <i class="ti ti-pig-money"
+                  style="color:var(--warning);font-size:20px;"></i></div>
+              <div class="stat-value" id="stat-remaining">Rp 0</div>
+              <div class="progress-track">
+                <div class="progress-fill" id="stat-remaining-bar" style="width:0%;"></div>
+              </div>
+              <div class="progress-caption" id="stat-remaining-pct">0% terpakai</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">SKOR KESEHATAN FINANSIAL <i class="ti ti-heart-rate-monitor"
+                  style="color:var(--success);font-size:20px;"></i></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+                <div style="font-size:44px;font-weight:700;color:var(--success);" id="stat-health">85</div>
+                <div style="text-align:right;">
+                  <div style="font-size:13px;font-weight:600;color:var(--success);font-family:'Geist',sans-serif;"
+                    id="stat-health-label">Sangat Baik</div>
+                  <div style="font-size:12.5px;color:var(--text-muted);">Top 15% mahasiswa</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dash-grid">
+            <div class="card">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                <div class="panel-title" style="margin-bottom:0;">Tren Pengeluaran</div>
+                <div
+                  style="font-size:13px;color:var(--text-muted);background:var(--primary-light);padding:7px 14px;border-radius:8px;font-weight:500;">
+                  7 hari terakhir</div>
+              </div>
+              <div class="chart-box">
+                <canvas id="trendChart"></canvas>
+              </div>
+            </div>
+            <div class="card">
+              <div class="panel-title">Pengeluaran per Kategori</div>
+              <div class="cat-list" id="dash-cat-list"></div>
+            </div>
+          </div>
+
+          <div class="card tx-recent">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+              <div class="panel-title" style="margin-bottom:0;">Transaksi Terbaru</div>
+              <button class="nav-item" style="width:auto;color:var(--primary);" data-page="transactions">Lihat semua <i
+                  class="ti ti-arrow-right"></i></button>
+            </div>
+            <div id="dash-recent-list"></div>
+          </div>
+        </div>
+
+        <!-- TRANSACTIONS -->
+        <div class="page hidden" id="page-transactions">
+          <div class="page-header">
+            <div>
+              <h1>Transaksi</h1>
+              <div class="sub">Tinjau dan kelola aktivitas keuanganmu.</div>
+            </div>
+            <button class="btn-secondary" style="display:flex;align-items:center;gap:8px;width:auto;padding:9px 16px;"
+              id="btn-export">
+              <i class="ti ti-download"></i> Export
+            </button>
+          </div>
+
+          <div class="tx-toolbar">
+            <select id="filter-category">
+              <option value="all">Semua Kategori</option>
+            </select>
+            <select id="filter-account">
+              <option value="all">Semua Akun</option>
+            </select>
+            <select id="filter-type">
+              <option value="all">Semua Tipe</option>
+              <option value="expense">Pengeluaran</option>
+              <option value="income">Pemasukan</option>
+            </select>
+            <button class="clear-filters" id="btn-clear-filters">Hapus Filter</button>
+          </div>
+
+          <div class="tx-table-wrap">
+            <table class="tx-table">
+              <thead>
+                <tr>
+                  <th>TANGGAL</th>
+                  <th>DESKRIPSI</th>
+                  <th>KATEGORI</th>
+                  <th>AKUN</th>
+                  <th class="right">JUMLAH (IDR)</th>
+                </tr>
+              </thead>
+              <tbody id="tx-table-body"></tbody>
+            </table>
+            <div class="empty-state hidden" id="tx-empty">
+              <i class="ti ti-receipt-off"></i>
+              Tidak ada transaksi yang cocok dengan filter ini.
+            </div>
+          </div>
+        </div>
+
+        <!-- BUDGETS -->
+        <div class="page hidden" id="page-budgets">
+          <div class="page-header">
+            <div>
+              <h1>Kelola Anggaran</h1>
+              <div class="sub">Pantau dan atur target pengeluaran bulananmu.</div>
+            </div>
+          </div>
+
+          <div class="stat-grid" style="grid-template-columns:1fr 1fr;">
+            <div class="stat-card">
+              <div class="stat-label">TOTAL ALOKASI BULANAN</div>
+              <div class="stat-value" id="budget-total-alloc">Rp 0</div>
+              <div class="stat-sub up"><i class="ti ti-info-circle"></i> <span>Berlaku untuk bulan ini</span></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">TOTAL TERPAKAI</div>
+              <div class="stat-value" id="budget-total-spent">Rp 0</div>
+              <div class="progress-track">
+                <div class="progress-fill" id="budget-total-bar" style="width:0%;"></div>
+              </div>
+              <div class="progress-caption" id="budget-total-pct">0% terpakai</div>
+            </div>
+          </div>
+
+          <div class="panel-title">Anggaran per Kategori</div>
+          <div class="budget-grid" id="budget-cards"></div>
+        </div>
+
+        <!-- INSIGHT -->
+        <div class="page hidden" id="page-insight">
+          <div class="page-header">
+            <div>
+              <h1>Insight & Analitik</h1>
+              <div class="sub">Pahami pola perilaku dan tren keuanganmu secara mendalam.</div>
+            </div>
+            <div
+              style="padding:9px 16px;border:1px solid var(--border);border-radius:8px;font-family:'Geist',sans-serif;font-size:13px;font-weight:600;color:var(--text-muted);">
+              6 Bulan Terakhir</div>
+          </div>
+          <div class="insight-hero">
+            <div class="insight-hero-blob"></div>
+            <div class="insight-tag"><i class="ti ti-brain"></i>ANALISIS PERILAKU FINANSIAL</div>
+            <div class="insight-headline" id="insight-headline">Pengeluaran weekendmu <span class="red">40% lebih
+                tinggi</span><br />dibanding hari kerja, terutama untuk Makan &amp; Minum.</div>
+            <div class="insight-sub">Pertimbangkan membuat anggaran khusus weekend. Tingkat tabunganmu saat ini
+              15%—cukup solid, tapi mengoptimalkan pengeluaran weekend bisa membawamu lebih dekat ke target 20%.</div>
+            <div class="insight-badges">
+              <div class="badge primary"><i class="ti ti-trending-up" style="font-size:13px;"></i>Pengeluaran Weekend
+              </div>
+              <div class="badge green"><i class="ti ti-leaf" style="font-size:13px;"></i>15% Saving Rate</div>
+            </div>
+          </div>
+          <div class="dash-grid" style="margin-bottom:24px;">
+            <div class="card">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                <div
+                  style="font-family:'Geist',sans-serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);">
+                  TREN PEMASUKAN VS PENGELUARAN</div>
+              </div>
+              <div style="height:200px;position:relative;"><canvas id="incomeExpenseChart"></canvas></div>
+              <div style="display:flex;gap:20px;justify-content:center;margin-top:12px;">
+                <div
+                  style="display:flex;align-items:center;gap:6px;font-family:'Geist',sans-serif;font-size:12px;font-weight:600;">
+                  <div style="width:12px;height:12px;border-radius:9999px;background:var(--success);"></div>Pemasukan
+                </div>
+                <div
+                  style="display:flex;align-items:center;gap:6px;font-family:'Geist',sans-serif;font-size:12px;font-weight:600;">
+                  <div style="width:12px;height:12px;border-radius:9999px;background:var(--primary);"></div>Pengeluaran
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:20px;">
+              <div class="card">
+                <div
+                  style="font-family:'Geist',sans-serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);margin-bottom:12px;">
+                  BREAKDOWN KATEGORI</div>
+                <div style="display:flex;align-items:center;gap:16px;">
+                  <div style="position:relative;width:120px;height:120px;flex-shrink:0;">
+                    <canvas id="donutChart"></canvas>
+                    <div
+                      style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
+                      <div style="font-size:10px;color:var(--text-muted);">Total</div>
+                      <div style="font-size:13px;font-weight:700;" id="donut-center">Rp 0</div>
+                    </div>
+                  </div>
+                  <div id="donut-legend" style="flex:1;display:flex;flex-direction:column;gap:6px;"></div>
+                </div>
+              </div>
+              <div class="insight-smart-action">
+                <div class="blob2"></div>
+                <div class="action-icon"><i class="ti ti-sparkles"></i></div>
+                <div class="action-title">Smart Action</div>
+                <div class="action-body" id="smart-action-text">Alihkan Rp 500.000 dari 'Nongkrong' ke tabungan bulan
+                  ini untuk mempercepat pencapaian target finansialmu.</div>
+                <button class="action-btn"
+                  onclick="showToast('Saran diterapkan ke budget!', 'ti-circle-check')">Terapkan Saran</button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+              <div>
+                <div
+                  style="font-family:'Geist',sans-serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);">
+                  POLA PENGELUARAN</div>
+                <div style="font-size:13px;color:var(--text-muted);margin-top:4px;">Frekuensi transaksi per hari &amp;
+                  waktu</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:11px;color:var(--text-faint);">Sedikit</span>
+                <div style="display:flex;gap:4px;">
+                  <div style="width:12px;height:12px;background:#F0ECF9;border-radius:2px;"></div>
+                  <div style="width:12px;height:12px;background:#E2DFFF;border-radius:2px;"></div>
+                  <div style="width:12px;height:12px;background:#C3C0FF;border-radius:2px;"></div>
+                  <div style="width:12px;height:12px;background:#4F46E5;border-radius:2px;"></div>
+                  <div style="width:12px;height:12px;background:var(--primary);border-radius:2px;"></div>
+                </div>
+                <span style="font-size:11px;color:var(--text-faint);">Banyak</span>
+              </div>
+            </div>
+            <div class="heatmap-wrap">
+              <div class="heatmap-grid" id="heatmap-grid"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SAVINGS GOALS -->
+        <div class="page hidden" id="page-savings">
+          <div class="page-header">
+            <div>
+              <h1>Target Tabungan</h1>
+              <div class="sub">Pantau perkembangan dan proyeksi pencapaian finansialmu.</div>
+            </div>
+            <button class="btn-quickadd" id="btn-add-goal" style="border:none;"><i class="ti ti-plus"></i> Tambah
+              Target</button>
+          </div>
+          <div class="goals-grid">
+            <div id="goals-list" style="display:flex;flex-direction:column;gap:20px;"></div>
+            <div style="display:flex;flex-direction:column;gap:20px;">
+              <div class="forecasting-card">
+                <div class="forecast-label">PERKIRAAN PENCAPAIAN</div>
+                <div style="height:160px;position:relative;"><canvas id="forecastChart"></canvas></div>
+                <div class="forecast-info">
+                  Berdasarkan tingkat tabungan <strong>Rp 2,5jt/bulan</strong>, kamu akan mencapai seluruh target pada:
+                  <div class="forecast-date"><i class="ti ti-calendar-check" style="font-size:20px;"></i><span
+                      id="forecast-date">April 2025</span></div>
+                </div>
+              </div>
+              <div class="liquidity-card">
+                <div
+                  style="font-family:'Geist',sans-serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);margin-bottom:8px;">
+                  TOTAL TERKUNCI DI TABUNGAN</div>
+                <div style="font-size:26px;font-weight:700;margin:8px 0;" id="total-locked">Rp 0</div>
+                <button class="deposit-btn" onclick="showToast('Deposit diarahkan ke tabungan', 'ti-circle-check')"><i
+                    class="ti ti-arrow-down"></i> Deposit ke Target</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACCOUNTS -->
+        <div class="page hidden" id="page-accounts">
+          <div class="page-header">
+            <div>
+              <h1>Akun</h1>
+              <div class="sub">Kelola institusi dan dompet yang terhubung.</div>
+            </div>
+            <button class="btn-secondary" style="width:auto;padding:9px 16px;display:flex;align-items:center;gap:8px;"
+              onclick="showToast('Sinkronisasi selesai', 'ti-cloud-check')"><i class="ti ti-refresh"></i> Sync
+              Semua</button>
+          </div>
+          <div class="accounts-top">
+            <div class="liquidity-card" style="display:flex;flex-direction:column;gap:16px;">
+              <div>
+                <div
+                  style="font-family:'Geist',sans-serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);">
+                  TOTAL LIKUIDITAS</div>
+                <div style="font-size:28px;font-weight:700;margin:10px 0;" id="acc-total">Rp 18.450.000</div>
+                <div
+                  style="display:flex;align-items:center;gap:6px;font-family:'Geist',sans-serif;font-size:12px;font-weight:600;color:var(--success);">
+                  <i class="ti ti-trending-up" style="font-size:14px;"></i>+2.4% bulan ini</div>
+              </div>
+              <div>
+                <div
+                  style="font-family:'Geist',sans-serif;font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:12px;">
+                  Distribusi</div>
+                <div class="dist-bar-wrap">
+                  <div class="dist-row"><span style="display:flex;align-items:center;gap:6px;"><span
+                        style="width:10px;height:10px;border-radius:9999px;background:var(--primary);display:inline-block;"></span>Banking</span><strong>65%</strong>
+                  </div>
+                  <div class="progress-track" style="margin-bottom:12px;">
+                    <div class="progress-fill" style="width:65%;background:var(--primary);"></div>
+                  </div>
+                  <div class="dist-row"><span style="display:flex;align-items:center;gap:6px;"><span
+                        style="width:10px;height:10px;border-radius:9999px;background:var(--success);display:inline-block;"></span>E-Wallet</span><strong>25%</strong>
+                  </div>
+                  <div class="progress-track" style="margin-bottom:12px;">
+                    <div class="progress-fill" style="width:25%;background:var(--success);"></div>
+                  </div>
+                  <div class="dist-row"><span style="display:flex;align-items:center;gap:6px;"><span
+                        style="width:10px;height:10px;border-radius:9999px;background:#684000;display:inline-block;"></span>Tunai</span><strong>10%</strong>
+                  </div>
+                  <div class="progress-track">
+                    <div class="progress-fill" style="width:10%;background:#684000;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="acc-list-card">
+              <div class="acc-list-header">
+                <span>Institusi Terhubung</span>
+                <span style="color:var(--primary);font-size:13px;cursor:pointer;"
+                  onclick="showToast('Kelola koneksi belum tersedia', 'ti-info-circle')">Kelola Koneksi</span>
+              </div>
+              <div id="acc-rows"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MONTHLY REPORT -->
+        <div class="page hidden" id="page-reports">
+          <div class="page-header" style="border-bottom:1px solid var(--border);padding-bottom:24px;">
+            <div>
+              <h1 id="report-title">Ringkasan Bulan Ini</h1>
+              <div class="sub">Laporan performa keuangan bulanan. Analisis tren, tinjau pengeluaran, dan optimalkan
+                anggaran.</div>
+            </div>
+            <button class="btn-primary" style="width:auto;padding:12px 20px;"
+              onclick="showToast('Export PDF belum tersedia di prototype', 'ti-info-circle')"><i
+                class="ti ti-download"></i> Download PDF</button>
+          </div>
+          <div class="report-top-stats" style="margin-top:28px;">
+            <div class="report-stat">
+              <div class="report-stat-label">TOTAL PENGELUARAN <div
+                  style="width:30px;height:30px;background:rgba(255,218,214,0.3);border-radius:9999px;display:flex;align-items:center;justify-content:center;">
+                  <i class="ti ti-arrow-up" style="color:var(--danger);font-size:14px;"></i></div>
+              </div>
+              <div class="report-stat-value" id="report-spent">Rp 0</div>
+              <div class="report-stat-foot"><span class="vs-tag vs-up"><i class="ti ti-trending-up"
+                    style="font-size:11px;"></i>+12%</span><span style="color:var(--text-muted);">vs bulan lalu</span>
+              </div>
+            </div>
+            <div class="report-stat">
+              <div class="report-stat-label">TOTAL PEMASUKAN <div
+                  style="width:30px;height:30px;background:rgba(108,248,187,0.3);border-radius:9999px;display:flex;align-items:center;justify-content:center;">
+                  <i class="ti ti-arrow-down" style="color:var(--success);font-size:14px;"></i></div>
+              </div>
+              <div class="report-stat-value" id="report-income" style="color:var(--success);">Rp 0</div>
+              <div class="report-stat-foot"><span class="vs-tag vs-down"><i class="ti ti-trending-up"
+                    style="font-size:11px;"></i>+5%</span><span style="color:var(--text-muted);">vs bulan lalu</span>
+              </div>
+            </div>
+            <div class="report-stat primary-bg">
+              <div class="report-stat-label">PERFORMA TABUNGAN</div>
+              <div class="report-stat-value">On Track</div>
+              <div style="font-size:13px;color:#DAD7FF;margin-top:4px;">Laptop Fund</div>
+              <div style="margin-top:14px;">
+                <div style="display:flex;justify-content:space-between;font-size:13px;color:#DAD7FF;margin-bottom:6px;">
+                  <span>Progress</span><span>69%</span></div>
+                <div style="height:8px;background:rgba(15,0,105,0.4);border-radius:9999px;overflow:hidden;">
+                  <div style="height:100%;width:69%;background:#6FFBBE;border-radius:9999px;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="dash-grid" style="margin-top:0;">
+            <div class="card">
+              <div class="panel-title">Ringkasan Pengeluaran</div>
+              <div id="report-cat-list"></div>
+            </div>
+            <div class="ai-insight-card">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+                <i class="ti ti-sparkles" style="font-size:22px;color:#FFB95F;"></i>
+                <div style="font-size:18px;font-weight:600;">AI Insights</div>
+              </div>
+              <div id="ai-insights-list"></div>
+              <button
+                style="width:100%;padding:12px;border-radius:12px;border:1px solid var(--border);margin-top:16px;font-family:'Geist',sans-serif;font-size:13.5px;font-weight:500;color:var(--primary);background:transparent;cursor:pointer;"
+                onclick="showToast('Lihat semua rekomendasi', 'ti-list-check')">Lihat Semua Rekomendasi</button>
+            </div>
+          </div>
+          <div class="card" style="margin-top:24px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+              <div class="panel-title" style="margin-bottom:0;">Laporan Sebelumnya</div>
+              <span
+                style="color:var(--primary);font-family:'Geist',sans-serif;font-size:13px;font-weight:500;cursor:pointer;">Lihat
+                Semua</span>
+            </div>
+            <table class="prev-reports-table">
+              <thead>
+                <tr>
+                  <th>BULAN</th>
+                  <th>PENGELUARAN</th>
+                  <th>NET FLOW</th>
+                  <th>AKSI</th>
+                </tr>
+              </thead>
+              <tbody id="prev-reports-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- UPGRADE -->
+        <div class="page hidden" id="page-upgrade">
+          <div class="upgrade-hero" style="max-width:660px;margin:0 auto;text-align:center;padding:48px 0 32px;">
+            <div class="badge-tag"><i class="ti ti-sparkles" style="font-size:14px;color:#FFB95F;"></i>Pro Features
+            </div>
+            <h1 style="font-size:32px;font-weight:700;margin:12px 0;">Tingkatkan Perjalanan Finansialmu</h1>
+            <div style="font-size:17px;color:var(--text-muted);line-height:1.6;">Kendalikan penuh budget dengan akun tak
+              terbatas, insight bertenaga AI, dan alat pelaporan canggih.</div>
+            <div class="billing-toggle" id="billing-toggle" style="margin:24px auto 0;display:inline-flex;">
+              <div class="billing-opt active" data-billing="monthly">Bulanan</div>
+              <div class="billing-opt" data-billing="yearly">Tahunan <span class="discount-badge">-20%</span></div>
+            </div>
+          </div>
+          <div class="plans-grid">
+            <div class="plan-card">
+              <div class="plan-name">Free</div>
+              <div class="plan-desc">Alat esensial untuk budgeting mahasiswa dasar.</div>
+              <div class="plan-price">Rp 0</div>
+              <div class="plan-period">/bulan</div>
+              <div class="plan-divider"></div>
+              <div class="plan-feature"><i class="ti ti-check" style="color:var(--success);"></i><span>Sampai 2
+                  Akun</span></div>
+              <div class="plan-feature"><i class="ti ti-check" style="color:var(--success);"></i><span>Budgeting
+                  Dasar</span></div>
+              <div class="plan-feature"><i class="ti ti-check" style="color:var(--success);"></i><span>Kategori
+                  Standar</span></div>
+              <div style="flex:1;"></div>
+              <button class="plan-btn outline" style="cursor:default;margin-top:24px;">Paket Saat Ini</button>
+            </div>
+            <div class="plan-card featured">
+              <div class="most-popular-tag">Paling Populer</div>
+              <div class="plan-name">Pro</div>
+              <div class="plan-desc">Alat canggih, insight, dan tanpa batasan.</div>
+              <div class="plan-price" id="pro-price">Rp 29.000</div>
+              <div class="plan-period">/bulan</div>
+              <div class="plan-divider"></div>
+              <div class="plan-feature"><i class="ti ti-check"></i><span>Akun &amp; Dompet Tak Terbatas</span></div>
+              <div class="plan-feature"><i class="ti ti-check"></i><span>Insight Finansial Bertenaga AI</span></div>
+              <div class="plan-feature"><i class="ti ti-check"></i><span>Kategori Budget Kustom</span></div>
+              <div class="plan-feature"><i class="ti ti-check"></i><span>Export CSV Otomatis</span></div>
+              <div class="plan-feature"><i class="ti ti-check"></i><span>Prioritas Support</span></div>
+              <button class="plan-btn solid-white" style="margin-top:auto;"
+                onclick="showToast('Fitur Pro belum tersedia di prototype ini', 'ti-lock')">Upgrade ke Pro</button>
+            </div>
+            <div class="plan-card">
+              <div class="plan-name">Household</div>
+              <div class="plan-desc">Budget bersama untuk anak kos atau keluarga.</div>
+              <div class="plan-price" id="household-price">Rp 59.000</div>
+              <div class="plan-period">/bulan</div>
+              <div class="plan-divider"></div>
+              <div class="plan-feature"><i class="ti ti-check" style="color:var(--success);"></i><span>Semua yang ada di
+                  Pro</span></div>
+              <div class="plan-feature"><i class="ti ti-check" style="color:var(--success);"></i><span>Sampai 5 Pengguna
+                  Bersama</span></div>
+              <div class="plan-feature"><i class="ti ti-check" style="color:var(--success);"></i><span>Pelacakan Budget
+                  Bersama</span></div>
+              <div style="flex:1;"></div>
+              <button class="plan-btn solid-primary" style="margin-top:24px;"
+                onclick="showToast('Fitur Household belum tersedia', 'ti-lock')">Mulai Trial</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- QUICK ADD MODAL -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3>Tambah Pengeluaran</h3>
+        <button class="modal-close" id="modal-close"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="modal-label">Jumlah</div>
+      <div class="amount-input-wrap">
+        <span class="prefix">Rp</span>
+        <input type="text" id="qa-amount" inputmode="numeric" placeholder="0" autocomplete="off" />
+      </div>
+      <div class="modal-label">Kategori</div>
+      <div class="cat-grid" id="qa-cat-grid"></div>
+      <div class="modal-label">Catatan (opsional)</div>
+      <input type="text" class="desc-input" id="qa-desc" placeholder="cth. Makan siang di kantin" autocomplete="off" />
+      <div class="modal-actions">
+        <button class="btn-secondary" id="qa-cancel">Batal</button>
+        <button class="btn-primary" id="qa-submit"><i class="ti ti-check"></i> Simpan Transaksi</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"><i class="ti ti-circle-check"></i><span id="toast-text"></span></div>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/dist/tabler-icons.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="app.js"></script>
 </body>
+
 </html>
