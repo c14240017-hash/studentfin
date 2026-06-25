@@ -1,12 +1,8 @@
 /* ============================================================
-   StudentFin Prototype — State & Logic (v3)
-   + Dark Mode toggle switch
-   + Skeleton loading on page navigation
-   + Nav dropdown groups
-   + Edit / Delete transactions
-   + Global search across all pages
-   + CSV export
-   + Auto-sync all pages
+   StudentFin Prototype — State & Logic (v2)
+   + Dark Mode toggle
+   + Transaction Tags (pribadi, organisasi, panitia, kuliah, lainnya)
+   + Improved Quick Add modal
    + Responsive sidebar & mobile nav
    ============================================================ */
 
@@ -29,11 +25,11 @@ function getCat(id) {
 
 /* ---- TAGS ---- */
 const TAGS = [
-  { id:"pribadi",    label:"Pribadi",    emoji:"\u{1F464}" },
-  { id:"organisasi", label:"Organisasi", emoji:"\u{1F3E2}" },
-  { id:"panitia",    label:"Panitia",    emoji:"\u{1F3AA}" },
-  { id:"kuliah",     label:"Kuliah",     emoji:"\u{1F4DA}" },
-  { id:"lainnya",    label:"Lainnya",    emoji:"\u{00B7}" },
+  { id:"pribadi",    label:"Pribadi",    emoji:"👤" },
+  { id:"organisasi", label:"Organisasi", emoji:"🏢" },
+  { id:"panitia",    label:"Panitia",    emoji:"🎪" },
+  { id:"kuliah",     label:"Kuliah",     emoji:"📚" },
+  { id:"lainnya",    label:"Lainnya",    emoji:"·" },
 ];
 
 function getTag(id) {
@@ -138,13 +134,14 @@ function rupiahShort(n) {
 let currentPage = "dashboard";
 
 /* ============================================================
-   DARK MODE — Toggle switch
+   DARK MODE
 ============================================================ */
 function applyTheme(theme) {
   document.documentElement.setAttribute("data-theme", theme);
   const btn = document.getElementById("btn-theme");
-  if (btn) btn.setAttribute("aria-checked", theme === "dark" ? "true" : "false");
+  if (btn) btn.querySelector("i").className = theme === "dark" ? "ti ti-sun" : "ti ti-moon";
   localStorage.setItem("sf-theme", theme);
+  // Redraw charts when theme changes so colors update
   if (currentPage === "dashboard") renderTrendChart();
   if (currentPage === "insight") { renderIncomeExpenseChart(); renderDonutChart(); }
   if (currentPage === "savings") renderForecastChart();
@@ -161,61 +158,23 @@ document.getElementById("btn-theme").addEventListener("click", () => {
   applyTheme(current === "dark" ? "light" : "dark");
 });
 
-document.getElementById("btn-theme").addEventListener("keydown", e => {
-  if (e.key === "Enter" || e.key === " ") {
-    e.preventDefault();
-    document.getElementById("btn-theme").click();
-  }
-});
-
 /* ============================================================
-   SIDEBAR — collapsible on desktop
+   RESPONSIVE SIDEBAR
 ============================================================ */
-function toggleSidebar() {
-  const sidebar = document.getElementById("sidebar");
-  const collapsed = sidebar.classList.toggle("collapsed");
-  localStorage.setItem("sf-sidebar-collapsed", collapsed ? "1" : "");
+function openSidebar() {
+  document.getElementById("sidebar").classList.add("open");
+  document.getElementById("sidebar-overlay").classList.add("show");
+  document.body.style.overflow = "hidden";
 }
 
-function initSidebar() {
-  const saved = localStorage.getItem("sf-sidebar-collapsed");
-  if (saved === "1") {
-    document.getElementById("sidebar").classList.add("collapsed");
-  }
+function closeSidebar() {
+  document.getElementById("sidebar").classList.remove("open");
+  document.getElementById("sidebar-overlay").classList.remove("show");
+  document.body.style.overflow = "";
 }
 
-document.getElementById("btn-sidebar-collapse").addEventListener("click", toggleSidebar);
-
-/* ============================================================
-   NAV DROPDOWN GROUPS
-============================================================ */
-document.querySelectorAll(".nav-group-toggle").forEach(toggle => {
-  toggle.addEventListener("click", () => {
-    const group = toggle.closest(".nav-group");
-    const isOpen = group.classList.contains("open");
-    group.classList.toggle("open", !isOpen);
-    toggle.setAttribute("aria-expanded", !isOpen);
-  });
-});
-
-function autoOpenNavGroup(page) {
-  const analitikPages = ["insight", "reports"];
-  const keuanganPages = ["savings", "accounts"];
-  const gAnalitik = document.getElementById("nav-group-analitik");
-  const gKeuangan = document.getElementById("nav-group-keuangan");
-  if (gAnalitik) {
-    gAnalitik.classList.toggle("open", analitikPages.includes(page));
-    gAnalitik.classList.toggle("active", analitikPages.includes(page));
-    const t = gAnalitik.querySelector(".nav-group-toggle");
-    if (t) t.setAttribute("aria-expanded", analitikPages.includes(page));
-  }
-  if (gKeuangan) {
-    gKeuangan.classList.toggle("open", keuanganPages.includes(page));
-    gKeuangan.classList.toggle("active", keuanganPages.includes(page));
-    const t = gKeuangan.querySelector(".nav-group-toggle");
-    if (t) t.setAttribute("aria-expanded", keuanganPages.includes(page));
-  }
-}
+document.getElementById("btn-hamburger").addEventListener("click", openSidebar);
+document.getElementById("sidebar-overlay").addEventListener("click", closeSidebar);
 
 /* ============================================================
    LOGIN
@@ -244,81 +203,6 @@ document.getElementById("btn-login").addEventListener("click", () => {
 document.getElementById("btn-upgrade").addEventListener("click", () => showPage("upgrade"));
 
 /* ============================================================
-   SKELETON LOADING
-============================================================ */
-function showSkeleton(pageId) {
-  const page = document.getElementById("page-" + pageId);
-  if (!page) return;
-
-  const existing = page.querySelector(".skeleton-wrap");
-  if (existing) existing.remove();
-
-  const skeleton = document.createElement("div");
-  skeleton.className = "skeleton-wrap";
-  skeleton.setAttribute("aria-label", "Memuat konten...");
-  skeleton.setAttribute("role", "status");
-
-  skeleton.innerHTML = `
-    <div class="skeleton-grid">
-      <div class="skeleton-card">
-        <div class="skeleton skeleton-line w-40" style="margin-bottom:12px;"></div>
-        <div class="skeleton skeleton-line h-lg w-60" style="margin-bottom:8px;"></div>
-        <div class="skeleton skeleton-line w-80"></div>
-      </div>
-      <div class="skeleton-card">
-        <div class="skeleton skeleton-line w-40" style="margin-bottom:12px;"></div>
-        <div class="skeleton skeleton-line h-lg w-60" style="margin-bottom:8px;"></div>
-        <div class="skeleton skeleton-line w-full"></div>
-      </div>
-      <div class="skeleton-card">
-        <div class="skeleton skeleton-line w-40" style="margin-bottom:12px;"></div>
-        <div class="skeleton skeleton-line h-lg w-60" style="margin-bottom:8px;"></div>
-        <div class="skeleton skeleton-line w-80"></div>
-      </div>
-    </div>
-    <div class="skeleton-row" style="margin-top:12px;">
-      <div class="skeleton skeleton-circle"></div>
-      <div style="flex:1;">
-        <div class="skeleton skeleton-line w-60" style="margin-bottom:8px;"></div>
-        <div class="skeleton skeleton-line w-40"></div>
-      </div>
-    </div>
-    <div class="skeleton-row">
-      <div class="skeleton skeleton-circle"></div>
-      <div style="flex:1;">
-        <div class="skeleton skeleton-line w-80" style="margin-bottom:8px;"></div>
-        <div class="skeleton skeleton-line w-40"></div>
-      </div>
-    </div>
-    <div class="skeleton-row">
-      <div class="skeleton skeleton-circle"></div>
-      <div style="flex:1;">
-        <div class="skeleton skeleton-line w-60" style="margin-bottom:8px;"></div>
-        <div class="skeleton skeleton-line w-40"></div>
-      </div>
-    </div>`;
-
-  const header = page.querySelector(".page-header");
-  if (header) {
-    header.insertAdjacentElement("afterend", skeleton);
-  } else {
-    page.prepend(skeleton);
-  }
-
-  const contentEls = page.querySelectorAll(":scope > :not(.page-header):not(.skeleton-wrap)");
-  contentEls.forEach(el => el.style.display = "none");
-}
-
-function hideSkeleton(pageId) {
-  const page = document.getElementById("page-" + pageId);
-  if (!page) return;
-  const skeleton = page.querySelector(".skeleton-wrap");
-  if (skeleton) skeleton.remove();
-  const contentEls = page.querySelectorAll(":scope > :not(.page-header)");
-  contentEls.forEach(el => el.style.display = "");
-}
-
-/* ============================================================
    INIT APP
 ============================================================ */
 let appInitialized = false;
@@ -327,10 +211,8 @@ function initApp() {
   if (appInitialized) { showPage("dashboard"); return; }
   appInitialized = true;
   initTheme();
-  initSidebar();
   populateFilterDropdowns();
   buildQuickAddCategoryGrid();
-  initScrollIndicator();
   showPage("dashboard");
 }
 
@@ -352,74 +234,21 @@ function showPage(page) {
   document.querySelectorAll(".mobile-nav-item[data-page]").forEach(btn => {
     btn.classList.toggle("active", btn.dataset.page === page);
   });
-  autoOpenNavGroup(page);
-
-  showSkeleton(page);
-
-  setTimeout(() => {
-    hideSkeleton(page);
-    if (page === "dashboard")    renderDashboard();
-    if (page === "transactions") renderTransactions();
-    if (page === "budgets")      renderBudgets();
-    if (page === "insight")      renderInsight();
-    if (page === "savings")      renderSavings();
-    if (page === "accounts")   { renderAccounts(); startAutoSync(); }
-    if (page === "reports")      renderReports();
-    if (page === "upgrade")      renderUpgrade();
-    if (page !== "accounts")     stopAutoSync();
-  }, 350);
-
+  if (page === "dashboard")    renderDashboard();
+  if (page === "transactions") renderTransactions();
+  if (page === "budgets")      renderBudgets();
+  if (page === "insight")      renderInsight();
+  if (page === "savings")      renderSavings();
+  if (page === "accounts")     renderAccounts();
+  if (page === "reports")      renderReports();
+  if (page === "upgrade")      renderUpgrade();
   window.scrollTo(0, 0);
+  // Close sidebar on mobile after navigation
+  if (window.innerWidth <= 768) closeSidebar();
 }
 
 document.querySelectorAll("[data-page]").forEach(btn => {
-  btn.addEventListener("click", () => {
-    showPage(btn.dataset.page);
-    closeMobileMore();
-  });
-});
-
-/* ============================================================
-   MOBILE NAV — "+" button & "More" sheet
-============================================================ */
-document.getElementById("mobile-add-btn").addEventListener("click", openQuickAdd);
-
-function openMobileMore() {
-  document.getElementById("mobile-more-overlay").classList.add("show");
-}
-
-function closeMobileMore() {
-  document.getElementById("mobile-more-overlay").classList.remove("show");
-}
-
-document.getElementById("mobile-more-btn").addEventListener("click", openMobileMore);
-document.getElementById("mobile-more-overlay").addEventListener("click", e => {
-  if (e.target.id === "mobile-more-overlay") closeMobileMore();
-});
-
-/* ============================================================
-   GLOBAL SEARCH — works across all pages
-============================================================ */
-const globalSearch = document.getElementById("global-search");
-
-globalSearch.addEventListener("input", () => {
-  const q = globalSearch.value.trim().toLowerCase();
-  if (!q) {
-    if (currentPage === "transactions") renderTransactions();
-    return;
-  }
-  if (currentPage !== "transactions") {
-    showPage("transactions");
-  } else {
-    renderTransactions();
-  }
-});
-
-globalSearch.addEventListener("keydown", e => {
-  if (e.key === "Enter") {
-    const q = globalSearch.value.trim().toLowerCase();
-    if (q && currentPage !== "transactions") showPage("transactions");
-  }
+  btn.addEventListener("click", () => showPage(btn.dataset.page));
 });
 
 /* ============================================================
@@ -531,7 +360,7 @@ function getChartColors() {
   const dark = document.documentElement.getAttribute("data-theme") === "dark";
   return {
     grid:  dark ? "rgba(255,255,255,0.06)" : "#EAE6F4",
-    tick:  dark ? "#ABA9C4" : "#464555",
+    tick:  dark ? "#9B99B8" : "#464555",
   };
 }
 
@@ -572,7 +401,7 @@ function renderTrendChart() {
 }
 
 /* ============================================================
-   TRANSACTIONS PAGE — with edit/delete
+   TRANSACTIONS PAGE
 ============================================================ */
 function populateFilterDropdowns() {
   const catSelect = document.getElementById("filter-category");
@@ -594,7 +423,7 @@ function getFilteredTransactions() {
   const acc    = document.getElementById("filter-account").value;
   const type   = document.getElementById("filter-type").value;
   const tag    = document.getElementById("filter-tag").value;
-  const search = globalSearch.value.trim().toLowerCase();
+  const search = document.getElementById("global-search").value.trim().toLowerCase();
 
   return [...state.transactions]
     .sort((a,b) => b.date-a.date)
@@ -610,11 +439,9 @@ function getFilteredTransactions() {
 
 function renderTransactions() {
   const tbody = document.getElementById("tx-table-body");
-  const mobileList = document.getElementById("tx-mobile-list");
   const empty = document.getElementById("tx-empty");
   const rows  = getFilteredTransactions();
   tbody.innerHTML = "";
-  if (mobileList) mobileList.innerHTML = "";
 
   if (!rows.length) {
     empty.classList.remove("hidden");
@@ -625,8 +452,6 @@ function renderTransactions() {
   rows.forEach(t => {
     const c   = getCat(t.cat);
     const acc = ACCOUNTS.find(a => a.id===t.account);
-
-    // Desktop table row
     const tr  = document.createElement("tr");
     tr.innerHTML = `
       <td style="color:var(--text-muted);white-space:nowrap;">${fmtDate(t.date)}</td>
@@ -634,38 +459,8 @@ function renderTransactions() {
       <td><span class="chip">${c.name}</span></td>
       <td>${t.tag ? tagPillHTML(t.tag) : '<span style="color:var(--text-faint);font-size:12px;">—</span>'}</td>
       <td style="color:var(--text-muted);">${acc?acc.name:t.account}</td>
-      <td class="right amt-cell ${t.type}">${t.type==="income"?"+":""}${rupiah(t.amount)}</td>
-      <td>
-        <div class="tx-actions">
-          <button class="tx-action-btn" data-edit="${t.id}" title="Edit" aria-label="Edit transaksi"><i class="ti ti-pencil"></i></button>
-          <button class="tx-action-btn delete" data-delete="${t.id}" title="Hapus" aria-label="Hapus transaksi"><i class="ti ti-trash"></i></button>
-        </div>
-      </td>`;
+      <td class="right amt-cell ${t.type}">${t.type==="income"?"+":""}${rupiah(t.amount)}</td>`;
     tbody.appendChild(tr);
-
-    // Mobile card
-    if (mobileList) {
-      const card = document.createElement("div");
-      card.className = "tx-mobile-card";
-      card.innerHTML = `
-        <div class="tx-mobile-icon" style="background:${c.bg};color:${c.color};"><i class="ti ${c.icon}"></i></div>
-        <div class="tx-mobile-body">
-          <div class="tx-mobile-top">
-            <div class="tx-mobile-name">${t.desc}</div>
-            <div class="tx-mobile-amount ${t.type}">${t.type==="income"?"+":""}${rupiah(t.amount)}</div>
-          </div>
-          <div class="tx-mobile-meta">
-            <span class="tx-mobile-date">${fmtDate(t.date)}</span>
-            <span class="chip">${c.name}</span>
-            ${t.tag ? tagPillHTML(t.tag) : ""}
-          </div>
-          <div class="tx-mobile-actions">
-            <button class="tx-action-btn" data-edit="${t.id}" aria-label="Edit"><i class="ti ti-pencil"></i></button>
-            <button class="tx-action-btn delete" data-delete="${t.id}" aria-label="Hapus"><i class="ti ti-trash"></i></button>
-          </div>
-        </div>`;
-      mobileList.appendChild(card);
-    }
   });
 }
 
@@ -673,143 +468,20 @@ function renderTransactions() {
   document.getElementById(id).addEventListener("change", renderTransactions);
 });
 
+document.getElementById("global-search").addEventListener("input", () => {
+  if (currentPage === "transactions") renderTransactions();
+});
+
 document.getElementById("btn-clear-filters").addEventListener("click", () => {
   ["filter-category","filter-account","filter-type","filter-tag"].forEach(id => {
     document.getElementById(id).value = "all";
   });
-  globalSearch.value = "";
+  document.getElementById("global-search").value = "";
   renderTransactions();
 });
 
-/* ---- Scroll indicator for table ---- */
-function initScrollIndicator() {
-  const scrollEl = document.getElementById("tx-table-scroll");
-  const wrap = document.getElementById("tx-scroll-wrap");
-  if (!scrollEl || !wrap) return;
-  scrollEl.addEventListener("scroll", () => {
-    const atStart = scrollEl.scrollLeft > 10;
-    const atEnd = scrollEl.scrollLeft + scrollEl.clientWidth >= scrollEl.scrollWidth - 10;
-    wrap.classList.toggle("scrolled-start", atStart);
-    wrap.classList.toggle("scrolled-end", atEnd);
-  });
-}
-
-/* ---- Edit transaction ---- */
-let editingTxId = null;
-
-document.addEventListener("click", e => {
-  const editBtn = e.target.closest("[data-edit]");
-  if (editBtn) {
-    const tx = state.transactions.find(t => t.id === editBtn.dataset.edit);
-    if (tx) openEditTransaction(tx);
-    return;
-  }
-
-  const deleteBtn = e.target.closest("[data-delete]");
-  if (deleteBtn) {
-    openDeleteConfirm(deleteBtn.dataset.delete);
-    return;
-  }
-});
-
-function openEditTransaction(tx) {
-  editingTxId = tx.id;
-  document.getElementById("modal-overlay").classList.add("show");
-  qaRawAmount = String(Math.abs(tx.amount));
-  qaAmountInput.value = qaRawAmount;
-  document.getElementById("qa-desc").value = tx.desc;
-
-  selectedQACategory = tx.cat;
-  document.querySelectorAll(".cat-btn").forEach(b => {
-    b.classList.toggle("selected", b.dataset.cat === tx.cat);
-  });
-
-  selectedQATag = tx.tag || null;
-  document.querySelectorAll(".tag-option").forEach(b => {
-    b.classList.toggle("selected-tag", b.dataset.tag === tx.tag);
-  });
-
-  updateAmountDisplay();
-
-  const eyebrow = document.querySelector(".modal-eyebrow");
-  const title = document.querySelector(".modal-title");
-  const submitBtn = document.getElementById("qa-submit");
-  if (eyebrow) eyebrow.textContent = "Edit Transaksi";
-  if (title) title.textContent = "Ubah detail transaksi";
-  if (submitBtn) submitBtn.innerHTML = '<i class="ti ti-check"></i>Simpan Perubahan';
-}
-
-/* ---- Delete transaction ---- */
-let deletingTxId = null;
-
-function openDeleteConfirm(txId) {
-  const tx = state.transactions.find(t => t.id === txId);
-  if (!tx) return;
-  deletingTxId = txId;
-  const desc = document.getElementById("confirm-desc");
-  if (desc) desc.textContent = `"${tx.desc}" (${rupiah(Math.abs(tx.amount))}) akan dihapus permanen.`;
-  document.getElementById("confirm-overlay").classList.add("show");
-}
-
-document.getElementById("confirm-cancel").addEventListener("click", () => {
-  document.getElementById("confirm-overlay").classList.remove("show");
-  deletingTxId = null;
-});
-
-document.getElementById("confirm-delete").addEventListener("click", () => {
-  if (deletingTxId) {
-    state.transactions = state.transactions.filter(t => t.id !== deletingTxId);
-    showToast("Transaksi berhasil dihapus", "ti-trash");
-    refreshAllPages();
-  }
-  document.getElementById("confirm-overlay").classList.remove("show");
-  deletingTxId = null;
-});
-
-document.getElementById("confirm-overlay").addEventListener("click", e => {
-  if (e.target.id === "confirm-overlay") {
-    document.getElementById("confirm-overlay").classList.remove("show");
-    deletingTxId = null;
-  }
-});
-
-/* ---- CSV Export ---- */
 document.getElementById("btn-export").addEventListener("click", () => {
-  const rows = getFilteredTransactions();
-  if (!rows.length) {
-    showToast("Tidak ada transaksi untuk di-export", "ti-alert-circle");
-    return;
-  }
-
-  const headers = ["Tanggal","Deskripsi","Kategori","Tag","Akun","Tipe","Jumlah"];
-  const csvRows = [headers.join(",")];
-
-  rows.forEach(t => {
-    const c = getCat(t.cat);
-    const acc = ACCOUNTS.find(a => a.id === t.account);
-    const tag = t.tag ? getTag(t.tag).label : "";
-    csvRows.push([
-      fmtDate(t.date),
-      '"' + t.desc.replace(/"/g, '""') + '"',
-      c.name,
-      tag,
-      acc ? acc.name : t.account,
-      t.type === "expense" ? "Pengeluaran" : "Pemasukan",
-      t.amount,
-    ].join(","));
-  });
-
-  const blob = new Blob(["﻿" + csvRows.join("\n")], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "studentfin-transaksi-" + new Date().toISOString().slice(0,10) + ".csv";
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-
-  showToast(`${rows.length} transaksi berhasil di-export ke CSV`, "ti-download");
+  showToast("Export CSV belum tersedia di prototype", "ti-info-circle");
 });
 
 /* ============================================================
@@ -867,7 +539,7 @@ function renderBudgets() {
 }
 
 /* ============================================================
-   QUICK ADD MODAL — with edit mode support
+   QUICK ADD MODAL (redesigned)
 ============================================================ */
 let selectedQACategory = null;
 let selectedQATag      = null;
@@ -891,6 +563,7 @@ function buildQuickAddCategoryGrid() {
   });
 }
 
+// Tag selector
 document.querySelectorAll(".tag-option").forEach(btn => {
   btn.addEventListener("click", () => {
     selectedQATag = btn.dataset.tag;
@@ -899,6 +572,7 @@ document.querySelectorAll(".tag-option").forEach(btn => {
   });
 });
 
+// Amount input — display formatted value in header
 const qaAmountInput  = document.getElementById("qa-amount");
 const amountDisplay  = document.getElementById("amount-display");
 const amountCursor   = document.getElementById("amount-cursor");
@@ -912,8 +586,10 @@ function updateAmountDisplay() {
   const num = Number(qaRawAmount);
   if (num > 0) {
     amountDisplay.innerHTML = num.toLocaleString("id-ID") + '<span class="modal-amount-cursor" id="amount-cursor"></span>';
+    amountCursor.style.display = "none";
   } else {
     amountDisplay.innerHTML = '0<span class="modal-amount-cursor" id="amount-cursor"></span>';
+    amountCursor.style.display = "";
   }
 }
 
@@ -922,7 +598,6 @@ qaAmountInput.addEventListener("focus", () => {
 });
 
 function openQuickAdd() {
-  editingTxId = null;
   document.getElementById("modal-overlay").classList.add("show");
   qaRawAmount = "";
   selectedQACategory = null;
@@ -932,20 +607,11 @@ function openQuickAdd() {
   document.querySelectorAll(".cat-btn").forEach(b => b.classList.remove("selected"));
   document.querySelectorAll(".tag-option").forEach(b => b.classList.remove("selected-tag"));
   updateAmountDisplay();
-
-  const eyebrow = document.querySelector(".modal-eyebrow");
-  const title = document.querySelector(".modal-title");
-  const submitBtn = document.getElementById("qa-submit");
-  if (eyebrow) eyebrow.textContent = "Catat Pengeluaran";
-  if (title) title.textContent = "Berapa yang kamu keluarkan?";
-  if (submitBtn) submitBtn.innerHTML = '<i class="ti ti-check"></i>Simpan Transaksi';
-
   setTimeout(() => qaAmountInput.focus(), 80);
 }
 
 function closeQuickAdd() {
   document.getElementById("modal-overlay").classList.remove("show");
-  editingTxId = null;
 }
 
 document.getElementById("btn-quickadd").addEventListener("click", openQuickAdd);
@@ -956,13 +622,8 @@ document.getElementById("modal-overlay").addEventListener("click", e => {
 });
 
 document.addEventListener("keydown", e => {
-  if (e.key === "Escape") {
-    if (document.getElementById("confirm-overlay").classList.contains("show")) {
-      document.getElementById("confirm-overlay").classList.remove("show");
-      deletingTxId = null;
-    } else if (document.getElementById("modal-overlay").classList.contains("show")) {
-      closeQuickAdd();
-    }
+  if (e.key === "Escape" && document.getElementById("modal-overlay").classList.contains("show")) {
+    closeQuickAdd();
   }
 });
 
@@ -981,31 +642,23 @@ document.getElementById("qa-submit").addEventListener("click", () => {
   const cat      = getCat(selectedQACategory);
   const finalDesc = desc || cat.name;
 
-  if (editingTxId) {
-    const tx = state.transactions.find(t => t.id === editingTxId);
-    if (tx) {
-      tx.desc = finalDesc;
-      tx.cat = selectedQACategory;
-      tx.amount = tx.type === "income" ? amount : -amount;
-      tx.tag = selectedQATag || "pribadi";
-      showToast(`Transaksi berhasil diubah`, "ti-circle-check");
-    }
-  } else {
-    state.transactions.push({
-      id:      newTxId(),
-      date:    new Date(),
-      desc:    finalDesc,
-      cat:     selectedQACategory,
-      account: "gopay",
-      amount:  -amount,
-      type:    "expense",
-      tag:     selectedQATag || "pribadi",
-    });
-    showToast(`Tersimpan: ${finalDesc} · ${rupiah(amount)}`, "ti-circle-check");
-  }
+  state.transactions.push({
+    id:      newTxId(),
+    date:    new Date(),
+    desc:    finalDesc,
+    cat:     selectedQACategory,
+    account: "gopay",
+    amount:  -amount,
+    type:    "expense",
+    tag:     selectedQATag || "pribadi",
+  });
 
   closeQuickAdd();
-  refreshAllPages();
+  showToast(`Tersimpan: ${finalDesc} · ${rupiah(amount)}`, "ti-circle-check");
+
+  if (currentPage === "dashboard")    renderDashboard();
+  if (currentPage === "transactions") renderTransactions();
+  if (currentPage === "budgets")      renderBudgets();
 });
 
 ["qa-desc"].forEach(id => {
@@ -1013,19 +666,6 @@ document.getElementById("qa-submit").addEventListener("click", () => {
     if (e.key === "Enter") document.getElementById("qa-submit").click();
   });
 });
-
-/* ============================================================
-   AUTO-REFRESH — sync all visible pages when data changes
-============================================================ */
-function refreshAllPages() {
-  if (currentPage === "dashboard")    renderDashboard();
-  if (currentPage === "transactions") renderTransactions();
-  if (currentPage === "budgets")      renderBudgets();
-  if (currentPage === "insight")      renderInsight();
-  if (currentPage === "savings")      renderSavings();
-  if (currentPage === "accounts")     renderAccounts();
-  if (currentPage === "reports")      renderReports();
-}
 
 /* ============================================================
    TOAST
@@ -1044,11 +684,11 @@ function showToast(text, icon="ti-circle-check") {
    STATIC DATA — other pages
 ============================================================ */
 const ACCOUNTS_DATA = [
-  { id:"bca",     name:"Bank Central Asia (BCA)", type:"Rekening •••• 4589", letter:"BCA", bg:"#003d79", balance:8500000,  sync:"Sync 2j lalu",      syncOk:true  },
-  { id:"mandiri", name:"Bank Mandiri",             type:"Tabungan •••• 1204", letter:"MDR", bg:"#003366", balance:3500000,  sync:"Sync 5j lalu",      syncOk:true  },
-  { id:"gopay",   name:"GoPay",                   type:"E-Wallet",           letter:"GP",  bg:"#00880e", balance:2800000,  sync:"Sync gagal",        syncOk:false },
-  { id:"ovo",     name:"OVO",                     type:"E-Wallet",           letter:"OVO", bg:"#4c3494", balance:1800000,  sync:"Sync 1h lalu",      syncOk:true  },
-  { id:"cash",    name:"Dompet Tunai",             type:"Akun Manual",        letter:"IDR", bg:"#5F5E5A", balance:1850000,  sync:"Diperbarui manual", syncOk:true  },
+  { id:"bca",     name:"Bank Central Asia (BCA)", type:"Rekening •••• 4589", letter:"B", color:"#3525CD", balance:8500000,  sync:"Sync 2j lalu",      syncOk:true  },
+  { id:"mandiri", name:"Bank Mandiri",             type:"Tabungan •••• 1204", letter:"M", color:"#006C49", balance:3500000,  sync:"Sync 5j lalu",      syncOk:true  },
+  { id:"gopay",   name:"GoPay",                   type:"E-Wallet",           letter:"G", color:"#4F46E5", balance:2800000,  sync:"Sync gagal",        syncOk:false },
+  { id:"ovo",     name:"OVO",                     type:"E-Wallet",           letter:"O", color:"#3525CD", balance:1800000,  sync:"Sync 1h lalu",      syncOk:true  },
+  { id:"cash",    name:"Dompet Tunai",             type:"Akun Manual",        letter:"💵",color:"#464555", balance:1850000,  sync:"Diperbarui manual", syncOk:true  },
 ];
 
 const SAVINGS_GOALS = [
@@ -1194,7 +834,7 @@ function renderSavings() {
             <div class="goal-status" style="color:${statusColor};"><i class="ti ${statusIcon}" style="font-size:11px;"></i>${g.statusText}</div>
           </div>
         </div>
-        <button style="color:var(--text-faint);font-size:17px;" aria-label="Opsi target" onclick="showToast('Edit target belum tersedia','ti-info-circle')"><i class="ti ti-dots-vertical"></i></button>
+        <button style="color:var(--text-faint);font-size:17px;" onclick="showToast('Edit target belum tersedia','ti-info-circle')"><i class="ti ti-dots-vertical"></i></button>
       </div>
       <div>
         <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:7px;">
@@ -1246,7 +886,7 @@ document.getElementById("btn-add-goal").addEventListener("click", () => {
 });
 
 /* ============================================================
-   ACCOUNTS — with auto-sync
+   ACCOUNTS
 ============================================================ */
 function renderAccounts() {
   const totalBal = ACCOUNTS_DATA.reduce((s,a) => s+a.balance, 0);
@@ -1258,7 +898,7 @@ function renderAccounts() {
     row.className = "acc-row";
     row.innerHTML = `
       <div style="display:flex;align-items:center;gap:14px;">
-        <div class="acc-logo" style="background:${a.bg};">${a.letter}</div>
+        <div class="acc-logo" style="color:${a.color};">${a.letter}</div>
         <div>
           <div class="acc-name">${a.name}</div>
           <div class="acc-type">${a.type}</div>
@@ -1266,9 +906,7 @@ function renderAccounts() {
       </div>
       <div style="text-align:right;">
         <div class="acc-balance">${rupiah(a.balance)}</div>
-        <div class="acc-sync ${a.syncOk?"":"fail"}">
-          ${a.syncOk?'<span class="sync-status-live"><i class="ti ti-circle-check"></i></span>':''}<span class="acc-sync-text">${a.sync}</span>
-        </div>
+        <div class="acc-sync ${a.syncOk?"":"fail"}">${a.sync}</div>
       </div>`;
     container.appendChild(row);
   });
@@ -1343,7 +981,7 @@ function renderReports() {
         </div>
       </td>
       <td style="text-align:right;">
-        <button style="font-size:17px;color:var(--text-faint);" aria-label="Download laporan ${r.month}" onclick="showToast('Download PDF ${r.month}','ti-download')"><i class="ti ti-download"></i></button>
+        <button style="font-size:17px;color:var(--text-faint);" onclick="showToast('Download PDF ${r.month}','ti-download')"><i class="ti ti-download"></i></button>
       </td>`;
     tbody.appendChild(tr);
   });
@@ -1370,139 +1008,4 @@ document.getElementById("billing-toggle").addEventListener("click", e => {
   if (!opt) return;
   billingMode = opt.dataset.billing;
   renderUpgrade();
-});
-
-/* ============================================================
-   AUTO-SYNC — Accounts page
-============================================================ */
-let autoSyncInterval = null;
-let syncTimestampInterval = null;
-let lastSyncTime = Date.now();
-
-function startAutoSync() {
-  if (autoSyncInterval) return;
-  lastSyncTime = Date.now();
-  updateAllSyncTimestamps();
-
-  autoSyncInterval = setInterval(() => {
-    performSync(true);
-  }, 30000);
-
-  syncTimestampInterval = setInterval(() => {
-    updateAllSyncTimestamps();
-    refreshSyncDisplay();
-  }, 5000);
-}
-
-function stopAutoSync() {
-  if (autoSyncInterval) {
-    clearInterval(autoSyncInterval);
-    autoSyncInterval = null;
-  }
-  if (syncTimestampInterval) {
-    clearInterval(syncTimestampInterval);
-    syncTimestampInterval = null;
-  }
-}
-
-const SYNC_TX_POOL = [
-  { desc:"Transfer masuk dari Shopee",    cat:"lainnya",   type:"income",  min:50000,  max:350000  },
-  { desc:"Cashback GoPay",                cat:"lainnya",   type:"income",  min:5000,   max:25000   },
-  { desc:"Top-up OVO dari BCA",           cat:"lainnya",   type:"expense", min:50000,  max:200000  },
-  { desc:"Pembayaran QRIS Warteg",        cat:"makan",     type:"expense", min:12000,  max:30000   },
-  { desc:"Auto-debit Spotify",            cat:"pulsa",     type:"expense", min:54990,  max:54990   },
-  { desc:"Transfer dari orang tua",       cat:"lainnya",   type:"income",  min:500000, max:1500000 },
-  { desc:"Bayar parkir kampus",           cat:"transport", type:"expense", min:2000,   max:5000    },
-  { desc:"Beli snack Indomaret",          cat:"makan",     type:"expense", min:10000,  max:45000   },
-  { desc:"Refund belanja online",         cat:"belanja",   type:"income",  min:30000,  max:150000  },
-  { desc:"Iuran Wi-Fi kos",              cat:"pulsa",     type:"expense", min:50000,  max:100000  },
-  { desc:"Jual buku bekas",              cat:"lainnya",   type:"income",  min:25000,  max:80000   },
-  { desc:"Bayar laundry express",         cat:"kos",       type:"expense", min:15000,  max:35000   },
-];
-
-function generateSyncTransaction() {
-  const template = SYNC_TX_POOL[Math.floor(Math.random() * SYNC_TX_POOL.length)];
-  const amount = Math.round((template.min + Math.random() * (template.max - template.min)) / 1000) * 1000;
-  const accountIds = ["gopay","bca","dana","cash"];
-  const tagIds = ["pribadi","organisasi","kuliah","lainnya"];
-
-  return {
-    id:      newTxId(),
-    date:    new Date(),
-    desc:    template.desc,
-    cat:     template.cat,
-    account: accountIds[Math.floor(Math.random() * accountIds.length)],
-    amount:  template.type === "income" ? amount : -amount,
-    type:    template.type,
-    tag:     tagIds[Math.floor(Math.random() * tagIds.length)],
-  };
-}
-
-function performSync(silent) {
-  lastSyncTime = Date.now();
-
-  ACCOUNTS_DATA.forEach(a => {
-    if (a.id !== "cash") {
-      const delta = Math.round((Math.random() - 0.35) * 80000);
-      a.balance = Math.max(100000, a.balance + delta);
-    }
-    a.syncOk = true;
-  });
-
-  if (!silent) {
-    const newTx = generateSyncTransaction();
-    state.transactions.push(newTx);
-    refreshAllPages();
-  }
-
-  updateAllSyncTimestamps();
-
-  const icon = document.getElementById("sync-icon");
-  if (icon) {
-    icon.style.animation = "spin .8s ease";
-    icon.addEventListener("animationend", () => { icon.style.animation = ""; }, { once: true });
-  }
-
-  renderAccounts();
-
-  document.querySelectorAll(".acc-balance").forEach(el => {
-    el.classList.add("acc-balance-updating");
-    el.addEventListener("animationend", () => el.classList.remove("acc-balance-updating"), { once: true });
-  });
-
-  if (!silent) {
-    const tx = state.transactions[state.transactions.length - 1];
-    const label = tx.type === "income" ? "+" + rupiah(tx.amount) : rupiah(tx.amount);
-    showToast(`Sync selesai — "${tx.desc}" (${label})`, "ti-cloud-check");
-  }
-}
-
-function updateAllSyncTimestamps() {
-  const elapsed = Math.round((Date.now() - lastSyncTime) / 1000);
-  ACCOUNTS_DATA.forEach(a => {
-    if (a.id === "cash") {
-      a.sync = "Diperbarui otomatis";
-    } else if (elapsed < 5) {
-      a.sync = "Baru saja";
-    } else if (elapsed < 60) {
-      a.sync = elapsed + " detik lalu";
-    } else if (elapsed < 3600) {
-      a.sync = Math.floor(elapsed / 60) + " menit lalu";
-    } else {
-      a.sync = Math.floor(elapsed / 3600) + " jam lalu";
-    }
-  });
-}
-
-function refreshSyncDisplay() {
-  const rows = document.querySelectorAll(".acc-sync-text");
-  ACCOUNTS_DATA.forEach((a, i) => {
-    if (rows[i]) rows[i].textContent = a.sync;
-  });
-}
-
-document.addEventListener("click", e => {
-  if (e.target.closest("#btn-sync-all")) {
-    performSync(false);
-  }
 });
